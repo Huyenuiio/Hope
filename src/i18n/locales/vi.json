@@ -1,0 +1,264 @@
+{
+  "nav": {
+    "articles": "Bài viết",
+    "people": "Mọi người",
+    "learning": "Học tập",
+    "jobs": "Việc làm",
+    "games": "Trò chơi",
+    "joinNow": "Tham gia ngay",
+    "signIn": "Đăng nhập",
+    "home": "Trang chủ",
+    "network": "Mạng lưới",
+    "messaging": "Nhắn tin",
+    "notifications": "Thông báo",
+    "me": "Tôi"
+  },
+  "landing": {
+    "hero": {
+      "title": "Khám phá cơ hội mới",
+      "continueGoogle": "Tiếp tục với Google",
+      "signInEmail": "Đăng nhập bằng email",
+      "agreement": "Bằng cách nhấp vào Tiếp tục để tham gia hoặc đăng nhập, bạn đồng ý với",
+      "userAgreement": "Thỏa thuận người dùng",
+      "privacyPolicy": "Chính sách quyền riêng tư",
+      "cookiePolicy": "Chính sách Cookie",
+      "newToLinkedIn": "Bạn chưa có tài khoản?",
+      "joinNow": "Tham gia ngay"
+    },
+    "topics": {
+      "title": "Khám phá nội dung hàng đầu trên LinkedIn",
+      "desc": "Tìm hiểu các bài đăng và thông tin chuyên gia liên quan — được tuyển chọn theo chủ đề.",
+      "showAll": "Xem tất cả",
+      "tags": ["Sự nghiệp", "Năng suất", "Tài chính", "Kỹ năng mềm", "Quản lý dự án", "Giáo dục", "Công nghệ"]
+    },
+    "jobCategories": {
+      "title": "Tìm việc làm hoặc thực tập phù hợp với bạn",
+      "showMore": "Xem thêm",
+      "tags": ["Kỹ thuật", "Phát triển kinh doanh", "Tài chính", "Trợ lý hành chính", "Nhân viên bán lẻ", "Dịch vụ khách hàng", "Vận hành", "Công nghệ thông tin"]
+    },
+    "postJob": {
+      "title": "Đăng tin tuyển dụng để hàng triệu người thấy",
+      "btn": "Đăng tin tuyển dụng"
+    },
+    "software": {
+      "title": "Khám phá các công cụ phần mềm tốt nhất",
+      "desc": "Kết nối với người mua có kinh nghiệm thực tế để tìm sản phẩm phù hợp nhất cho bạn.",
+      "showAll": "Xem tất cả",
+      "tags": ["Nền tảng thương mại điện tử", "Phần mềm CRM", "Hệ thống quản lý nhân sự", "Phần mềm tuyển dụng", "Phần mềm bán hàng", "Phần mềm quản lý dự án", "Phần mềm hỗ trợ"]
+    },
+    "games": {
+      "title": "Mài sắc tư duy với các trò chơi",
+      "desc": "Nghỉ ngơi và kết nối lại với mạng lưới của bạn qua các trò chơi hàng ngày."
+    },
+    "openToWork": {
+      "title": "Cho người phù hợp biết bạn đang tìm việc",
+      "desc": "Với tính năng Open To Work, bạn có thể thông báo riêng tư cho nhà tuyển dụng hoặc chia sẻ công khai với cộng đồng LinkedIn rằng bạn đang tìm kiếm cơ hội việc làm mới."
+    },
+    "connect": {
+      "title": "Kết nối với những người có thể giúp bạn",
+      "btn": "Tìm người bạn quen"
+    },
+    "learn": {
+      "title": "Học kỹ năng bạn cần để thành công",
+      "chooseTopic": "Chọn chủ đề để tìm hiểu",
+      "topics": ["Phân tích kinh doanh", "Marketing kỹ thuật số", "Phát triển phần mềm"]
+    },
+    "whoIsFor": {
+      "title": "LinkedIn dành cho ai?",
+      "desc": "Bất kỳ ai muốn điều hướng cuộc sống nghề nghiệp của mình.",
+      "items": ["Tìm đồng nghiệp hoặc bạn học", "Tìm việc làm mới", "Tìm khóa học hoặc đào tạo"]
+    },
+    "cta": {
+      "title": "Tham gia cùng đồng nghiệp, bạn học và bạn bè trên LinkedIn.",
+      "btn": "Bắt đầu ngay"
+    }
+  },
+  "employer": {
+    "welcome": "Chào mừng trở lại, Sarah",
+    "subtitle": "Đây là những gì đang xảy ra với tin tuyển dụng của bạn hôm nay.",
+    "stats": {
+      "activeJobs": "Tin đang hoạt động",
+      "totalViews": "Tổng lượt xem",
+      "totalApplications": "Tổng đơn ứng tuyển",
+      "newCandidates": "Ứng viên mới",
+      "sinceYesterday": "so với hôm qua"
+    },
+    "postings": {
+      "title": "Tin tuyển dụng đang hoạt động",
+      "viewAll": "Xem tất cả tin",
+      "showMore": "Hiển thị thêm",
+      "views": "Lượt xem",
+      "applicants": "Ứng viên",
+      "new": "Mới"
+    },
+    "candidates": {
+      "title": "Ứng viên phù hợp gần đây",
+      "viewAll": "Xem tất cả ứng viên",
+      "message": "Nhắn tin",
+      "profile": "Hồ sơ",
+      "match": "Phù hợp"
+    },
+    "insights": {
+      "title": "Thông tin nhân tài",
+      "desc": "Ứng viên với kỹ năng \"React\" hiện đang có nhu cầu cao. Hãy làm nổi bật lợi ích làm việc từ xa để thu hút nhiều nhân tài hơn.",
+      "readMore": "Đọc báo cáo đầy đủ"
+    },
+    "postJob": "Đăng tin tuyển dụng"
+  },
+  "jobSearch": {
+    "searchPlaceholder": "Tìm kiếm việc làm",
+    "basedOnProfile": "Việc làm dựa trên hồ sơ của bạn",
+    "results": "kết quả",
+    "filters": {
+      "datePosted": "Ngày đăng",
+      "experienceLevel": "Cấp độ kinh nghiệm",
+      "company": "Công ty",
+      "jobType": "Loại hình",
+      "remote": "Tại chỗ/Từ xa",
+      "allFilters": "Tất cả bộ lọc"
+    },
+    "detail": {
+      "apply": "Ứng tuyển",
+      "save": "Lưu",
+      "hiringTeam": "Gặp nhóm tuyển dụng",
+      "aboutJob": "Về vị trí này",
+      "responsibilities": "Trách nhiệm chính:",
+      "requirements": "Yêu cầu:",
+      "skills": "Kỹ năng:",
+      "aboutCompany": "Về công ty",
+      "follow": "Theo dõi",
+      "activelyHiring": "Đang tuyển dụng tích cực",
+      "yourProfileMatches": "Hồ sơ của bạn phù hợp với công việc này"
+    }
+  },
+  "dashboard": {
+    "startPost": "Bắt đầu một bài đăng",
+    "media": "Phương tiện",
+    "event": "Sự kiện",
+    "writeArticle": "Viết bài",
+    "sortBy": "Sắp xếp theo:",
+    "top": "Hàng đầu",
+    "like": "Thích",
+    "comment": "Bình luận",
+    "share": "Chia sẻ",
+    "send": "Gửi",
+    "seeMore": "...xem thêm",
+    "activelyRecruiting": "Đang tuyển dụng tích cực",
+    "easyApply": "Ứng tuyển dễ dàng",
+    "ignore": "Bỏ qua",
+    "profile": {
+      "profileViewers": "Người xem hồ sơ",
+      "connections": "Kết nối",
+      "myItems": "Mục của tôi",
+      "strength": "Độ mạnh hồ sơ",
+      "intermediate": "Trung bình",
+      "strengthTip": "Thêm danh mục để thu hút gấp 3 lần nhà tuyển dụng.",
+      "completeProfile": "Hoàn thiện hồ sơ",
+      "recent": "Gần đây",
+      "discoverMore": "Khám phá thêm"
+    },
+    "sidebar": {
+      "trendingJobs": "Việc làm xu hướng",
+      "peopleYouMayKnow": "Người bạn có thể quen",
+      "connect": "Kết nối",
+      "seeAll": "Xem tất cả đề xuất",
+      "showMore": "Xem thêm"
+    },
+    "messaging": "Nhắn tin"
+  },
+  "footer": {
+    "general": "Tổng quát",
+    "browseLI": "Khám phá LinkedIn",
+    "businessSolutions": "Giải pháp doanh nghiệp",
+    "directories": "Thư mục",
+    "generalLinks": ["Đăng ký", "Trung tâm hỗ trợ", "Giới thiệu", "Báo chí", "Blog", "Tuyển dụng", "Nhà phát triển"],
+    "browseLinks": ["Học tập", "Việc làm", "Trò chơi", "Di động", "Dịch vụ", "Sản phẩm"],
+    "businessLinks": ["Nhân tài", "Marketing", "Bán hàng", "Đào tạo"],
+    "directoriesLinks": ["Thành viên", "Việc làm", "Công ty", "Tin tức", "Bản tin", "Dịch vụ"],
+    "bottomLinks": ["Giới thiệu", "Hỗ trợ tiếp cận", "Thỏa thuận người dùng", "Chính sách riêng tư", "Chính sách Cookie", "Chính sách bản quyền", "Chính sách thương hiệu", "Kiểm soát khách"],
+    "language": "Ngôn ngữ"
+  },
+  "admin": {
+    "login": {
+      "title": "Cổng Quản Trị",
+      "subtitle": "Đăng nhập để truy cập bảng điều khiển quản trị",
+      "username": "Tên đăng nhập",
+      "password": "Mật khẩu",
+      "usernamePlaceholder": "admin@hope.com",
+      "passwordPlaceholder": "Nhập mật khẩu của bạn",
+      "signIn": "Đăng nhập",
+      "error": "Tên đăng nhập hoặc mật khẩu không đúng",
+      "backToSite": "← Quay về trang chính",
+      "secureLogin": "Truy cập quản trị bảo mật"
+    },
+    "nav": {
+      "brand": "Ho",
+      "brandHighlight": "pe Quản Trị",
+      "searchPlaceholder": "Tìm người dùng, việc làm, hoặc nhật ký...",
+      "adminName": "Alex Rivera",
+      "adminRole": "Quản Trị Hệ Thống"
+    },
+    "sidebar": {
+      "dashboard": "Tổng Quan",
+      "management": "Quản Lý",
+      "userManagement": "Quản Lý Người Dùng",
+      "contentModeration": "Kiểm Duyệt Nội Dung",
+      "operations": "Vận Hành",
+      "matching": "Ghép Nối & Lịch Hẹn",
+      "analytics": "Phân Tích",
+      "system": "Hệ Thống",
+      "securityMonitor": "Giám Sát Bảo Mật",
+      "systemStatus": "Trạng Thái Hệ Thống",
+      "allOperational": "Tất cả hệ thống hoạt động tốt",
+      "logout": "Đăng xuất"
+    },
+    "stats": {
+      "newUsers": "Người Dùng Mới",
+      "successfulMatches": "Ghép Nối Thành Công",
+      "monthlyRevenue": "Doanh Thu Tháng",
+      "securityAlerts": "Cảnh Báo Bảo Mật",
+      "vsLast30": "so với 30 ngày trước",
+      "vsLastMonth": "so với tháng trước",
+      "last24h": "Trong 24 giờ qua",
+      "highRisk": "Rủi Ro Cao"
+    },
+    "users": {
+      "title": "Quản Lý Người Dùng",
+      "filter": "Lọc",
+      "exportCsv": "Xuất CSV",
+      "colUser": "Người Dùng",
+      "colType": "Loại",
+      "colStatus": "Trạng Thái",
+      "colPortfolio": "Hồ Sơ",
+      "colActions": "Thao Tác",
+      "verified": "Đã Xác Minh",
+      "pending": "Chờ Duyệt",
+      "viewPortfolio": "Xem",
+      "approvePortfolio": "Duyệt Hồ Sơ",
+      "na": "N/A",
+      "viewAll": "Xem Tất Cả Người Dùng"
+    },
+    "security": {
+      "title": "Giám Sát Bảo Mật",
+      "liveTracking": "Theo Dõi Trực Tiếp",
+      "threatLog": "Nhật Ký Phát Hiện Mối Đe Dọa",
+      "systemTraffic": "Lưu Lượng Hệ Thống",
+      "nmapScans": "Quét Nmap Gần Đây",
+      "load": "Tải"
+    },
+    "skills": {
+      "title": "Kỹ Năng Được Yêu Cầu Nhiều Nhất",
+      "viewFullMap": "Xem Bản Đồ Kỹ Năng Đầy Đủ"
+    },
+    "matching": {
+      "title": "Hiệu Quả Ghép Nối",
+      "matchRate": "Tỷ Lệ Ghép Nối",
+      "organic": "Ghép Tự Nhiên",
+      "aiSuggested": "Đề Xuất AI"
+    },
+    "logs": {
+      "title": "Nhật Ký Truy Cập",
+      "viewFull": "Xem Nhật Ký Đầy Đủ"
+    }
+  }
+}

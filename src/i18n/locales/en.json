@@ -1,0 +1,264 @@
+{
+  "nav": {
+    "articles": "Articles",
+    "people": "People",
+    "learning": "Learning",
+    "jobs": "Jobs",
+    "games": "Games",
+    "joinNow": "Join now",
+    "signIn": "Sign in",
+    "home": "Home",
+    "network": "Network",
+    "messaging": "Messaging",
+    "notifications": "Notifications",
+    "me": "Me"
+  },
+  "landing": {
+    "hero": {
+      "title": "Discover new opportunities",
+      "continueGoogle": "Continue with Google",
+      "signInEmail": "Sign in with email",
+      "agreement": "By clicking Continue to join or sign in, you agree to LinkedIn's",
+      "userAgreement": "User Agreement",
+      "privacyPolicy": "Privacy Policy",
+      "cookiePolicy": "Cookie Policy",
+      "newToLinkedIn": "New to LinkedIn?",
+      "joinNow": "Join now"
+    },
+    "topics": {
+      "title": "Explore top LinkedIn content",
+      "desc": "Discover relevant posts and expert insights — curated by topic and in one place.",
+      "showAll": "Show all",
+      "tags": ["Career", "Productivity", "Finance", "Soft Skills & EQ", "Project Management", "Education", "Technology"]
+    },
+    "jobCategories": {
+      "title": "Find the right job or internship for you",
+      "showMore": "Show more",
+      "tags": ["Engineering", "Business Development", "Finance", "Administrative Assistant", "Retail Associate", "Customer Service", "Operations", "Information Technology"]
+    },
+    "postJob": {
+      "title": "Post your job for millions of people to see",
+      "btn": "Post a job"
+    },
+    "software": {
+      "title": "Discover the best software tools",
+      "desc": "Connect with buyers who have first-hand experience to find the best products for you.",
+      "showAll": "Show all",
+      "tags": ["E-Commerce Platforms", "CRM Software", "HR Management Systems", "Recruiting Software", "Sales Intelligence", "Project Management Software", "Help Desk Software"]
+    },
+    "games": {
+      "title": "Keep your mind sharp with games",
+      "desc": "Take a break and reconnect with your network through quick daily games."
+    },
+    "openToWork": {
+      "title": "Let the right people know you're open to work",
+      "desc": "With the Open To Work feature, you can privately tell recruiters or publicly share with the LinkedIn community that you are looking for new job opportunities."
+    },
+    "connect": {
+      "title": "Connect with people who can help",
+      "btn": "Find people you know"
+    },
+    "learn": {
+      "title": "Learn the skills you need to succeed",
+      "chooseTopic": "Choose a topic to learn about",
+      "topics": ["Business Analysis", "Digital Marketing", "Software Development"]
+    },
+    "whoIsFor": {
+      "title": "Who is LinkedIn for?",
+      "desc": "Anyone looking to navigate their professional life.",
+      "items": ["Find a coworker or classmate", "Find a new job", "Find a course or training"]
+    },
+    "cta": {
+      "title": "Join your colleagues, classmates, and friends on LinkedIn.",
+      "btn": "Get started"
+    }
+  },
+  "employer": {
+    "welcome": "Welcome back, Sarah",
+    "subtitle": "Here's what's happening with your job postings today.",
+    "stats": {
+      "activeJobs": "Active Jobs",
+      "totalViews": "Total Views",
+      "totalApplications": "Total Applications",
+      "newCandidates": "New Candidates",
+      "sinceYesterday": "since yesterday"
+    },
+    "postings": {
+      "title": "Active Job Postings",
+      "viewAll": "View all jobs",
+      "showMore": "Show more jobs",
+      "views": "Views",
+      "applicants": "Applicants",
+      "new": "New"
+    },
+    "candidates": {
+      "title": "Recent Top Matches",
+      "viewAll": "View all candidates",
+      "message": "Message",
+      "profile": "Profile",
+      "match": "Match"
+    },
+    "insights": {
+      "title": "Talent Insights",
+      "desc": "Candidates with \"React\" skills are currently in high demand. Consider highlighting your remote work benefits to attract more talent.",
+      "readMore": "Read the full report"
+    },
+    "postJob": "Post a Job"
+  },
+  "jobSearch": {
+    "searchPlaceholder": "Search jobs",
+    "basedOnProfile": "Jobs based on your profile",
+    "results": "results",
+    "filters": {
+      "datePosted": "Date posted",
+      "experienceLevel": "Experience level",
+      "company": "Company",
+      "jobType": "Job type",
+      "remote": "On-site/Remote",
+      "allFilters": "All filters"
+    },
+    "detail": {
+      "apply": "Apply",
+      "save": "Save",
+      "hiringTeam": "Meet the hiring team",
+      "aboutJob": "About the job",
+      "responsibilities": "Key Responsibilities:",
+      "requirements": "Requirements:",
+      "skills": "Skills:",
+      "aboutCompany": "About the company",
+      "follow": "Follow",
+      "activelyHiring": "Actively hiring",
+      "yourProfileMatches": "Your profile matches this job"
+    }
+  },
+  "dashboard": {
+    "startPost": "Start a post",
+    "media": "Media",
+    "event": "Event",
+    "writeArticle": "Write article",
+    "sortBy": "Sort by:",
+    "top": "Top",
+    "like": "Like",
+    "comment": "Comment",
+    "share": "Share",
+    "send": "Send",
+    "seeMore": "...see more",
+    "activelyRecruiting": "Actively recruiting",
+    "easyApply": "Easy Apply",
+    "ignore": "Ignore",
+    "profile": {
+      "profileViewers": "Profile viewers",
+      "connections": "Connections",
+      "myItems": "My Items",
+      "strength": "Profile Strength",
+      "intermediate": "Intermediate",
+      "strengthTip": "Add your portfolio to attract 3x more recruiters.",
+      "completeProfile": "Complete Profile",
+      "recent": "Recent",
+      "discoverMore": "Discover more"
+    },
+    "sidebar": {
+      "trendingJobs": "Trending jobs",
+      "peopleYouMayKnow": "People you may know",
+      "connect": "Connect",
+      "seeAll": "See all recommendations",
+      "showMore": "Show more"
+    },
+    "messaging": "Messaging"
+  },
+  "footer": {
+    "general": "General",
+    "browseLI": "Browse LinkedIn",
+    "businessSolutions": "Business Solutions",
+    "directories": "Directories",
+    "generalLinks": ["Sign Up", "Help Center", "About", "Press", "Blog", "Careers", "Developers"],
+    "browseLinks": ["Learning", "Jobs", "Games", "Mobile", "Services", "Products"],
+    "businessLinks": ["Talent", "Marketing", "Sales", "Learning"],
+    "directoriesLinks": ["Members", "Jobs", "Companies", "News", "Newsletters", "Services"],
+    "bottomLinks": ["About", "Accessibility", "User Agreement", "Privacy Policy", "Cookie Policy", "Copyright Policy", "Brand Policy", "Guest Controls"],
+    "language": "Language"
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Portal",
+      "subtitle": "Sign in to access the administration panel",
+      "username": "Username",
+      "password": "Password",
+      "usernamePlaceholder": "admin@hope.com",
+      "passwordPlaceholder": "Enter your password",
+      "signIn": "Sign In",
+      "error": "Invalid username or password",
+      "backToSite": "← Back to main site",
+      "secureLogin": "Secure Admin Access"
+    },
+    "nav": {
+      "brand": "Ho",
+      "brandHighlight": "pe Admin",
+      "searchPlaceholder": "Search users, jobs, or logs...",
+      "adminName": "Alex Rivera",
+      "adminRole": "System Admin"
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "management": "Management",
+      "userManagement": "User Management",
+      "contentModeration": "Content Moderation",
+      "operations": "Operations",
+      "matching": "Matching & Scheduling",
+      "analytics": "Analytics",
+      "system": "System",
+      "securityMonitor": "Security Monitor",
+      "systemStatus": "System Status",
+      "allOperational": "All systems operational",
+      "logout": "Logout"
+    },
+    "stats": {
+      "newUsers": "New Users",
+      "successfulMatches": "Successful Matches",
+      "monthlyRevenue": "Monthly Revenue",
+      "securityAlerts": "Security Alerts",
+      "vsLast30": "v.s. last 30 days",
+      "vsLastMonth": "v.s. last month",
+      "last24h": "In the last 24 hours",
+      "highRisk": "High Risk"
+    },
+    "users": {
+      "title": "User Management",
+      "filter": "Filter",
+      "exportCsv": "Export CSV",
+      "colUser": "User",
+      "colType": "Type",
+      "colStatus": "Status",
+      "colPortfolio": "Portfolio",
+      "colActions": "Actions",
+      "verified": "Verified",
+      "pending": "Pending",
+      "viewPortfolio": "View",
+      "approvePortfolio": "Approve Portfolio",
+      "na": "N/A",
+      "viewAll": "View All Users"
+    },
+    "security": {
+      "title": "Security Monitor",
+      "liveTracking": "Live Tracking",
+      "threatLog": "Threat Detection Log",
+      "systemTraffic": "System Traffic",
+      "nmapScans": "Recent Nmap Scans",
+      "load": "Load"
+    },
+    "skills": {
+      "title": "Top Demanded Skills",
+      "viewFullMap": "View Full Skill Map"
+    },
+    "matching": {
+      "title": "Matching Efficiency",
+      "matchRate": "Match Rate",
+      "organic": "Organic Matches",
+      "aiSuggested": "AI Suggested"
+    },
+    "logs": {
+      "title": "Access Logs",
+      "viewFull": "View Full Logs"
+    }
+  }
+}
