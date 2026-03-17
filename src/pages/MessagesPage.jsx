@@ -242,7 +242,7 @@ export default function MessagesPage() {
       // Upload to ImgBB
       const formData = new FormData();
       formData.append('image', file);
-      const imgbbRes = await axios.post(`https://api.imgbb.com/1/upload?key=6ad8b3a7e1ef39bceed6f960fcdea074`, formData);
+      const imgbbRes = await axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_KEY}`, formData);
       const imageUrl = imgbbRes.data.data.url;
 
       // Optimistic UI cho ảnh

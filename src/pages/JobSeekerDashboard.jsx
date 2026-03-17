@@ -89,7 +89,7 @@ function JobCard({ job, t, onApply, isHighlighted, onRefresh, setPreviewImage, o
 
       const formData = new FormData();
       formData.append('image', file);
-      const res = await axios.post(`https://api.imgbb.com/1/upload?key=6ad8b3a7e1ef39bceed6f960fcdea074`, formData);
+      const res = await axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_KEY}`, formData);
 
       if (type === 'comment') setCommentImage(res.data.data.url);
       else setReplyImage(res.data.data.url);
