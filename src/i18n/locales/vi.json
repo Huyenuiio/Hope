@@ -13,170 +13,31 @@
     "notifications": "Thông báo",
     "me": "Tôi"
   },
-  "landing": {
-    "hero": {
-      "title": "Khám phá cơ hội mới",
-      "continueGoogle": "Tiếp tục với Google",
-      "signInEmail": "Đăng nhập bằng email",
-      "agreement": "Bằng cách nhấp vào Tiếp tục để tham gia hoặc đăng nhập, bạn đồng ý với",
-      "userAgreement": "Thỏa thuận người dùng",
-      "privacyPolicy": "Chính sách quyền riêng tư",
-      "cookiePolicy": "Chính sách Cookie",
-      "newToLinkedIn": "Bạn chưa có tài khoản?",
-      "joinNow": "Tham gia ngay"
-    },
-    "topics": {
-      "title": "Khám phá nội dung hàng đầu trên LinkedIn",
-      "desc": "Tìm hiểu các bài đăng và thông tin chuyên gia liên quan — được tuyển chọn theo chủ đề.",
-      "showAll": "Xem tất cả",
-      "tags": ["Sự nghiệp", "Năng suất", "Tài chính", "Kỹ năng mềm", "Quản lý dự án", "Giáo dục", "Công nghệ"]
-    },
-    "jobCategories": {
-      "title": "Tìm việc làm hoặc thực tập phù hợp với bạn",
-      "showMore": "Xem thêm",
-      "tags": ["Kỹ thuật", "Phát triển kinh doanh", "Tài chính", "Trợ lý hành chính", "Nhân viên bán lẻ", "Dịch vụ khách hàng", "Vận hành", "Công nghệ thông tin"]
-    },
-    "postJob": {
-      "title": "Đăng tin tuyển dụng để hàng triệu người thấy",
-      "btn": "Đăng tin tuyển dụng"
-    },
-    "software": {
-      "title": "Khám phá các công cụ phần mềm tốt nhất",
-      "desc": "Kết nối với người mua có kinh nghiệm thực tế để tìm sản phẩm phù hợp nhất cho bạn.",
-      "showAll": "Xem tất cả",
-      "tags": ["Nền tảng thương mại điện tử", "Phần mềm CRM", "Hệ thống quản lý nhân sự", "Phần mềm tuyển dụng", "Phần mềm bán hàng", "Phần mềm quản lý dự án", "Phần mềm hỗ trợ"]
-    },
-    "games": {
-      "title": "Mài sắc tư duy với các trò chơi",
-      "desc": "Nghỉ ngơi và kết nối lại với mạng lưới của bạn qua các trò chơi hàng ngày."
-    },
-    "openToWork": {
-      "title": "Cho người phù hợp biết bạn đang tìm việc",
-      "desc": "Với tính năng Open To Work, bạn có thể thông báo riêng tư cho nhà tuyển dụng hoặc chia sẻ công khai với cộng đồng LinkedIn rằng bạn đang tìm kiếm cơ hội việc làm mới."
-    },
-    "connect": {
-      "title": "Kết nối với những người có thể giúp bạn",
-      "btn": "Tìm người bạn quen"
-    },
-    "learn": {
-      "title": "Học kỹ năng bạn cần để thành công",
-      "chooseTopic": "Chọn chủ đề để tìm hiểu",
-      "topics": ["Phân tích kinh doanh", "Marketing kỹ thuật số", "Phát triển phần mềm"]
-    },
-    "whoIsFor": {
-      "title": "LinkedIn dành cho ai?",
-      "desc": "Bất kỳ ai muốn điều hướng cuộc sống nghề nghiệp của mình.",
-      "items": ["Tìm đồng nghiệp hoặc bạn học", "Tìm việc làm mới", "Tìm khóa học hoặc đào tạo"]
-    },
-    "cta": {
-      "title": "Tham gia cùng đồng nghiệp, bạn học và bạn bè trên LinkedIn.",
-      "btn": "Bắt đầu ngay"
-    }
+  "notifications": {
+    "title": "Thông báo hệ thống",
+    "new": "MỚI",
+    "reports": "Báo cáo vi phạm mới",
+    "reportsDesc": "Có {{count}} báo cáo đang chờ xử lý.",
+    "moderation": "Phê duyệt nội dung",
+    "moderationDesc": "Có {{count}} tin tuyển dụng cần kiểm duyệt.",
+    "empty": "Không có thông báo mới"
   },
-  "employer": {
-    "welcome": "Chào mừng trở lại, Sarah",
-    "subtitle": "Đây là những gì đang xảy ra với tin tuyển dụng của bạn hôm nay.",
-    "stats": {
-      "activeJobs": "Tin đang hoạt động",
-      "totalViews": "Tổng lượt xem",
-      "totalApplications": "Tổng đơn ứng tuyển",
-      "newCandidates": "Ứng viên mới",
-      "sinceYesterday": "so với hôm qua"
-    },
-    "postings": {
-      "title": "Tin tuyển dụng đang hoạt động",
-      "viewAll": "Xem tất cả tin",
-      "showMore": "Hiển thị thêm",
-      "views": "Lượt xem",
-      "applicants": "Ứng viên",
-      "new": "Mới"
-    },
-    "candidates": {
-      "title": "Ứng viên phù hợp gần đây",
-      "viewAll": "Xem tất cả ứng viên",
-      "message": "Nhắn tin",
-      "profile": "Hồ sơ",
-      "match": "Phù hợp"
-    },
-    "insights": {
-      "title": "Thông tin nhân tài",
-      "desc": "Ứng viên với kỹ năng \"React\" hiện đang có nhu cầu cao. Hãy làm nổi bật lợi ích làm việc từ xa để thu hút nhiều nhân tài hơn.",
-      "readMore": "Đọc báo cáo đầy đủ"
-    },
-    "postJob": "Đăng tin tuyển dụng"
-  },
-  "jobSearch": {
-    "searchPlaceholder": "Tìm kiếm việc làm",
-    "basedOnProfile": "Việc làm dựa trên hồ sơ của bạn",
-    "results": "kết quả",
-    "filters": {
-      "datePosted": "Ngày đăng",
-      "experienceLevel": "Cấp độ kinh nghiệm",
-      "company": "Công ty",
-      "jobType": "Loại hình",
-      "remote": "Tại chỗ/Từ xa",
-      "allFilters": "Tất cả bộ lọc"
-    },
-    "detail": {
-      "apply": "Ứng tuyển",
-      "save": "Lưu",
-      "hiringTeam": "Gặp nhóm tuyển dụng",
-      "aboutJob": "Về vị trí này",
-      "responsibilities": "Trách nhiệm chính:",
-      "requirements": "Yêu cầu:",
-      "skills": "Kỹ năng:",
-      "aboutCompany": "Về công ty",
-      "follow": "Theo dõi",
-      "activelyHiring": "Đang tuyển dụng tích cực",
-      "yourProfileMatches": "Hồ sơ của bạn phù hợp với công việc này"
-    }
-  },
-  "dashboard": {
-    "startPost": "Bắt đầu một bài đăng",
-    "media": "Phương tiện",
-    "event": "Sự kiện",
-    "writeArticle": "Viết bài",
-    "sortBy": "Sắp xếp theo:",
-    "top": "Hàng đầu",
-    "like": "Thích",
-    "comment": "Bình luận",
-    "share": "Chia sẻ",
-    "send": "Gửi",
-    "seeMore": "...xem thêm",
-    "activelyRecruiting": "Đang tuyển dụng tích cực",
-    "easyApply": "Ứng tuyển dễ dàng",
-    "ignore": "Bỏ qua",
-    "profile": {
-      "profileViewers": "Người xem hồ sơ",
-      "connections": "Kết nối",
-      "myItems": "Mục của tôi",
-      "strength": "Độ mạnh hồ sơ",
-      "intermediate": "Trung bình",
-      "strengthTip": "Thêm danh mục để thu hút gấp 3 lần nhà tuyển dụng.",
-      "completeProfile": "Hoàn thiện hồ sơ",
-      "recent": "Gần đây",
-      "discoverMore": "Khám phá thêm"
-    },
-    "sidebar": {
-      "trendingJobs": "Việc làm xu hướng",
-      "peopleYouMayKnow": "Người bạn có thể quen",
-      "connect": "Kết nối",
-      "seeAll": "Xem tất cả đề xuất",
-      "showMore": "Xem thêm"
-    },
-    "messaging": "Nhắn tin"
-  },
-  "footer": {
-    "general": "Tổng quát",
-    "browseLI": "Khám phá LinkedIn",
-    "businessSolutions": "Giải pháp doanh nghiệp",
-    "directories": "Thư mục",
-    "generalLinks": ["Đăng ký", "Trung tâm hỗ trợ", "Giới thiệu", "Báo chí", "Blog", "Tuyển dụng", "Nhà phát triển"],
-    "browseLinks": ["Học tập", "Việc làm", "Trò chơi", "Di động", "Dịch vụ", "Sản phẩm"],
-    "businessLinks": ["Nhân tài", "Marketing", "Bán hàng", "Đào tạo"],
-    "directoriesLinks": ["Thành viên", "Việc làm", "Công ty", "Tin tức", "Bản tin", "Dịch vụ"],
-    "bottomLinks": ["Giới thiệu", "Hỗ trợ tiếp cận", "Thỏa thuận người dùng", "Chính sách riêng tư", "Chính sách Cookie", "Chính sách bản quyền", "Chính sách thương hiệu", "Kiểm soát khách"],
-    "language": "Ngôn ngữ"
+  "common": {
+    "loading": "Đang tải...",
+    "refresh": "Tải lại",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "search": "Tìm kiếm",
+    "actions": "Thao tác",
+    "hideContent": "Ẩn nội dung",
+    "viewContent": "Xem nội dung vi phạm",
+    "warning": "Cảnh báo",
+    "criticalWarning": "CẢNH BÁO NGHIÊM TRỌNG",
+    "analysis": "Phân tích",
+    "closeLogs": "Đóng Nhật Ký",
+    "sync": "Đồng bộ trực tiếp"
   },
   "admin": {
     "login": {
@@ -206,16 +67,19 @@
       "operations": "Vận Hành",
       "matching": "Ghép Nối & Lịch Hẹn",
       "analytics": "Phân Tích",
+      "support": "Hỗ Trợ & Tranh Chấp",
+      "reports": "Báo Cáo Vi Phạm",
       "system": "Hệ Thống",
-      "securityMonitor": "Giám Sát Bảo Mật",
+      "securityMonitor": "BẢO MẬT",
       "systemStatus": "Trạng Thái Hệ Thống",
       "allOperational": "Tất cả hệ thống hoạt động tốt",
       "logout": "Đăng xuất"
     },
     "stats": {
-      "newUsers": "Người Dùng Mới",
-      "successfulMatches": "Ghép Nối Thành Công",
-      "monthlyRevenue": "Doanh Thu Tháng",
+      "totalUsers": "Tổng Người Dùng",
+      "newUsersToday": "Người Dùng Mới Hôm Nay",
+      "successfulMatches": "Kết Nối Thành Công",
+      "openJobs": "Việc Làm Đang Mở",
       "securityAlerts": "Cảnh Báo Bảo Mật",
       "vsLast30": "so với 30 ngày trước",
       "vsLastMonth": "so với tháng trước",
@@ -233,10 +97,29 @@
       "colActions": "Thao Tác",
       "verified": "Đã Xác Minh",
       "pending": "Chờ Duyệt",
-      "viewPortfolio": "Xem",
-      "approvePortfolio": "Duyệt Hồ Sơ",
+      "noData": "Chưa có dữ liệu người dùng",
+      "filterAllRoles": "Tất cả vai trò",
+      "status": {
+        "active": "Hoạt động",
+        "banned": "Bị khóa",
+        "ban": "Khóa",
+        "unban": "Mở khóa"
+      },
+      "viewPortfolio": "Xem hồ sơ",
       "na": "N/A",
-      "viewAll": "Xem Tất Cả Người Dùng"
+      "viewAll": "Xem Tất Cả Người Dùng",
+      "deletePrompt": "Gõ XOA VINH VIEN để xác nhận:",
+      "deleteSafe": "Hủy (An toàn)",
+      "deletePermanent": "Xóa vĩnh viễn",
+      "deleteSub": "Hành động này KHÔNG THỂ hoàn tác",
+      "deleteAbout": "Bạn sắp xóa vĩnh viễn tài khoản của:",
+      "deleteWarning1": "Toàn bộ dữ liệu, bình luận, hồ sơ sẽ bị xóa",
+      "deleteWarning2": "Không thể khôi phục sau khi xóa",
+      "deleteWarning3": "Người dùng sẽ mất truy cập vĩnh viễn",
+      "banSelectDate": "Chọn ngày mở khóa",
+      "banReasonLabel": "Lý do (tuỳ chọn)",
+      "banPlaceholder": "Nhập lý do khóa tài khoản...",
+      "banPermanentNote": "Tài khoản sẽ bị khóa vĩnh viễn. Người dùng không thể đăng nhập cho đến khi admin mở khóa thủ công."
     },
     "security": {
       "title": "Giám Sát Bảo Mật",
@@ -244,21 +127,77 @@
       "threatLog": "Nhật Ký Phát Hiện Mối Đe Dọa",
       "systemTraffic": "Lưu Lượng Hệ Thống",
       "nmapScans": "Quét Nmap Gần Đây",
-      "load": "Tải"
+      "load": "Tải",
+      "liveScanner": "Máy Quét Trực Tiếp",
+      "noThreats": "Chưa phát hiện mối đe dọa nào",
+      "noRecentThreats": "Không phát hiện mối đe dọa gần đây",
+      "fetchingLogs": "Đang truy xuất nhật ký hệ thống...",
+      "detailLog": "Nhật Ký Bảo Mật Chi Tiết",
+      "detailLogDesc": "Lịch sử 50 truy cập gần nhất được ghi nhận",
+      "colTime": "Thời gian",
+      "colMethod": "Phương thức",
+      "colPath": "Đường dẫn",
+      "colIp": "IP Nguồn",
+      "colThreat": "Loại mối đe dọa",
+      "colStatus": "Trạng thái",
+      "aiProtected": "An ninh hệ thống được đảm bảo bởi AI"
     },
     "skills": {
       "title": "Kỹ Năng Được Yêu Cầu Nhiều Nhất",
-      "viewFullMap": "Xem Bản Đồ Kỹ Năng Đầy Đủ"
+      "viewFullMap": "Xem Bản Đồ Kỹ Năng Đầy Đủ",
+      "mapTitle": "Bản đồ kỹ năng & Thị trường",
+      "mapDesc": "Dữ liệu phân tích từ toàn bộ tin tuyển dụng trên hệ thống",
+      "highDemand": "Kỹ năng đang yêu cầu cao",
+      "requests": "yêu cầu",
+      "niches": "Ngách thị trường (Niches)",
+      "adminNote": "Lưu ý cho quản trị viên",
+      "adminNoteDesc": "Dữ liệu này được cập nhật theo thời gian thực mỗi khi có tin tuyển dụng mới được duyệt. Bạn có thể sử dụng biểu đồ này để điều chỉnh danh sách kỹ năng gợi ý hoặc ưu tiên hiển thị các Freelancer có kỹ năng đang 'hot'."
     },
     "matching": {
       "title": "Hiệu Quả Ghép Nối",
       "matchRate": "Tỷ Lệ Ghép Nối",
       "organic": "Ghép Tự Nhiên",
-      "aiSuggested": "Đề Xuất AI"
+      "aiSuggested": "Đề Xuất AI",
+      "details": "Chi tiết ghép nối",
+      "success": "Kết nối thành công",
+      "totalApps": "Tổng hồ sơ ứng tuyển"
+    },
+    "moderation": {
+      "title": "Kiểm duyệt tin tuyển dụng",
+      "pendingJobs": "tin chờ duyệt",
+      "noPendingJobs": "Tuyệt vời! Không có tin tuyển dụng nào đang chờ duyệt.",
+      "flagged": "Bị cắm cờ",
+      "budget": "Ngân sách",
+      "client": "Khách hàng",
+      "workType": "Hình thức",
+      "approve": "Duyệt",
+      "reject": "Từ chối"
+    },
+    "reports": {
+      "title": "Quản lý báo cáo nội dung",
+      "subtitle": "Xem xét các báo cáo từ người dùng và đưa ra quyết định xử lý",
+      "noReports": "Không có báo cáo nào",
+      "noReportsDesc": "Chưa có báo cáo vi phạm từ người dùng",
+      "dismiss": "Đóng báo cáo",
+      "resolve": "Đánh dấu đã xử lý"
     },
     "logs": {
       "title": "Nhật Ký Truy Cập",
       "viewFull": "Xem Nhật Ký Đầy Đủ"
+    },
+    "analysis": {
+      "title": "Phân Tích Chuyên Sâu",
+      "severity": "Mức độ nghiêm trọng",
+      "httpStatus": "Trạng thái mã nguồn",
+      "technicalDetails": "Chi Tiết Kỹ Thuật",
+      "aiInsight": "Nhận định từ AI Security",
+      "mitigation": "Biện pháp xử lý",
+      "blockIp": "Chặn IP này",
+      "ignore": "Bỏ qua",
+      "payload": "Dữ liệu nghi vấn",
+      "low": "THẤP",
+      "medium": "TRUNG BÌNH",
+      "critical": "RẤT CAO"
     }
   }
 }

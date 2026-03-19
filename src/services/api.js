@@ -122,6 +122,7 @@ export const meetingsAPI = {
 export const adminAPI = {
   getStats: () => api.get('/admin/stats'),
   getUsers: (params) => api.get('/admin/users', { params }),
+  exportUsers: () => api.get('/admin/users/export', { responseType: 'blob' }),
   banUser: (id, data) => api.post(`/admin/users/${id}/ban`, data),
   verifyUser: (id, data) => api.patch(`/admin/users/${id}/verify`, data),
   setUserRole: (id, role) => api.patch(`/admin/users/${id}/role`, { role }),
@@ -139,6 +140,7 @@ export const adminAPI = {
   getReports: () => api.get('/admin/reports'),
   updateReport: (id, data) => api.patch(`/admin/reports/${id}`, data),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  getHealth: () => api.get('/health'),
 };
 
 export default api;
