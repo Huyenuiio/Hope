@@ -29,12 +29,29 @@
       "title": "Explore top LinkedIn content",
       "desc": "Discover relevant posts and expert insights — curated by topic and in one place.",
       "showAll": "Show all",
-      "tags": ["Career", "Productivity", "Finance", "Soft Skills & EQ", "Project Management", "Education", "Technology"]
+      "tags": [
+        "Career",
+        "Productivity",
+        "Finance",
+        "Soft Skills & EQ",
+        "Project Management",
+        "Education",
+        "Technology"
+      ]
     },
     "jobCategories": {
       "title": "Find the right job or internship for you",
       "showMore": "Show more",
-      "tags": ["Engineering", "Business Development", "Finance", "Administrative Assistant", "Retail Associate", "Customer Service", "Operations", "Information Technology"]
+      "tags": [
+        "Engineering",
+        "Business Development",
+        "Finance",
+        "Administrative Assistant",
+        "Retail Associate",
+        "Customer Service",
+        "Operations",
+        "Information Technology"
+      ]
     },
     "postJob": {
       "title": "Post your job for millions of people to see",
@@ -44,7 +61,15 @@
       "title": "Discover the best software tools",
       "desc": "Connect with buyers who have first-hand experience to find the best products for you.",
       "showAll": "Show all",
-      "tags": ["E-Commerce Platforms", "CRM Software", "HR Management Systems", "Recruiting Software", "Sales Intelligence", "Project Management Software", "Help Desk Software"]
+      "tags": [
+        "E-Commerce Platforms",
+        "CRM Software",
+        "HR Management Systems",
+        "Recruiting Software",
+        "Sales Intelligence",
+        "Project Management Software",
+        "Help Desk Software"
+      ]
     },
     "games": {
       "title": "Keep your mind sharp with games",
@@ -61,12 +86,20 @@
     "learn": {
       "title": "Learn the skills you need to succeed",
       "chooseTopic": "Choose a topic to learn about",
-      "topics": ["Business Analysis", "Digital Marketing", "Software Development"]
+      "topics": [
+        "Business Analysis",
+        "Digital Marketing",
+        "Software Development"
+      ]
     },
     "whoIsFor": {
       "title": "Who is LinkedIn for?",
       "desc": "Anyone looking to navigate their professional life.",
-      "items": ["Find a coworker or classmate", "Find a new job", "Find a course or training"]
+      "items": [
+        "Find a coworker or classmate",
+        "Find a new job",
+        "Find a course or training"
+      ]
     },
     "cta": {
       "title": "Join your colleagues, classmates, and friends on LinkedIn.",
@@ -100,7 +133,7 @@
     },
     "insights": {
       "title": "Talent Insights",
-      "desc": "Candidates with \"React\" skills are currently in high demand. Consider highlighting your remote work benefits to attract more talent.",
+      "desc": "Market analysis based on current job postings and hiring trends on Hope.",
       "readMore": "Read the full report"
     },
     "postJob": "Post a Job"
@@ -171,11 +204,47 @@
     "browseLI": "Browse LinkedIn",
     "businessSolutions": "Business Solutions",
     "directories": "Directories",
-    "generalLinks": ["Sign Up", "Help Center", "About", "Press", "Blog", "Careers", "Developers"],
-    "browseLinks": ["Learning", "Jobs", "Games", "Mobile", "Services", "Products"],
-    "businessLinks": ["Talent", "Marketing", "Sales", "Learning"],
-    "directoriesLinks": ["Members", "Jobs", "Companies", "News", "Newsletters", "Services"],
-    "bottomLinks": ["About", "Accessibility", "User Agreement", "Privacy Policy", "Cookie Policy", "Copyright Policy", "Brand Policy", "Guest Controls"],
+    "generalLinks": [
+      "Sign Up",
+      "Help Center",
+      "About",
+      "Press",
+      "Blog",
+      "Careers",
+      "Developers"
+    ],
+    "browseLinks": [
+      "Learning",
+      "Jobs",
+      "Games",
+      "Mobile",
+      "Services",
+      "Products"
+    ],
+    "businessLinks": [
+      "Talent",
+      "Marketing",
+      "Sales",
+      "Learning"
+    ],
+    "directoriesLinks": [
+      "Members",
+      "Jobs",
+      "Companies",
+      "News",
+      "Newsletters",
+      "Services"
+    ],
+    "bottomLinks": [
+      "About",
+      "Accessibility",
+      "User Agreement",
+      "Privacy Policy",
+      "Cookie Policy",
+      "Copyright Policy",
+      "Brand Policy",
+      "Guest Controls"
+    ],
     "language": "Language"
   },
   "admin": {

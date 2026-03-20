@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import Navbar from '../components/Navbar';
 import { jobsAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -34,13 +35,21 @@ function StatCard({ icon, label, value, trend, note, iconBg, iconColor, loading,
   );
 }
 
-function PostJobModal({ onClose, onSuccess }) {
+function PostJobModal({ onClose, onSuccess, job }) {
   const { t } = useTranslation();
   const [form, setForm] = useState({
-    title: '', description: '', niche: [], subNiche: [], workType: 'remote',
-    expertiseLevel: 'junior',
-    'budget.type': 'fixed', 'budget.min': '', 'budget.max': '', 'budget.currency': 'VND',
-    requiredSkills: '', deadline: '',
+    title: job?.title || '',
+    description: job?.description || '',
+    niche: job?.niche || [],
+    subNiche: job?.subNiche || [],
+    workType: job?.workType || 'remote',
+    expertiseLevel: job?.expertiseLevel || 'junior',
+    'budget.type': job?.budget?.type || 'fixed',
+    'budget.min': job?.budget?.min || '',
+    'budget.max': job?.budget?.max || '',
+    'budget.currency': job?.budget?.currency || 'VND',
+    requiredSkills: job?.requiredSkills?.join(', ') || '',
+    deadline: job?.deadline ? new Date(job.deadline).toISOString().split('T')[0] : '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -105,7 +114,13 @@ function PostJobModal({ onClose, onSuccess }) {
         requiredSkills: form.requiredSkills.split(',').map(s => s.trim()).filter(Boolean),
         deadline: form.deadline || undefined,
       };
-      await jobsAPI.createJob(payload);
+
+      if (job) {
+        await jobsAPI.updateJob(job._id, payload);
+      } else {
+        await jobsAPI.createJob(payload);
+      }
+
       onSuccess();
       onClose();
     } catch (err) {
@@ -135,7 +150,7 @@ function PostJobModal({ onClose, onSuccess }) {
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col">
         <div className="p-5 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
-          <h2 className="font-bold text-lg text-gray-900">Đăng tin tuyển dụng</h2>
+          <h2 className="font-bold text-lg text-gray-900">{job ? 'Chỉnh sửa tin tuyển dụng' : 'Đăng tin tuyển dụng'}</h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full"><span className="material-icons text-gray-400">close</span></button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto">
@@ -228,7 +243,7 @@ function PostJobModal({ onClose, onSuccess }) {
         <div className="p-5 border-t border-gray-100 flex gap-3 flex-shrink-0">
           <button onClick={onClose} className="flex-1 py-2.5 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50">Hủy</button>
           <button onClick={handleSubmit} disabled={loading} className="flex-1 py-2.5 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary-dark disabled:opacity-50 transition-colors">
-            {loading ? 'Đang đăng...' : 'Đăng tin'}
+            {loading ? (job ? 'Đang cập nhật...' : 'Đang đăng...') : (job ? 'Lưu thay đổi' : 'Đăng tin')}
           </button>
         </div>
       </div>
@@ -368,11 +383,15 @@ function ApplicationsModal({ job, onClose }) {
 export default function EmployerDashboard() {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [myJobs, setMyJobs] = useState([]);
+  const [marketInsights, setMarketInsights] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [postModal, setPostModal] = useState(false);
+  const [editingJob, setEditingJob] = useState(null);
   const [appModal, setAppModal] = useState(null); // selected job for applications
   const [filterStatus, setFilterStatus] = useState('all');
+  const [openMenuId, setOpenMenuId] = useState(null); // tracking which job menu is open
 
   const fetchMyJobs = useCallback(async () => {
     setLoadingJobs(true);
@@ -387,15 +406,41 @@ export default function EmployerDashboard() {
     }
   }, []);
 
-  useEffect(() => { if (user) fetchMyJobs(); }, [fetchMyJobs, user]);
+  const fetchMarketInsights = useCallback(async () => {
+    try {
+      const res = await jobsAPI.getMarketInsights();
+      setMarketInsights(res.data);
+    } catch (err) {
+      console.error('Lỗi khi lấy thông tin thị trường:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchMyJobs();
+      fetchMarketInsights();
+    }
+  }, [fetchMyJobs, fetchMarketInsights, user]);
 
   const handleDeleteJob = async (id) => {
-    if (!window.confirm('Bạn có chắc chắn muốn hủy tin tuyển dụng này?')) return;
+    if (!window.confirm('Bạn có chắc chắn muốn xóa vĩnh viễn tin tuyển dụng này?')) return;
     try {
       await jobsAPI.deleteJob(id);
       fetchMyJobs();
+      setOpenMenuId(null);
     } catch (err) {
-      alert(err.response?.data?.message || 'Có lỗi xảy ra khi hủy tin');
+      alert(err.response?.data?.message || 'Có lỗi xảy ra khi xóa tin');
+    }
+  };
+
+  const handleCloseJob = async (id) => {
+    if (!window.confirm('Bạn muốn đóng tin tuyển dụng này? Freelancer sẽ không thể ứng tuyển thêm.')) return;
+    try {
+      await jobsAPI.updateJob(id, { status: 'closed' });
+      fetchMyJobs();
+      setOpenMenuId(null);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Có lỗi xảy ra khi đóng tin');
     }
   };
 
@@ -418,47 +463,21 @@ export default function EmployerDashboard() {
   });
 
   return (
-    <div className="bg-gray-100 min-h-screen font-sans">
-      {/* Navbar */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link to="/" className="text-primary font-bold text-2xl tracking-tighter flex items-center gap-1">
-                Ho<span className="bg-primary text-white px-1 rounded-sm">pe</span>
-                <span className="text-sm font-normal text-gray-500 ml-2 tracking-normal self-end mb-1">Talent Solutions</span>
-              </Link>
-              <div className="hidden md:flex md:space-x-6">
-                {['Dashboard', t('nav.jobs'), 'Ứng viên'].map((item, i) => (
-                  <a key={item} href="#" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${i === 0 ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>{item}</a>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <LanguageSwitcher variant="compact" />
-              <button className="p-2 rounded-full text-gray-500 hover:bg-gray-100"><span className="material-icons">notifications</span></button>
-              <button
-                onClick={() => setPostModal(true)}
-                className="bg-primary hover:bg-primary-dark text-white px-4 py-1.5 rounded-full font-medium text-sm transition-colors flex items-center gap-2"
-              >
-                <span className="material-icons text-sm">add</span>{t('employer.postJob')}
-              </button>
-              {/* Avatar + Logout */}
-              <div className="relative group cursor-pointer">
-                {user?.avatar
-                  ? <img alt="Avatar" className="h-8 w-8 rounded-full border border-gray-300 object-cover" src={user.avatar} />
-                  : <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center"><span className="material-icons text-primary text-sm">person</span></div>
-                }
-                <div className="absolute right-0 top-full mt-1 bg-white shadow-lg rounded-lg border border-gray-200 py-1 w-36 hidden group-hover:block z-50">
-                  <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50">Đăng xuất</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      {/* Top Navigation */}
+      <Navbar
+        activeNav="home"
+        extraActions={
+          <button
+            onClick={() => setPostModal(true)}
+            className="bg-primary hover:bg-primary-dark text-white px-4 py-1.5 rounded-full font-medium text-sm transition-colors flex items-center gap-2 mr-2"
+          >
+            <span className="material-icons text-sm">add</span>{t('employer.postJob')}
+          </button>
+        }
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">Xin chào, {user?.name?.split(' ')[0] || 'Nhà tuyển dụng'}! 👋</h1>
@@ -543,18 +562,57 @@ export default function EmployerDashboard() {
                             </button>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-2 ml-3 relative">
                           {job.status === 'pending' && (
                             <button
                               onClick={() => handleDeleteJob(job._id)}
-                              className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-medium bg-red-50 px-2 py-1 rounded"
+                              className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-medium bg-red-50 px-2 py-1 rounded transition-colors"
                               title="Hủy tin này"
                             >
                               <span className="material-icons text-sm">delete</span>
                               Hủy
                             </button>
                           )}
-                          <button className="text-gray-400 hover:text-gray-600"><span className="material-icons">more_horiz</span></button>
+
+                          <div className="relative">
+                            <button
+                              onClick={() => setOpenMenuId(openMenuId === job._id ? null : job._id)}
+                              className="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                            >
+                              <span className="material-icons">more_horiz</span>
+                            </button>
+
+                            {openMenuId === job._id && (
+                              <>
+                                <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
+                                  <button
+                                    onClick={() => { setEditingJob(job); setOpenMenuId(null); }}
+                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                  >
+                                    <span className="material-icons text-sm text-blue-500">edit</span>
+                                    Chỉnh sửa
+                                  </button>
+                                  {job.status === 'open' && (
+                                    <button
+                                      onClick={() => handleCloseJob(job._id)}
+                                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                    >
+                                      <span className="material-icons text-sm text-amber-500">lock_clock</span>
+                                      Đóng tin
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleDeleteJob(job._id)}
+                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                  >
+                                    <span className="material-icons text-sm">delete_forever</span>
+                                    Xóa vĩnh viễn
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </li>
@@ -594,26 +652,26 @@ export default function EmployerDashboard() {
               </div>
             </div>
 
-            {/* Insights card */}
             <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-5">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-sm font-semibold text-gray-900">{t('employer.insights.title')}</h4>
                 <span className="material-icons text-gray-400 text-sm">info</span>
               </div>
               <p className="text-sm text-gray-600 mb-4">{t('employer.insights.desc')}</p>
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <span className="material-icons text-primary text-sm">trending_up</span>
-                  Video editing tăng 40% nhu cầu
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <span className="material-icons text-green-500 text-sm">check_circle</span>
-                  Reels/Shorts đang hot nhất
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <span className="material-icons text-amber-500 text-sm">star</span>
-                  Freelancer top-rated phản hồi nhanh hơn
-                </div>
+              <div className="space-y-4">
+                {marketInsights.length > 0 ? marketInsights.map((insight, idx) => (
+                  <div key={idx} className="flex gap-3 items-start">
+                    <div className={`p-1.5 rounded-lg bg-${insight.color === 'primary' ? 'primary/10' : insight.color + '/10'} flex-shrink-0`}>
+                      <span className={`material-icons text-sm text-${insight.color === 'primary' ? 'primary' : insight.color}`}>{insight.icon}</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-gray-900 leading-tight">{insight.title}</p>
+                      <p className="text-[10px] text-gray-500 mt-0.5 leading-relaxed">{insight.desc}</p>
+                    </div>
+                  </div>
+                )) : (
+                  <p className="text-xs text-center text-gray-400 py-4 italic">Đang phân tích dữ liệu thị trường...</p>
+                )}
               </div>
             </div>
           </div>
@@ -622,6 +680,7 @@ export default function EmployerDashboard() {
 
       {/* Modals */}
       {postModal && <PostJobModal onClose={() => setPostModal(false)} onSuccess={fetchMyJobs} />}
+      {editingJob && <PostJobModal job={editingJob} onClose={() => setEditingJob(null)} onSuccess={fetchMyJobs} />}
       {appModal && <ApplicationsModal job={appModal} onClose={() => setAppModal(null)} />}
     </div>
   );

@@ -80,6 +80,7 @@ export const jobsAPI = {
   sendJob: (id) => api.post(`/jobs/${id}/send`),
   toggleSavedJob: (id) => api.post(`/users/saved-jobs/${id}`),
   getHistory: () => api.get('/users/me/history'),
+  getMarketInsights: () => api.get('/jobs/insights/market'),
 };
 
 // ── MESSAGES & NOTIFICATIONS ──────────────────────────────────────

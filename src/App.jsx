@@ -36,11 +36,14 @@ function ProtectedRoute({ children, requiredRole }) {
     return <Navigate to="/" replace />;
   }
 
-  if (requiredRole && user?.role !== requiredRole) {
-    // Redirect to appropriate dashboard
-    if (['superadmin', 'moderator', 'support'].includes(user?.role)) return <Navigate to="/admin/dashboard" replace />;
-    if (user?.role === 'client') return <Navigate to="/employer" replace />;
-    return <Navigate to="/dashboard" replace />;
+  if (requiredRole) {
+    const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+    if (!roles.includes(user?.role)) {
+      // Redirect to appropriate dashboard
+      if (['superadmin', 'moderator', 'support'].includes(user?.role)) return <Navigate to="/admin/dashboard" replace />;
+      if (user?.role === 'client') return <Navigate to="/employer" replace />;
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return children;
@@ -81,46 +84,46 @@ function App() {
 
         {/* Protected routes — require login */}
         <Route path="/dashboard" element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="freelancer">
             <JobSeekerDashboard />
           </ProtectedRoute>
         } />
         <Route path="/employer" element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="client">
             <EmployerDashboard />
           </ProtectedRoute>
         } />
 
         {/* Phase 4+5 — New Pages */}
         <Route path="/profile/edit" element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole={['freelancer', 'client']}>
             <ProfileEditPage />
           </ProtectedRoute>
         } />
         <Route path="/profile/:id" element={<ProfileViewPage />} />
         <Route path="/messages" element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole={['freelancer', 'client']}>
             <MessagesPage />
           </ProtectedRoute>
         } />
         <Route path="/portfolio" element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="freelancer">
             <PortfolioPage />
           </ProtectedRoute>
         } />
         <Route path="/portfolio/:userId" element={<PortfolioPage />} />
         <Route path="/notifications" element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole={['freelancer', 'client']}>
             <NotificationsPage />
           </ProtectedRoute>
         } />
         <Route path="/meetings" element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole={['freelancer', 'client']}>
             <MeetingsPage />
           </ProtectedRoute>
         } />
         <Route path="/settings" element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole={['freelancer', 'client']}>
             <SettingsPage />
           </ProtectedRoute>
         } />

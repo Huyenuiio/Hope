@@ -199,5 +199,11 @@
       "medium": "TRUNG BÌNH",
       "critical": "RẤT CAO"
     }
+  },
+  "employer": {
+    "insights": {
+      "title": "Phân tích thị trường",
+      "desc": "Dựa trên dữ liệu tin tuyển dụng và xu hướng tìm việc hiện tại trên hệ thống Hope."
+    }
   }
 }

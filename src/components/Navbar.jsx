@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
 import { usersAPI } from '../services/api';
 
-export default function Navbar({ activeNav = 'home', search, onSearchChange, showSearch = false }) {
+export default function Navbar({ activeNav = 'home', search, onSearchChange, showSearch = false, extraActions }) {
   const { t } = useTranslation();
   const { user, logout, setUser } = useAuth();
   const { notifications, unreadCount, markAllRead, setNotifications } = useNotifications();
@@ -41,17 +41,29 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
     }
   };
 
-  const navItems = [
-    { id: 'home', icon: 'home', label: t('nav.home'), path: '/dashboard' },
-    { id: 'network', icon: 'people', label: t('nav.network'), path: '/dashboard' },
-    { id: 'jobs', icon: 'work', label: t('nav.jobs'), path: '/jobs' },
-    { id: 'messages', icon: 'chat', label: t('nav.messaging'), path: '/messages' },
-    { id: 'notifications', icon: 'notifications', label: t('nav.notifications'), path: '#' },
-  ];
+  const isAdmin = user && ['superadmin', 'moderator', 'support'].includes(user.role);
+  const isClient = user && user.role === 'client';
+
+  const navItems = isAdmin
+    ? [{ id: 'admin', icon: 'settings_suggest', label: t('admin.sidebar.dashboard'), path: '/admin/dashboard' }]
+    : isClient
+      ? [
+        { id: 'home', icon: 'dashboard', label: 'Dashboard', path: '/employer' },
+        { id: 'jobs', icon: 'work_outline', label: t('nav.jobs'), path: '/jobs' },
+        { id: 'messages', icon: 'chat', label: t('nav.messaging'), path: '/messages' },
+        { id: 'notifications', icon: 'notifications', label: t('nav.notifications'), path: '#' },
+      ]
+      : [
+        { id: 'home', icon: 'home', label: t('nav.home'), path: '/dashboard' },
+        { id: 'network', icon: 'people', label: t('nav.network'), path: '/dashboard' },
+        { id: 'jobs', icon: 'work', label: t('nav.jobs'), path: '/jobs' },
+        { id: 'messages', icon: 'chat', label: t('nav.messaging'), path: '/messages' },
+        { id: 'notifications', icon: 'notifications', label: t('nav.notifications'), path: '#' },
+      ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-300 h-16 px-4 flex-none">
-      <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
+    <nav className="sticky top-0 z-50 bg-white border-b border-gray-300 h-16 px-4 flex-none shadow-sm">
+      <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
         <div className="flex items-center space-x-4 flex-1">
           <Link to="/" className="flex-shrink-0 text-primary text-3xl font-bold flex items-center">
             Ho<span className="bg-primary text-white rounded px-1 pb-1 mr-1 text-2xl">pe</span>
@@ -157,10 +169,11 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
               );
             })}
           </ul>
-          <div className="ml-4 flex items-center pl-4 border-l border-gray-200 space-x-3">
+          <div className="ml-4 flex items-center pl-4 border-l border-gray-200 space-x-3 h-full">
+            {extraActions}
             <LanguageSwitcher variant="compact" />
             <div className="relative group p-1 flex flex-col items-center cursor-pointer">
-              <Link to={`/profile/${user?._id}`} className="flex flex-col items-center">
+              <Link to="/profile/edit" className="flex flex-col items-center">
                 {user?.avatar ? (
                   <img src={user.avatar} alt="Me" className="w-6 h-6 rounded-full object-cover shadow-sm border border-gray-100" />
                 ) : (
@@ -182,8 +195,8 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
                       <p className="text-xs text-gray-500 truncate">{user?.headline || 'Chuyên viên'}</p>
                     </div>
                   </div>
-                  <Link to={`/profile/${user?._id}`} className="block mt-3 w-full text-center py-1.5 border border-primary text-primary rounded-full text-sm font-bold hover:bg-primary hover:text-white transition-all">
-                    Xem hồ sơ
+                  <Link to="/profile/edit" className="block mt-3 w-full text-center py-1.5 border border-primary text-primary rounded-full text-sm font-bold hover:bg-primary hover:text-white transition-all">
+                    Chỉnh sửa & Chuyển vai trò
                   </Link>
                 </div>
 
