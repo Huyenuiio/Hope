@@ -146,7 +146,7 @@
       "title": "Kỹ Năng Được Yêu Cầu Nhiều Nhất",
       "viewFullMap": "Xem Bản Đồ Kỹ Năng Đầy Đủ",
       "mapTitle": "Bản đồ kỹ năng & Thị trường",
-      "mapDesc": "Dữ liệu phân tích từ toàn bộ tin tuyển dụng trên hệ thống",
+      "mapDesc": "Dữ liệu phân tích từ toàn bộ tin tuyển dụng trên hệ thống Hope.",
       "highDemand": "Kỹ năng đang yêu cầu cao",
       "requests": "yêu cầu",
       "niches": "Ngách thị trường (Niches)",
@@ -205,5 +205,8 @@
       "title": "Phân tích thị trường",
       "desc": "Dựa trên dữ liệu tin tuyển dụng và xu hướng tìm việc hiện tại trên hệ thống Hope."
     }
+  },
+  "jobSearch": {
+    "searchPlaceholder": "Tìm kiếm bài viết hoặc thành viên..."
   }
 }

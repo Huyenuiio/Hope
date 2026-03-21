@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import Navbar from '../components/Navbar';
-import { jobsAPI } from '../services/api';
+import { jobsAPI, usersAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 // ── COMPONENTS ─────────────────────────────────────────────────────
@@ -381,6 +381,8 @@ function ApplicationsModal({ job, onClose }) {
 // ── MAIN ────────────────────────────────────────────────────────────
 
 export default function EmployerDashboard() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchTerm = searchParams.get('search') || '';
   const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -392,6 +394,9 @@ export default function EmployerDashboard() {
   const [appModal, setAppModal] = useState(null); // selected job for applications
   const [filterStatus, setFilterStatus] = useState('all');
   const [openMenuId, setOpenMenuId] = useState(null); // tracking which job menu is open
+
+  const [searchResults, setSearchResults] = useState({ jobs: [], users: [] });
+  const [isSearching, setIsSearching] = useState(false);
 
   const fetchMyJobs = useCallback(async () => {
     setLoadingJobs(true);
@@ -414,6 +419,55 @@ export default function EmployerDashboard() {
       console.error('Lỗi khi lấy thông tin thị trường:', err);
     }
   }, []);
+
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+
+  const fetchSearchResults = useCallback(async (q) => {
+    if (!q) {
+      setSearchResults({ jobs: [], users: [] });
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const [jobsRes, usersRes] = await Promise.all([
+        jobsAPI.getJobs({ search: q, limit: 5 }),
+        usersAPI.getFreelancers({ search: q, limit: 5 })
+      ]);
+      setSearchResults({
+        jobs: jobsRes.data.jobs || [],
+        users: usersRes.data.users || []
+      });
+    } catch (err) {
+      console.error('Search error:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  // Sync LOCAL input with URL (e.g. on page load)
+  useEffect(() => {
+    setLocalSearch(searchTerm);
+  }, [searchTerm]);
+
+  // Debounce BOTH: Search results AND URL update
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchSearchResults(localSearch);
+
+      // Update URL search param
+      setSearchParams(prev => {
+        if (localSearch) prev.set('search', localSearch);
+        else prev.delete('search');
+        return prev;
+      }, { replace: true });
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [localSearch, fetchSearchResults, setSearchParams]);
+
+  const handleSearchChange = (e) => {
+    setLocalSearch(e.target.value);
+  };
 
   useEffect(() => {
     if (user) {
@@ -467,6 +521,11 @@ export default function EmployerDashboard() {
       {/* Top Navigation */}
       <Navbar
         activeNav="home"
+        showSearch={true}
+        search={localSearch}
+        onSearchChange={handleSearchChange}
+        searchResults={searchResults}
+        isSearching={isSearching}
         extraActions={
           <button
             onClick={() => setPostModal(true)}

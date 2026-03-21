@@ -139,7 +139,7 @@
     "postJob": "Post a Job"
   },
   "jobSearch": {
-    "searchPlaceholder": "Search jobs",
+    "searchPlaceholder": "Search posts or members...",
     "basedOnProfile": "Jobs based on your profile",
     "results": "results",
     "filters": {

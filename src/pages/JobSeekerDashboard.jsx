@@ -719,29 +719,29 @@ function JobCard({ job, t, onApply, isHighlighted, onRefresh, setPreviewImage, o
                         <span className="material-icons text-[16px]">more_horiz</span>
                       </button>
                       {activeMenu?.id === c._id && (
-                        <div 
+                        <div
                           ref={commentMenuRef}
                           className="absolute right-0 top-full mt-1 bg-white shadow-2xl border border-gray-100 rounded-xl py-2 w-44 z-[60] animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-300 origin-top-right"
                         >
                           {c.user?._id === user?._id ? (
                             <>
                               <button onClick={() => { setEditingContent({ type: 'comment', id: c._id, text: c.text }); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
-                                <span className="material-icons text-lg text-gray-400">edit</span> 
+                                <span className="material-icons text-lg text-gray-400">edit</span>
                                 <span className="font-medium">Chỉnh sửa</span>
                               </button>
                               <button onClick={() => { handleDeleteComment(c._id); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors">
-                                <span className="material-icons text-lg">delete</span> 
+                                <span className="material-icons text-lg">delete</span>
                                 <span className="font-medium">Xóa bình luận</span>
                               </button>
                             </>
                           ) : (
                             <>
                               <button onClick={() => { setReportModal({ type: 'comment', id: c._id, accusedUser: c.user?._id, contentPreview: c.text }); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
-                                <span className="material-icons text-lg text-gray-400">flag</span> 
+                                <span className="material-icons text-lg text-gray-400">flag</span>
                                 <span className="font-medium">Báo cáo</span>
                               </button>
                               <button onClick={() => { handleBlockUser(c.user?._id, c.user?.name); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors">
-                                <span className="material-icons text-lg text-gray-400">block</span> 
+                                <span className="material-icons text-lg text-gray-400">block</span>
                                 <span className="font-medium">Chặn {c.user?.name}</span>
                               </button>
                             </>
@@ -861,29 +861,29 @@ function JobCard({ job, t, onApply, isHighlighted, onRefresh, setPreviewImage, o
                                   <span className="material-icons text-[14px]">more_horiz</span>
                                 </button>
                                 {activeMenu?.id === reply._id && (
-                                  <div 
+                                  <div
                                     ref={commentMenuRef}
                                     className="absolute right-0 top-full mt-1 bg-white shadow-2xl border border-gray-100 rounded-xl py-1.5 w-40 z-[60] animate-in fade-in zoom-in-95 slide-in-from-top-1 duration-300 origin-top-right"
                                   >
                                     {reply.user?._id === user?._id ? (
                                       <>
                                         <button onClick={() => { setEditingContent({ type: 'reply', id: reply._id, text: reply.text, commentId: c._id }); setActiveMenu(null); }} className="w-full text-left px-3 py-1.5 text-[11px] text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors">
-                                          <span className="material-icons text-base text-gray-400">edit</span> 
+                                          <span className="material-icons text-base text-gray-400">edit</span>
                                           <span className="font-medium">Sửa</span>
                                         </button>
                                         <button onClick={() => { handleDeleteReply(c._id, reply._id); setActiveMenu(null); }} className="w-full text-left px-3 py-1.5 text-[11px] text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors">
-                                          <span className="material-icons text-base">delete</span> 
+                                          <span className="material-icons text-base">delete</span>
                                           <span className="font-medium">Xóa</span>
                                         </button>
                                       </>
                                     ) : (
                                       <>
                                         <button onClick={() => { setReportModal({ type: 'reply', id: reply._id, commentId: c._id, accusedUser: reply.user?._id, contentPreview: reply.text }); setActiveMenu(null); }} className="w-full text-left px-3 py-1.5 text-[11px] text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors">
-                                          <span className="material-icons text-base text-gray-400">flag</span> 
+                                          <span className="material-icons text-base text-gray-400">flag</span>
                                           <span className="font-medium">Báo cáo</span>
                                         </button>
                                         <button onClick={() => { handleBlockUser(reply.user?._id, reply.user?.name); setActiveMenu(null); }} className="w-full text-left px-3 py-1.5 text-[11px] text-gray-700 hover:bg-gray-50 flex items-center gap-2.5 transition-colors">
-                                          <span className="material-icons text-base text-gray-400">block</span> 
+                                          <span className="material-icons text-base text-gray-400">block</span>
                                           <span className="font-medium">Chặn {reply.user?.name}</span>
                                         </button>
                                       </>
@@ -1134,8 +1134,9 @@ function ProfileSkeleton() {
 }
 
 export default function JobSeekerDashboard() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const targetJobId = searchParams.get('jobId');
+  const searchTerm = searchParams.get('search') || '';
   const { t } = useTranslation();
   const { user, logout, setUser } = useAuth();
   const { isUserOnline } = useSocket();
@@ -1151,6 +1152,9 @@ export default function JobSeekerDashboard() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [sendModalOpen, setSendModalOpen] = useState(false);
   const [activeSocialJob, setActiveSocialJob] = useState(null);
+
+  const [searchResults, setSearchResults] = useState({ jobs: [], users: [] });
+  const [isSearching, setIsSearching] = useState(false);
 
   // Calculate profile completeness
   const profileScore = user ? Math.min(100, [
@@ -1202,6 +1206,55 @@ export default function JobSeekerDashboard() {
     }
   }, [user?._id, user?.role, targetJobId]);
 
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+
+  const fetchSearchResults = useCallback(async (q) => {
+    if (!q) {
+      setSearchResults({ jobs: [], users: [] });
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const [jobsRes, usersRes] = await Promise.all([
+        jobsAPI.getJobs({ search: q, limit: 5 }),
+        usersAPI.getFreelancers({ search: q, limit: 5 })
+      ]);
+      setSearchResults({
+        jobs: jobsRes.data.jobs || [],
+        users: usersRes.data.users || []
+      });
+    } catch (err) {
+      console.error('Search error:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  // Sync LOCAL input with URL (e.g. on page load)
+  useEffect(() => {
+    setLocalSearch(searchTerm);
+  }, [searchTerm]);
+
+  // Debounce BOTH: Search results AND URL update
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchSearchResults(localSearch);
+
+      // Update URL search param
+      setSearchParams(prev => {
+        if (localSearch) prev.set('search', localSearch);
+        else prev.delete('search');
+        return prev;
+      }, { replace: true });
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [localSearch, fetchSearchResults, setSearchParams]);
+
+  const handleSearchChange = (e) => {
+    setLocalSearch(e.target.value);
+  };
+
   useEffect(() => { fetchData(); }, [fetchData]);
 
   // Scroll to target job ifJobID is in URL
@@ -1227,7 +1280,14 @@ export default function JobSeekerDashboard() {
 
   return (
     <div className="bg-gray-100 min-h-screen font-sans">
-      <Navbar activeNav="home" showSearch={true} />
+      <Navbar
+        activeNav="home"
+        showSearch={true}
+        search={localSearch}
+        onSearchChange={handleSearchChange}
+        searchResults={searchResults}
+        isSearching={isSearching}
+      />
 
       {/* Main 3-Column */}
       <main className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-12 gap-6">

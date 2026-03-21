@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { adminAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 // ===== DATA =====
 // (Hardcoded placeholders removed for 100% real-time accuracy)
@@ -73,11 +74,10 @@ function StatCard({ icon, labelKey, value, trend, trendUp, noteKey, badge, badge
           <span className="material-icons text-2xl">{icon}</span>
         </div>
         {trend && (
-          <div className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 border ${
-            trendUp 
-              ? 'text-emerald-600 bg-emerald-50 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20' 
-              : 'text-rose-600 bg-rose-50 border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/20'
-          }`}>
+          <div className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 border ${trendUp
+            ? 'text-emerald-600 bg-emerald-50 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20'
+            : 'text-rose-600 bg-rose-50 border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/20'
+            }`}>
             <span className="material-icons text-sm">{trendUp ? 'trending_up' : 'trending_down'}</span>
             {trend}%
           </div>
@@ -163,7 +163,7 @@ function SecurityMonitor({ logs, traffic, stats, onAnalyze }) {
                   <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 truncate">{log.path}</p>
                   <div className="flex items-center justify-between">
                     <p className="text-[10px] text-slate-500 font-mono">IP: {log.ip}</p>
-                    <button 
+                    <button
                       onClick={() => onAnalyze(log)}
                       className="text-[10px] text-primary font-bold hover:underline"
                     >
@@ -203,7 +203,7 @@ function SecurityMonitor({ logs, traffic, stats, onAnalyze }) {
               logs.filter(l => l.threat === 'scan').map((scan, i) => {
                 const isNmap = scan.path.includes('nmap') || scan.threatDetails?.toLowerCase().includes('nmap');
                 const isSQLi = scan.path.includes("'") || scan.path.includes('union') || scan.path.includes('select');
-                
+
                 return (
                   <div key={i} className="bg-slate-900 rounded-xl p-4 font-mono text-[10px] border-l-4 border-purple-500 shadow-lg relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
@@ -232,11 +232,11 @@ function SecurityMonitor({ logs, traffic, stats, onAnalyze }) {
                         </span>
                       </p>
                       <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                         <span className="text-emerald-400 font-black flex items-center gap-1 italic">
-                            <span className="material-icons text-[12px]">security</span>
-                            PACKET_DROPPED
-                         </span>
-                         <span className="text-slate-600 text-[8px] uppercase tracking-widest">{scan.threatDetails || 'Manual_Probe'}</span>
+                        <span className="text-emerald-400 font-black flex items-center gap-1 italic">
+                          <span className="material-icons text-[12px]">security</span>
+                          PACKET_DROPPED
+                        </span>
+                        <span className="text-slate-600 text-[8px] uppercase tracking-widest">{scan.threatDetails || 'Manual_Probe'}</span>
                       </div>
                     </div>
                   </div>
@@ -247,14 +247,14 @@ function SecurityMonitor({ logs, traffic, stats, onAnalyze }) {
           <div className="mt-8">
             <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Tín hiệu cảnh báo rà quét</h4>
             <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
-               <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 flex items-center justify-center">
-                  <span className="material-icons">dns</span>
-               </div>
-               <div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white">Dịch vụ giám sát hạ tầng</p>
-                  <p className="text-[9px] text-slate-500">Giám sát các cổng kết nối 22, 80, 443, 3306 24/7</p>
-               </div>
-               <span className="ml-auto flex h-2 w-2 rounded-full bg-green-500"></span>
+              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 flex items-center justify-center">
+                <span className="material-icons">dns</span>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">Dịch vụ giám sát hạ tầng</p>
+                <p className="text-[9px] text-slate-500">Giám sát các cổng kết nối 22, 80, 443, 3306 24/7</p>
+              </div>
+              <span className="ml-auto flex h-2 w-2 rounded-full bg-green-500"></span>
             </div>
           </div>
         </div>
@@ -297,14 +297,14 @@ function AnalyticsView({ skillsData, stats, growthData }) {
             </div>
           </div>
           <div className="mt-8">
-             <p className="text-[10px] font-bold text-slate-400 uppercase mb-4 tracking-widest">Xu hướng 7 ngày qua</p>
-             <div className="h-32 flex items-end gap-1 px-1">
-                {(growthData?.length > 0 ? growthData : [5, 5, 5, 5, 5, 5, 5]).map((v, i) => (
-                  <div key={i} className="flex-1 bg-primary/20 rounded-t-sm relative group">
-                    <div className="absolute bottom-0 left-0 right-0 bg-primary group-hover:bg-primary/80 transition-all rounded-t-sm" style={{ height: `${Math.max(v, 2)}%` }}></div>
-                  </div>
-                ))}
-             </div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase mb-4 tracking-widest">Xu hướng 7 ngày qua</p>
+            <div className="h-32 flex items-end gap-1 px-1">
+              {(growthData?.length > 0 ? growthData : [5, 5, 5, 5, 5, 5, 5]).map((v, i) => (
+                <div key={i} className="flex-1 bg-primary/20 rounded-t-sm relative group">
+                  <div className="absolute bottom-0 left-0 right-0 bg-primary group-hover:bg-primary/80 transition-all rounded-t-sm" style={{ height: `${Math.max(v, 2)}%` }}></div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -319,35 +319,35 @@ function MatchingView({ stats }) {
       <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
         <h3 className="font-bold text-slate-900 dark:text-white mb-8">Hiệu suất Ghép nối Dịch vụ</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-           <div className="text-center">
-              <div className="w-20 h-20 bg-green-100 dark:bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="material-icons text-3xl">handshake</span>
-              </div>
-              <h4 className="text-2xl font-black text-slate-900 dark:text-white">{stats?.successfulMatches || 0}</h4>
-              <p className="text-xs font-bold text-slate-400 uppercase">Kết nối thành công</p>
-           </div>
-           <div className="text-center">
-              <div className="w-20 h-20 bg-blue-100 dark:bg-blue-500/10 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="material-icons text-3xl">description</span>
-              </div>
-              <h4 className="text-2xl font-black text-slate-900 dark:text-white">{stats?.totalApplications || 0}</h4>
-              <p className="text-xs font-bold text-slate-400 uppercase">Tổng hồ sơ ứng tuyển</p>
-           </div>
-           <div className="text-center">
-              <div className="w-20 h-20 bg-purple-100 dark:bg-purple-500/10 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="material-icons text-3xl">work</span>
-              </div>
-              <h4 className="text-2xl font-black text-slate-900 dark:text-white">{stats?.openJobs || 0}</h4>
-              <p className="text-xs font-bold text-slate-400 uppercase">Dự án đang mở</p>
-           </div>
+          <div className="text-center">
+            <div className="w-20 h-20 bg-green-100 dark:bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="material-icons text-3xl">handshake</span>
+            </div>
+            <h4 className="text-2xl font-black text-slate-900 dark:text-white">{stats?.successfulMatches || 0}</h4>
+            <p className="text-xs font-bold text-slate-400 uppercase">Kết nối thành công</p>
+          </div>
+          <div className="text-center">
+            <div className="w-20 h-20 bg-blue-100 dark:bg-blue-500/10 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="material-icons text-3xl">description</span>
+            </div>
+            <h4 className="text-2xl font-black text-slate-900 dark:text-white">{stats?.totalApplications || 0}</h4>
+            <p className="text-xs font-bold text-slate-400 uppercase">Tổng hồ sơ ứng tuyển</p>
+          </div>
+          <div className="text-center">
+            <div className="w-20 h-20 bg-purple-100 dark:bg-purple-500/10 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="material-icons text-3xl">work</span>
+            </div>
+            <h4 className="text-2xl font-black text-slate-900 dark:text-white">{stats?.openJobs || 0}</h4>
+            <p className="text-xs font-bold text-slate-400 uppercase">Dự án đang mở</p>
+          </div>
         </div>
-        
+
         <div className="mt-12 p-8 bg-blue-50 dark:bg-primary/5 rounded-2xl border border-blue-100 dark:border-primary/20 text-center">
-           <h4 className="text-sm font-bold text-primary mb-2">Thông tin vận hành</h4>
-           <p className="text-xs text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
-             Tỷ lệ ghép nối được tính dựa trên số lượng hồ sơ ứng tuyển thực tế đã được khách hàng phê duyệt thuê (Hired). 
-             Dữ liệu được cập nhật liên tục từ hệ thống khớp lệnh của Hope.
-           </p>
+          <h4 className="text-sm font-bold text-primary mb-2">Thông tin vận hành</h4>
+          <p className="text-xs text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+            Tỷ lệ ghép nối được tính dựa trên số lượng hồ sơ ứng tuyển thực tế đã được khách hàng phê duyệt thuê (Hired).
+            Dữ liệu được cập nhật liên tục từ hệ thống khớp lệnh của Hope.
+          </p>
         </div>
       </div>
     </div>
@@ -381,6 +381,7 @@ export default function AdminDashboard() {
   const [deleteWarning, setDeleteWarning] = useState(null); // { userId, name }
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [expandedReport, setExpandedReport] = useState(null);
+  const [reportActionModal, setReportActionModal] = useState(null); // { reportId, job, accusedUser }
   const [showSkillsModal, setShowSkillsModal] = useState(false);
   const [allSkillsData, setAllSkillsData] = useState({ skills: [], niches: [] });
   const [logsModal, setLogsModal] = useState(false);
@@ -474,16 +475,16 @@ export default function AdminDashboard() {
     try {
       const token = localStorage.getItem('token');
       const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      
+
       console.log('Initiating fetch for CSV export...');
-      
+
       const response = await fetch(`${apiBase}/admin/users/export`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         const text = await response.text();
         let message = 'Lỗi từ máy chủ';
@@ -496,7 +497,7 @@ export default function AdminDashboard() {
         }
         throw new Error(message);
       }
-      
+
       const blob = await response.blob();
       if (blob.size < 10) throw new Error('Dữ liệu trả về quá ít');
 
@@ -506,12 +507,12 @@ export default function AdminDashboard() {
       link.setAttribute('download', `users_export_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
-      
+
       setTimeout(() => {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
       }, 1500);
-      
+
       console.log('CSV fetch successful');
     } catch (err) {
       console.error('Fetch export error:', err);
@@ -526,11 +527,17 @@ export default function AdminDashboard() {
     } catch (err) { console.error(err); }
   };
 
-  const handleResolveReport = async (reportId) => {
+  const handleResolveJobReport = async (reportId, actionData) => {
     try {
-      await adminAPI.updateReport(reportId, { status: 'resolved', resolution: 'Đã xử lý' });
+      await adminAPI.resolveReport(reportId, actionData);
+      toast.success('Báo cáo đã được xử lý');
       setReports(prev => prev.map(r => r._id === reportId ? { ...r, status: 'resolved' } : r));
-    } catch (err) { console.error(err); }
+      setReportActionModal(null);
+      fetchDashboardData();
+    } catch (err) {
+      toast.error('Xử lý báo cáo thất bại');
+      console.error(err);
+    }
   };
 
   const handleBanSubmit = async () => {
@@ -569,7 +576,7 @@ export default function AdminDashboard() {
     try {
       // 1. Fetch System Health (Parallel)
       const healthPromise = adminAPI.getHealth().catch(() => ({ data: { success: false } }));
-      
+
       const [statsRes, usersRes, logsRes, skillsRes, trafficRes, pendingJobsRes, growthRes, reportsRes, healthRes] = await Promise.allSettled([
         adminAPI.getStats(),
         adminAPI.getUsers({ ...usersFilter, limit: 5 }),
@@ -588,12 +595,12 @@ export default function AdminDashboard() {
         const skills = skillsRes.value.data.skills || [];
         const niches = skillsRes.value.data.niches || [];
         const maxCount = Math.max(...skills.map(s => s.count), 1);
-        
+
         setAllSkillsData({ skills, niches });
-        setSkillsData(skills.slice(0, 5).map(s => ({ 
-          name: s._id, 
+        setSkillsData(skills.slice(0, 5).map(s => ({
+          name: s._id,
           count: s.count,
-          pct: Math.round((s.count / maxCount) * 100) 
+          pct: Math.round((s.count / maxCount) * 100)
         })));
       }
       if (trafficRes.status === 'fulfilled') {
@@ -682,47 +689,47 @@ export default function AdminDashboard() {
 
   // Build stats cards from real data
   const statsCards = [
-    { 
-      icon: 'group', 
-      labelKey: 'admin.stats.totalUsers', 
-      value: apiStats?.totalUsers?.toLocaleString() ?? '—', 
-      trend: apiStats?.growthRate, 
-      trendUp: parseFloat(apiStats?.growthRate || 0) >= 0, 
-      noteKey: 'admin.stats.vsLast30', 
-      iconBg: 'bg-blue-100 dark:bg-blue-500/10', 
+    {
+      icon: 'group',
+      labelKey: 'admin.stats.totalUsers',
+      value: apiStats?.totalUsers?.toLocaleString() ?? '—',
+      trend: apiStats?.growthRate,
+      trendUp: parseFloat(apiStats?.growthRate || 0) >= 0,
+      noteKey: 'admin.stats.vsLast30',
+      iconBg: 'bg-blue-100 dark:bg-blue-500/10',
       iconColor: 'text-blue-600',
       glowColor: 'hover:shadow-blue-500/10'
     },
-    { 
-      icon: 'handshake', 
-      labelKey: 'admin.stats.successfulMatches', 
-      value: apiStats?.successfulMatches?.toLocaleString() ?? '—', 
-      trend: null, 
-      trendUp: true, 
-      noteKey: 'admin.stats.vsLast30', 
-      iconBg: 'bg-emerald-100 dark:bg-emerald-500/10', 
+    {
+      icon: 'handshake',
+      labelKey: 'admin.stats.successfulMatches',
+      value: apiStats?.successfulMatches?.toLocaleString() ?? '—',
+      trend: null,
+      trendUp: true,
+      noteKey: 'admin.stats.vsLast30',
+      iconBg: 'bg-emerald-100 dark:bg-emerald-500/10',
       iconColor: 'text-emerald-600',
       glowColor: 'hover:shadow-emerald-500/10'
     },
-    { 
-      icon: 'work', 
-      labelKey: 'admin.stats.openJobs', 
-      value: apiStats?.openJobs?.toLocaleString() ?? '—', 
-      trend: apiStats?.pendingJobs > 0 ? apiStats.pendingJobs : null, 
-      trendUp: true, 
-      noteKey: 'admin.stats.vsLastMonth', 
-      iconBg: 'bg-amber-100 dark:bg-amber-500/10', 
+    {
+      icon: 'work',
+      labelKey: 'admin.stats.openJobs',
+      value: apiStats?.openJobs?.toLocaleString() ?? '—',
+      trend: apiStats?.pendingJobs > 0 ? apiStats.pendingJobs : null,
+      trendUp: true,
+      noteKey: 'admin.stats.vsLastMonth',
+      iconBg: 'bg-amber-100 dark:bg-amber-500/10',
       iconColor: 'text-amber-600',
       glowColor: 'hover:shadow-amber-500/10'
     },
-    { 
-      icon: 'security', 
-      labelKey: 'admin.stats.securityAlerts', 
-      value: apiStats?.threatsToday?.toLocaleString() ?? '—', 
-      badge: apiStats?.threatsToday > 0 ? apiStats.threatsToday : null, 
-      badgeKey: 'admin.stats.highRisk', 
-      noteKey: 'admin.stats.last24h', 
-      iconBg: 'bg-rose-100 dark:bg-rose-500/10', 
+    {
+      icon: 'security',
+      labelKey: 'admin.stats.securityAlerts',
+      value: apiStats?.threatsToday?.toLocaleString() ?? '—',
+      badge: apiStats?.threatsToday > 0 ? apiStats.threatsToday : null,
+      badgeKey: 'admin.stats.highRisk',
+      noteKey: 'admin.stats.last24h',
+      iconBg: 'bg-rose-100 dark:bg-rose-500/10',
       iconColor: 'text-rose-600',
       glowColor: 'hover:shadow-rose-500/10'
     },
@@ -783,18 +790,17 @@ export default function AdminDashboard() {
             </button>
             {/* Notifications */}
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className={`p-2 rounded-full relative transition-colors ${
-                  showNotifications ? 'bg-primary/10 text-primary' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
-                }`}
+                className={`p-2 rounded-full relative transition-colors ${showNotifications ? 'bg-primary/10 text-primary' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
               >
                 <span className="material-icons">notifications</span>
                 {(reports.filter(r => r.status === 'pending').length > 0 || pendingJobs.length > 0) && (
                   <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
                 )}
               </button>
-              
+
               {showNotifications && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
@@ -805,7 +811,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="max-h-[300px] overflow-y-auto">
                       {reports.filter(r => r.status === 'pending').length > 0 && (
-                        <button 
+                        <button
                           onClick={() => { setActiveSection('reports'); setShowNotifications(false); }}
                           className="w-full p-4 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-100 dark:border-slate-700 text-left"
                         >
@@ -819,7 +825,7 @@ export default function AdminDashboard() {
                         </button>
                       )}
                       {pendingJobs.length > 0 && (
-                        <button 
+                        <button
                           onClick={() => { setActiveSection('moderation'); setShowNotifications(false); }}
                           className="w-full p-4 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-100 dark:border-slate-700 text-left"
                         >
@@ -840,7 +846,7 @@ export default function AdminDashboard() {
                       )}
                     </div>
                     <div className="p-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-700">
-                       <button onClick={() => setShowNotifications(false)} className="w-full py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">{t('common.cancel')}</button>
+                      <button onClick={() => setShowNotifications(false)} className="w-full py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">{t('common.cancel')}</button>
                     </div>
                   </div>
                 </>
@@ -891,24 +897,22 @@ export default function AdminDashboard() {
                       key={id}
                       href="#"
                       onClick={(e) => { e.preventDefault(); setActiveSection(id); setSidebarOpen(false); }}
-                      className={`group flex items-center gap-3 px-6 py-4 text-sm font-bold transition-all duration-300 relative overflow-hidden ${
-                        activeSection === id
-                          ? id === 'security'
-                            ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 border-l-4 border-rose-600'
-                            : 'border-l-4 border-primary bg-primary/5 text-primary'
-                          : danger
-                            ? 'text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/5'
-                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      className={`group flex items-center gap-3 px-6 py-4 text-sm font-bold transition-all duration-300 relative overflow-hidden ${activeSection === id
+                        ? id === 'security'
+                          ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 border-l-4 border-rose-600'
+                          : 'border-l-4 border-primary bg-primary/5 text-primary'
+                        : danger
+                          ? 'text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/5'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                         }`}
                     >
                       {activeSection === id && (
                         <div className={`absolute inset-0 opacity-10 animate-pulse ${id === 'security' ? 'bg-rose-500' : 'bg-primary'}`}></div>
                       )}
-                      <div className={`p-1.5 rounded-xl transition-all duration-300 ${
-                        activeSection === id 
-                          ? id === 'security' ? 'bg-rose-100 dark:bg-rose-500/20 shadow-sm' : 'bg-primary/20 shadow-sm' 
-                          : 'bg-transparent'
-                      } group-hover:scale-110`}>
+                      <div className={`p-1.5 rounded-xl transition-all duration-300 ${activeSection === id
+                        ? id === 'security' ? 'bg-rose-100 dark:bg-rose-500/20 shadow-sm' : 'bg-primary/20 shadow-sm'
+                        : 'bg-transparent'
+                        } group-hover:scale-110`}>
                         <span className="material-icons text-[22px]">{icon}</span>
                       </div>
                       <span className="flex-1 relative z-10 flex items-center justify-between">
@@ -926,11 +930,10 @@ export default function AdminDashboard() {
 
             {/* System Status + Logout */}
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
-              <div className={`rounded-xl p-4 border transition-all duration-300 ${
-                systemStatus.state === 'error' 
-                  ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30' 
-                  : 'bg-primary/5 dark:bg-primary/10 border-primary/20'
-              }`}>
+              <div className={`rounded-xl p-4 border transition-all duration-300 ${systemStatus.state === 'error'
+                ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30'
+                : 'bg-primary/5 dark:bg-primary/10 border-primary/20'
+                }`}>
                 <p className={`text-xs font-bold mb-1 ${systemStatus.state === 'error' ? 'text-red-500' : 'text-primary'}`}>{t('admin.sidebar.systemStatus')}</p>
                 <div className="flex items-center gap-2">
                   <span className={`flex h-2 w-2 rounded-full animate-pulse ${systemStatus.state === 'error' ? 'bg-red-500' : 'bg-green-500'}`}></span>
@@ -966,7 +969,7 @@ export default function AdminDashboard() {
                     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                       <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50 dark:bg-slate-800">
                         <h3 className="font-bold text-slate-900 dark:text-white shrink-0">{t('admin.users.title')}</h3>
-                        
+
                         <div className="flex flex-wrap gap-2 w-full md:w-auto">
                           <div className="relative flex-1 md:min-w-[200px]">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-slate-400">
@@ -1049,7 +1052,7 @@ export default function AdminDashboard() {
                                   )}
                                 </td>
                                 <td className="px-6 py-4">
-                                  <Link 
+                                  <Link
                                     to={`/profile/${u._id}`}
                                     className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1"
                                   >
@@ -1058,14 +1061,13 @@ export default function AdminDashboard() {
                                   </Link>
                                 </td>
                                 <td className="px-6 py-4 text-right">
-                                    <button
-                                      onClick={() => u.isBanned ? handleUnbanUser(u._id) : setBanModal({ userId: u._id, name: u.name })}
-                                      className={`text-[10px] font-bold px-2 py-1 rounded transition-all ${
-                                        u.isBanned ? 'text-green-600 bg-green-500/10 hover:bg-green-500/20' : 'text-amber-600 bg-amber-500/10 hover:bg-amber-500/20'
+                                  <button
+                                    onClick={() => u.isBanned ? handleUnbanUser(u._id) : setBanModal({ userId: u._id, name: u.name })}
+                                    className={`text-[10px] font-bold px-2 py-1 rounded transition-all ${u.isBanned ? 'text-green-600 bg-green-500/10 hover:bg-green-500/20' : 'text-amber-600 bg-amber-500/10 hover:bg-amber-500/20'
                                       }`}
-                                    >
-                                      {u.isBanned ? t('admin.users.status.unban') : t('admin.users.status.ban')}
-                                    </button>
+                                  >
+                                    {u.isBanned ? t('admin.users.status.unban') : t('admin.users.status.ban')}
+                                  </button>
                                 </td>
                               </tr>
                             ))}
@@ -1073,7 +1075,7 @@ export default function AdminDashboard() {
                         </table>
                       </div>
                       <div className="px-6 py-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-center">
-                        <button 
+                        <button
                           onClick={() => setActiveSection('users')}
                           className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
                         >
@@ -1183,7 +1185,7 @@ export default function AdminDashboard() {
                                 </div>
                               </div>
                               <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
-                                <div 
+                                <div
                                   className={`${color.bg} h-full rounded-full transition-all duration-1000 ease-out group-hover:opacity-80 relative`}
                                   style={{ width: `${pct}%` }}
                                 >
@@ -1194,7 +1196,7 @@ export default function AdminDashboard() {
                           );
                         })}
                       </div>
-                      <button 
+                      <button
                         onClick={() => setShowSkillsModal(true)}
                         className="w-full mt-8 py-2.5 text-xs font-bold text-primary bg-primary/5 border border-primary/10 rounded-xl hover:bg-primary/10 transition-all flex items-center justify-center gap-2"
                       >
@@ -1219,11 +1221,11 @@ export default function AdminDashboard() {
                               <div className="relative w-32 h-32 flex items-center justify-center">
                                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 130 130">
                                   <circle className="text-slate-100 dark:text-slate-700" cx="65" cy="65" fill="transparent" r="58" stroke="currentColor" strokeWidth="10" />
-                                  <circle 
-                                    className="text-green-500 transition-all duration-1000 ease-in-out" 
-                                    cx="65" cy="65" fill="transparent" r="58" stroke="currentColor" 
+                                  <circle
+                                    className="text-green-500 transition-all duration-1000 ease-in-out"
+                                    cx="65" cy="65" fill="transparent" r="58" stroke="currentColor"
                                     strokeWidth="10" strokeLinecap="round"
-                                    style={{ strokeDasharray: '364.4', strokeDashoffset }} 
+                                    style={{ strokeDasharray: '364.4', strokeDashoffset }}
                                   />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -1261,39 +1263,39 @@ export default function AdminDashboard() {
                           <h3 className="font-bold text-slate-900 dark:text-white">{t('admin.logs.title')}</h3>
                         </div>
                         <div className="p-6">
-                        <div className="space-y-4">
-                                {securityLogs.slice(0, 5).map((log) => (
-                                  <div key={log._id} className="flex gap-3">
-                                    <div className="h-8 w-8 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
-                                      <span className="material-icons text-slate-500 text-sm">
-                                        {THREAT_ICON_MAP[log.threat]?.icon || 'history'}
-                                      </span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-[10px] font-bold text-slate-900 dark:text-white truncate">
-                                        {log.method} {log.path}
-                                      </p>
-                                      <p className="text-[10px] text-slate-500 truncate">IP: {log.ip}</p>
-                                    </div>
-                                    <span className="text-[8px] text-slate-400 flex-shrink-0 self-start pt-0.5">
-                                      {new Date(log.createdAt).toLocaleTimeString()}
-                                    </span>
-                                  </div>
-                                ))}
-                                {securityLogs.length === 0 && (
-                                  <p className="text-[10px] text-slate-400 text-center py-4 italic">No recent logs</p>
-                                )}
+                          <div className="space-y-4">
+                            {securityLogs.slice(0, 5).map((log) => (
+                              <div key={log._id} className="flex gap-3">
+                                <div className="h-8 w-8 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+                                  <span className="material-icons text-slate-500 text-sm">
+                                    {THREAT_ICON_MAP[log.threat]?.icon || 'history'}
+                                  </span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-[10px] font-bold text-slate-900 dark:text-white truncate">
+                                    {log.method} {log.path}
+                                  </p>
+                                  <p className="text-[10px] text-slate-500 truncate">IP: {log.ip}</p>
+                                </div>
+                                <span className="text-[8px] text-slate-400 flex-shrink-0 self-start pt-0.5">
+                                  {new Date(log.createdAt).toLocaleTimeString()}
+                                </span>
+                              </div>
+                            ))}
+                            {securityLogs.length === 0 && (
+                              <p className="text-[10px] text-slate-400 text-center py-4 italic">No recent logs</p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => setLogsModal(true)}
+                            className="w-full mt-6 py-2 text-xs font-bold text-slate-500 hover:text-primary transition-colors flex items-center justify-center gap-2 group"
+                          >
+                            {t('admin.logs.viewFull')}
+                            <span className="material-icons text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                          </button>
                         </div>
-                        <button 
-                          onClick={() => setLogsModal(true)}
-                          className="w-full mt-6 py-2 text-xs font-bold text-slate-500 hover:text-primary transition-colors flex items-center justify-center gap-2 group"
-                        >
-                          {t('admin.logs.viewFull')}
-                          <span className="material-icons text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                        </button>
                       </div>
-                    </div>
-                  )}
+                    )}
                   </div>
                 </div>
               </>
@@ -1376,7 +1378,7 @@ export default function AdminDashboard() {
 
                 {loadingReports ? (
                   <div className="space-y-4">
-                    {[1,2,3].map(i => <div key={i} className="h-32 bg-white rounded-xl animate-pulse border border-slate-200" />)}
+                    {[1, 2, 3].map(i => <div key={i} className="h-32 bg-white rounded-xl animate-pulse border border-slate-200" />)}
                   </div>
                 ) : reports.length === 0 ? (
                   <div className="bg-white rounded-xl border border-slate-200 p-16 text-center">
@@ -1387,10 +1389,9 @@ export default function AdminDashboard() {
                 ) : (
                   <div className="space-y-4">
                     {reports.map(report => (
-                      <div key={report._id} className={`bg-white dark:bg-slate-800 rounded-xl border shadow-sm overflow-hidden transition-all ${
-                        report.status === 'pending' ? 'border-amber-200 dark:border-amber-500/30' :
+                      <div key={report._id} className={`bg-white dark:bg-slate-800 rounded-xl border shadow-sm overflow-hidden transition-all ${report.status === 'pending' ? 'border-amber-200 dark:border-amber-500/30' :
                         report.status === 'resolved' ? 'border-green-200 dark:border-green-500/30' : 'border-slate-200 dark:border-slate-700'
-                      }`}>
+                        }`}>
                         <div className="p-5">
                           <div className="flex flex-wrap gap-3 items-start justify-between mb-4">
                             <div className="flex items-center gap-3">
@@ -1407,11 +1408,10 @@ export default function AdminDashboard() {
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
-                                report.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                              <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${report.status === 'pending' ? 'bg-amber-100 text-amber-700' :
                                 report.status === 'resolved' ? 'bg-green-100 text-green-700' :
-                                'bg-slate-100 text-slate-500'
-                              }`}>
+                                  'bg-slate-100 text-slate-500'
+                                }`}>
                                 {report.status === 'pending' ? '⏳ Chờ xem xét' : report.status === 'resolved' ? '✅ Đã xử lý' : '🚫 Đã đóng'}
                               </span>
                               <span className="text-[10px] bg-blue-50 text-blue-600 font-bold px-2 py-1 rounded-full capitalize">{report.type}</span>
@@ -1442,18 +1442,18 @@ export default function AdminDashboard() {
 
                           {report.status === 'pending' && (
                             <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100">
-                                <button
-                                  onClick={() => handleDismissReport(report._id)}
-                                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 transition-colors"
-                                >
-                                  <span className="material-icons text-sm">do_not_disturb</span>{t('admin.reports.dismiss')}
-                                </button>
-                                <button
-                                  onClick={() => handleResolveReport(report._id)}
-                                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors"
-                                >
-                                  <span className="material-icons text-sm">check_circle</span>{t('admin.reports.resolve')}
-                                </button>
+                              <button
+                                onClick={() => handleDismissReport(report._id)}
+                                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 transition-colors"
+                              >
+                                <span className="material-icons text-sm">do_not_disturb</span>{t('admin.reports.dismiss')}
+                              </button>
+                              <button
+                                onClick={() => handleResolveReport(report._id)}
+                                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors"
+                              >
+                                <span className="material-icons text-sm">check_circle</span>{t('admin.reports.resolve')}
+                              </button>
                               {report.accusedUser && (
                                 <>
                                   <button
@@ -1574,10 +1574,9 @@ export default function AdminDashboard() {
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${
-                                u.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                              <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' :
                                 u.role === 'client' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
-                              }`}>
+                                }`}>
                                 {u.role === 'freelancer' ? 'Freelancer' : u.role === 'client' ? 'Khách hàng' : 'Admin'}
                               </span>
                             </td>
@@ -1599,9 +1598,8 @@ export default function AdminDashboard() {
                               <div className="flex justify-end gap-2">
                                 <button
                                   onClick={() => u.isBanned ? handleUnbanUser(u._id) : setBanModal({ userId: u._id, name: u.name })}
-                                  className={`p-2 rounded-xl transition-colors ${
-                                    u.isBanned ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
-                                  }`}
+                                  className={`p-2 rounded-xl transition-colors ${u.isBanned ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
+                                    }`}
                                   title={u.isBanned ? 'Mở khóa' : 'Khóa tài khoản'}
                                 >
                                   <span className="material-icons text-lg">{u.isBanned ? 'lock_open' : 'lock'}</span>
@@ -1641,10 +1639,10 @@ export default function AdminDashboard() {
               </div>
             )}
             {activeSection === 'security' && (
-              <SecurityMonitor 
-                logs={securityLogs} 
-                traffic={trafficData} 
-                stats={apiStats} 
+              <SecurityMonitor
+                logs={securityLogs}
+                traffic={trafficData}
+                stats={apiStats}
                 onAnalyze={(log) => setAnalysisModal(log)}
               />
             )}
@@ -1652,6 +1650,98 @@ export default function AdminDashboard() {
               <MatchingView stats={apiStats} />
             )}
             {activeSection === 'analytics' && <AnalyticsView skillsData={allSkillsData} stats={apiStats} growthData={growthData} />}
+            {activeSection === 'reports' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span className="material-icons text-primary">report</span> Báo cáo vi phạm
+                  </h2>
+                  <button onClick={fetchReports} className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 transition-colors">
+                    <span className="material-icons text-lg">refresh</span> Làm mới
+                  </button>
+                </div>
+
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 text-xs uppercase font-bold tracking-wider border-b border-slate-200 dark:border-slate-700">
+                        <tr>
+                          <th className="px-6 py-4">Báo cáo</th>
+                          <th className="px-6 py-4">Đối tượng bị tố cáo</th>
+                          <th className="px-6 py-4">Người báo cáo</th>
+                          <th className="px-6 py-4">Lý do</th>
+                          <th className="px-6 py-4">Trạng thái</th>
+                          <th className="px-6 py-4 text-right">Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                        {loadingReports ? (
+                          [1, 2, 3].map(i => (
+                            <tr key={i} className="animate-pulse">
+                              <td colSpan="6" className="px-6 py-8 h-16 bg-slate-50/50 dark:bg-slate-900/20"></td>
+                            </tr>
+                          ))
+                        ) : reports.length === 0 ? (
+                          <tr>
+                            <td colSpan="6" className="px-6 py-20 text-center">
+                              <div className="flex flex-col items-center justify-center text-slate-400">
+                                <span className="material-icons text-6xl mb-4 bg-slate-100 dark:bg-slate-900/50 p-6 rounded-full">verified_user</span>
+                                <h4 className="text-lg font-bold text-slate-700 dark:text-slate-300">Tuyệt vời!</h4>
+                                <p className="text-sm max-w-xs mx-auto mt-2">Hiện tại không có báo cáo vi phạm nào cần xử lý. Hệ thống của bạn đang rất sạch sẽ.</p>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : reports.map(r => (
+                          <tr key={r._id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col">
+                                <span className="text-xs font-bold text-slate-900 dark:text-white">{r.type === 'job' ? '💼 Công việc' : '👤 Người dùng'}</span>
+                                <span className="text-[10px] text-slate-500">{new Date(r.createdAt).toLocaleString('vi-VN')}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm font-medium text-slate-700 dark:text-slate-300">
+                              {r.type === 'job' ? (
+                                <div className="flex flex-col">
+                                  <span className="text-primary hover:underline cursor-pointer">{r.jobId?.title || 'Công việc không còn tồn tại'}</span>
+                                  <span className="text-[10px] text-slate-500 italic">ID: {r.jobId?._id}</span>
+                                </div>
+                              ) : (
+                                <span>{r.accusedUser?.name || 'N/A'}</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                              {r.reporter?.name || 'Ẩn danh'}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-slate-500 italic truncate max-w-xs">{r.reason}</td>
+                            <td className="px-6 py-4">
+                              <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${r.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'
+                                }`}>
+                                {r.status === 'pending' ? 'Đang chờ' : 'Đã xử lý'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              {r.status === 'pending' && (
+                                <button
+                                  onClick={() => setReportActionModal({
+                                    reportId: r._id,
+                                    job: r.jobId,
+                                    accusedUser: r.accusedUser,
+                                    reason: r.reason
+                                  })}
+                                  className="px-3 py-1 bg-primary text-white text-[10px] font-bold rounded-lg hover:bg-primary/90 transition-colors"
+                                >
+                                  Xử lý
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
             {activeSection !== 'dashboard' && activeSection !== 'moderation' && activeSection !== 'reports' && activeSection !== 'users' && activeSection !== 'security' && activeSection !== 'matching' && activeSection !== 'analytics' && (
               <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
                 <span className="material-icons text-6xl text-slate-300 dark:text-slate-600 mb-4">construction</span>
@@ -1660,6 +1750,108 @@ export default function AdminDashboard() {
                 <button onClick={() => setActiveSection('dashboard')} className="mt-6 px-6 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors">
                   Quay lại Dashboard
                 </button>
+              </div>
+            )}
+            {/* Report Action Modal */}
+            {reportActionModal && (
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                    <h3 className="font-bold text-slate-900 dark:text-white uppercase flex items-center gap-2">
+                      <span className="material-icons text-red-500">gavel</span> Xử lý báo cáo
+                    </h3>
+                    <button onClick={() => { setReportActionModal(null); setBanDuration('7d'); }} className="text-slate-400 hover:text-slate-600 transition-colors">
+                      <span className="material-icons">close</span>
+                    </button>
+                  </div>
+                  <div className="p-6 space-y-6">
+                    <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                      <p className="text-xs font-bold text-slate-500 uppercase mb-2">Thông tin vi phạm</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white">{reportActionModal.job?.title || reportActionModal.accusedUser?.name}</p>
+                      <p className="text-xs text-slate-500 mt-1 italic">"{reportActionModal.reason}"</p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-300">Chọn hành động xử lý:</p>
+
+                      <button
+                        onClick={() => handleResolveJobReport(reportActionModal.reportId, { action: 'none', resolution: 'Bỏ qua báo cáo' })}
+                        className="w-full flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all text-left"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                          <span className="material-icons text-slate-500">close</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">Bỏ qua báo cáo</p>
+                          <p className="text-xs text-slate-500">Báo cáo không hợp lệ, không thực hiện hành động nào.</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (window.confirm('Xác nhận xóa công việc này?')) {
+                            handleResolveJobReport(reportActionModal.reportId, { action: 'delete_job', resolution: 'Tin đăng vi phạm chính sách' });
+                          }
+                        }}
+                        className="w-full flex items-center gap-3 p-4 rounded-xl border border-red-100 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all text-left group"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                          <span className="material-icons text-red-500">delete_forever</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-red-600">Xóa công việc</p>
+                          <p className="text-xs text-red-700/60 dark:text-red-400">Gỡ bỏ tin đăng này vĩnh viễn khỏi hệ thống.</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setReportActionModal({ ...reportActionModal, mode: 'ban' });
+                        }}
+                        className="w-full flex items-center gap-3 p-4 rounded-xl border border-orange-100 dark:border-orange-900/30 hover:bg-orange-50 dark:hover:bg-orange-900/10 transition-all text-left"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                          <span className="material-icons text-orange-500">block</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-orange-600">Khóa người đăng + Xóa Job</p>
+                          <p className="text-xs text-orange-700/60 dark:text-orange-400">Hành động mạnh mẽ nhất cho các trường hợp lừa đảo.</p>
+                        </div>
+                      </button>
+                    </div>
+
+                    {reportActionModal.mode === 'ban' && (
+                      <div className="p-4 bg-orange-50 dark:bg-orange-900/10 rounded-xl border border-orange-100 animate-in slide-in-from-top-4 duration-300">
+                        <label className="block text-xs font-bold text-orange-700 uppercase mb-3">Thời hạn khóa tài khoản</label>
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                          {[{ v: '7d', l: '7 ngày' }, { v: '30d', l: '30 ngày' }, { v: 'permanent', l: 'Vĩnh viễn' }].map(opt => (
+                            <button
+                              key={opt.v}
+                              onClick={() => setBanDuration(opt.v)}
+                              className={`p-2 rounded-lg text-xs font-bold border-2 transition-all ${banDuration === opt.v ? 'border-orange-500 bg-white text-orange-600' : 'border-orange-100 text-orange-400'
+                                }`}
+                            >{opt.l}</button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => {
+                            const days = { '7d': 7, '30d': 30 }[banDuration] || 7;
+                            const banUntil = banDuration === 'permanent' ? null : new Date(Date.now() + days * 86400000).toISOString();
+                            handleResolveJobReport(reportActionModal.reportId, {
+                              action: 'ban_user',
+                              resolution: `Vi phạm nghiêm trọng: ${reportActionModal.reason}`,
+                              isPermanentlyBanned: banDuration === 'permanent',
+                              banUntil
+                            });
+                          }}
+                          className="w-full bg-orange-600 text-white font-bold py-3 rounded-xl hover:bg-orange-700 transition-colors shadow-lg shadow-orange-600/20"
+                        >
+                          Xác nhận Khóa & Xử lý báo cáo
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
             {/* Modals placed globally within main tag */}
@@ -1680,15 +1872,14 @@ export default function AdminDashboard() {
                     <div>
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Thời hạn khóa</label>
                       <div className="grid grid-cols-2 gap-2">
-                        {[{v:'1d',l:'1 ngày'},{v:'7d',l:'7 ngày'},{v:'30d',l:'30 ngày'},{v:'custom',l:'Tuỳ chỉnh'},{v:'permanent',l:'Vĩnh viễn'}].map(opt => (
+                        {[{ v: '1d', l: '1 ngày' }, { v: '7d', l: '7 ngày' }, { v: '30d', l: '30 ngày' }, { v: 'custom', l: 'Tuỳ chỉnh' }, { v: 'permanent', l: 'Vĩnh viễn' }].map(opt => (
                           <button
                             key={opt.v}
                             onClick={() => setBanDuration(opt.v)}
-                            className={`p-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
-                              banDuration === opt.v
-                                ? opt.v === 'permanent' ? 'border-red-500 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400' : 'border-primary bg-primary/5 text-primary'
-                                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600'
-                            }`}
+                            className={`p-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${banDuration === opt.v
+                              ? opt.v === 'permanent' ? 'border-red-500 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400' : 'border-primary bg-primary/5 text-primary'
+                              : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600'
+                              }`}
                           >{opt.l}</button>
                         ))}
                       </div>
@@ -1723,9 +1914,8 @@ export default function AdminDashboard() {
                     )}
                     <div className="flex gap-3 pt-2">
                       <button onClick={() => setBanModal(null)} className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">{t('common.cancel')}</button>
-                      <button onClick={handleBanSubmit} className={`flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-colors shadow-sm ${
-                        banDuration === 'permanent' ? 'bg-red-600 hover:bg-red-700 shadow-red-500/20' : 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/20'
-                      }`}>Xác nhận khóa</button>
+                      <button onClick={handleBanSubmit} className={`flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-colors shadow-sm ${banDuration === 'permanent' ? 'bg-red-600 hover:bg-red-700 shadow-red-500/20' : 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/20'
+                        }`}>Xác nhận khóa</button>
                     </div>
                   </div>
                 </div>
@@ -1796,7 +1986,7 @@ export default function AdminDashboard() {
                       <span className="material-icons">close</span>
                     </button>
                   </div>
-                  
+
                   <div className="p-8 overflow-y-auto max-h-[calc(90vh-88px)]">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                       {/* Skills Section */}
@@ -1817,7 +2007,7 @@ export default function AdminDashboard() {
                                   <span className="text-xs font-bold text-slate-500">{s.count} {t('admin.skills.requests')}</span>
                                 </div>
                                 <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3">
-                                  <div 
+                                  <div
                                     className={`${color.bg} h-3 rounded-full transition-all duration-1000`}
                                     style={{ width: `${pct}%` }}
                                   ></div>
@@ -1845,7 +2035,7 @@ export default function AdminDashboard() {
                             </div>
                           ))}
                         </div>
-                        
+
                         <div className="mt-12 p-6 bg-blue-50 dark:bg-primary/10 rounded-2xl border border-blue-100 dark:border-primary/20">
                           <h5 className="font-bold text-primary mb-2 flex items-center gap-2">
                             <span className="material-icons text-sm">info</span>
@@ -1880,7 +2070,7 @@ export default function AdminDashboard() {
                       <span className="material-icons text-slate-400 group-hover:rotate-90 transition-transform">close</span>
                     </button>
                   </div>
-                  
+
                   <div className="flex-1 overflow-auto p-0">
                     {loadingFullLogs ? (
                       <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -1910,11 +2100,10 @@ export default function AdminDashboard() {
                                   </span>
                                 </td>
                                 <td className="p-4">
-                                  <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
-                                    log.method === 'GET' ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/10' :
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-black ${log.method === 'GET' ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/10' :
                                     log.method === 'POST' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10' :
-                                    'bg-slate-100 text-slate-700'
-                                  }`}>
+                                      'bg-slate-100 text-slate-700'
+                                    }`}>
                                     {log.method}
                                   </span>
                                 </td>
@@ -1940,7 +2129,7 @@ export default function AdminDashboard() {
                                   </div>
                                 </td>
                                 <td className="p-4 text-right">
-                                  <button 
+                                  <button
                                     onClick={() => {
                                       setAnalysisModal(log);
                                       setLogsModal(false);
@@ -1965,11 +2154,11 @@ export default function AdminDashboard() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="p-6 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                       <span className="material-icons text-sm text-primary">verified_user</span>
-                       {t('admin.security.aiProtected')}
+                      <span className="material-icons text-sm text-primary">verified_user</span>
+                      {t('admin.security.aiProtected')}
                     </p>
                     <button onClick={() => setLogsModal(false)} className="px-8 py-2.5 bg-slate-900 dark:bg-primary text-white text-xs font-black rounded-xl hover:shadow-xl transition-all hover:-translate-y-0.5 uppercase tracking-widest">
                       {t('common.closeLogs') || 'Đóng Nhật Ký'}
@@ -1983,9 +2172,8 @@ export default function AdminDashboard() {
               <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setAnalysisModal(null)}>
                 <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
                   {/* Header */}
-                  <div className={`p-6 flex justify-between items-center ${
-                    analysisModal.threat !== 'none' ? 'bg-rose-500 text-white' : 'bg-slate-900 text-white'
-                  }`}>
+                  <div className={`p-6 flex justify-between items-center ${analysisModal.threat !== 'none' ? 'bg-rose-500 text-white' : 'bg-slate-900 text-white'
+                    }`}>
                     <div className="flex items-center gap-3">
                       <span className="material-icons text-3xl">
                         {THREAT_ICON_MAP[analysisModal.threat]?.icon || 'security'}
@@ -2008,13 +2196,12 @@ export default function AdminDashboard() {
                       <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700">
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('admin.analysis.severity')}</p>
                         <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full ${
-                            analysisModal.threat === 'none' ? 'bg-green-500' :
+                          <div className={`w-3 h-3 rounded-full ${analysisModal.threat === 'none' ? 'bg-green-500' :
                             ['sqli-attempt', 'xss-attempt'].includes(analysisModal.threat) ? 'bg-red-500 animate-pulse' : 'bg-orange-500'
-                          }`}></div>
+                            }`}></div>
                           <span className="text-lg font-black text-slate-900 dark:text-white uppercase transition-colors">
-                            {analysisModal.threat === 'none' ? t('admin.analysis.low') : 
-                             ['sqli-attempt', 'xss-attempt'].includes(analysisModal.threat) ? t('admin.analysis.critical') : t('admin.analysis.medium')}
+                            {analysisModal.threat === 'none' ? t('admin.analysis.low') :
+                              ['sqli-attempt', 'xss-attempt'].includes(analysisModal.threat) ? t('admin.analysis.critical') : t('admin.analysis.medium')}
                           </span>
                         </div>
                       </div>
@@ -2066,24 +2253,24 @@ export default function AdminDashboard() {
                       </h4>
                       <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                         {analysisModal.threat === 'sqli-attempt' ? 'Phát hiện các từ khóa SQL độc hại trong tham số yêu cầu. Đây là nỗ lực nhằm chiếm quyền truy cập hoặc trích xuất dữ liệu trái phép từ database.' :
-                         analysisModal.threat === 'xss-attempt' ? 'Phát hiện các đoạn mã script nghi vấn. Đối tượng đang cố gắng chèn mã độc vào giao diện người dùng để đánh cắp session hoặc thông tin cá nhân.' :
-                         analysisModal.threat === 'scan' ? 'IP này đang thực hiện quét các đường dẫn nhạy cảm. Đây có thể là công cụ tự động đang dò tìm lỗ hổng bảo mật.' :
-                         'Yêu cầu này có vẻ hợp lệ nhưng được ghi lại để phục vụ mục đích kiểm toán hệ thống định kỳ.'}
+                          analysisModal.threat === 'xss-attempt' ? 'Phát hiện các đoạn mã script nghi vấn. Đối tượng đang cố gắng chèn mã độc vào giao diện người dùng để đánh cắp session hoặc thông tin cá nhân.' :
+                            analysisModal.threat === 'scan' ? 'IP này đang thực hiện quét các đường dẫn nhạy cảm. Đây có thể là công cụ tự động đang dò tìm lỗ hổng bảo mật.' :
+                              'Yêu cầu này có vẻ hợp lệ nhưng được ghi lại để phục vụ mục đích kiểm toán hệ thống định kỳ.'}
                       </p>
                     </div>
 
                     {/* Mitigation Actions */}
                     <div className="flex gap-4 pt-2">
-                      <button 
-                         onClick={() => {
-                           alert(`Đã gửi yêu cầu chặn IP ${analysisModal.ip} tới Firewall.`);
-                           setAnalysisModal(null);
-                         }}
-                         className="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white text-sm font-black rounded-2xl transition-all hover:shadow-lg shadow-rose-500/20 uppercase tracking-widest"
+                      <button
+                        onClick={() => {
+                          alert(`Đã gửi yêu cầu chặn IP ${analysisModal.ip} tới Firewall.`);
+                          setAnalysisModal(null);
+                        }}
+                        className="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white text-sm font-black rounded-2xl transition-all hover:shadow-lg shadow-rose-500/20 uppercase tracking-widest"
                       >
                         Chặn IP này
                       </button>
-                      <button 
+                      <button
                         onClick={() => setAnalysisModal(null)}
                         className="flex-1 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors uppercase tracking-widest"
                       >

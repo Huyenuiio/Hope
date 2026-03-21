@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { jobsAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import ApplyModal from '../components/ApplyModal';
+import ReportJobModal from '../components/ReportJobModal';
+import { toast } from 'react-hot-toast';
 
 const NICHES = ['Talking Head', 'Vlog', 'Real Estate', 'Reels/Shorts', 'YouTube', 'Documentary', 'Ads/Commercial'];
 const WORK_TYPES = ['remote', 'hybrid', 'on-site'];
@@ -82,7 +84,9 @@ function JobCard({ job, isSelected, onSelect }) {
               <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-semibold whitespace-nowrap">✓ Đã ứng tuyển</span>
             )}
             {job.isSaved && (
-              <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-semibold whitespace-nowrap">🔖 Đã lưu</span>
+              <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold whitespace-nowrap flex items-center gap-0.5 shadow-sm">
+                <span className="material-icons text-[12px]">bookmark</span>Đã lưu
+              </span>
             )}
           </div>
           <p className="text-[10px] text-gray-400 mt-1">
@@ -97,8 +101,10 @@ function JobCard({ job, isSelected, onSelect }) {
 
 export default function JobSearchPage() {
   const { t } = useTranslation();
-  const { isAuthenticated, isFreelancer } = useAuth();
+  const { isAuthenticated, isFreelancer, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const urlJobId = searchParams.get('id');
 
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -117,29 +123,53 @@ export default function JobSearchPage() {
     sort: '-createdAt',
   });
   const [showSavedOnly, setShowSavedOnly] = useState(false);
+  const [showAppliedOnly, setShowAppliedOnly] = useState(false);
+  const [reportModalJob, setReportModalJob] = useState(null);
 
   const fetchJobs = useCallback(async () => {
     setLoading(true);
     try {
-      const params = { page, limit: 15, ...filters };
+      const params = {
+        page,
+        limit: 15,
+        ...filters,
+        appliedOnly: showAppliedOnly,
+        savedOnly: showSavedOnly
+      };
       // Remove empty filters
       Object.keys(params).forEach(k => !params[k] && delete params[k]);
       let { data } = await jobsAPI.getJobs(params);
 
-      // If showing saved only, filter the results locally (since savedJobs is populated on user)
-      // Alternatively you can do this from backend, but since we map `isSaved` boolean, we can just array.filter
-      let validJobs = data.jobs || [];
-      if (showSavedOnly) validJobs = validJobs.filter(j => j.isSaved);
+      setJobs(data.jobs || []);
+      setTotal(data.total || 0);
 
-      setJobs(validJobs);
-      setTotal(showSavedOnly ? validJobs.length : data.total || 0);
-      if (validJobs.length > 0 && !selectedJob) setSelectedJob(validJobs[0]);
+      // Priority: Select job by ID from URL if present
+      if (urlJobId) {
+        const found = data.jobs?.find(j => j._id === urlJobId);
+        if (found) {
+          setSelectedJob(found);
+        } else {
+          // If NOT in the current list, fetch it specifically
+          try {
+            const res = await jobsAPI.getJob(urlJobId);
+            if (res.data) {
+              setSelectedJob(res.data);
+              // Add to list so it appears in the sidebar too
+              setJobs(prev => [res.data, ...prev.filter(j => j._id !== urlJobId)]);
+            }
+          } catch (err) {
+            console.error('Specific job fetch error:', err);
+          }
+        }
+      } else if (data.jobs?.length > 0 && !selectedJob) {
+        setSelectedJob(data.jobs[0]);
+      }
     } catch (err) {
       console.error('Fetch jobs error:', err);
     } finally {
       setLoading(false);
     }
-  }, [page, filters, showSavedOnly]);
+  }, [page, filters, showSavedOnly, showAppliedOnly, urlJobId]);
 
   useEffect(() => { fetchJobs(); }, [fetchJobs]);
 
@@ -158,10 +188,36 @@ export default function JobSearchPage() {
     try {
       const res = await jobsAPI.toggleSavedJob(selectedJob._id);
       if (res.data.success) {
-        setSelectedJob(prev => ({ ...prev, isSaved: res.data.isSaved }));
-        fetchJobs(); // Update the list
+        const newIsSaved = res.data.isSaved;
+        setSelectedJob(prev => ({ ...prev, isSaved: newIsSaved }));
+
+        // Update the list immediately for UI feedback
+        setJobs(prev => {
+          if (showSavedOnly && !newIsSaved) {
+            return prev.filter(j => j._id !== selectedJob._id);
+          }
+          return prev.map(j => j._id === selectedJob._id ? { ...j, isSaved: newIsSaved } : j);
+        });
+
+        toast.success(newIsSaved ? 'Đã lưu công việc!' : 'Đã bỏ lưu công việc');
+        if (showSavedOnly && !newIsSaved) {
+          fetchJobs(); // Final sync
+        }
       }
     } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const activeJob = jobs.find(j => j._id === selectedJob?._id) || selectedJob;
+
+  const handleReportSubmit = async ({ reason, description }) => {
+    try {
+      await jobsAPI.reportJob(activeJob._id, { reason, description });
+      toast.success('Báo cáo của bạn đã được gửi!');
+      setReportModalJob(null);
+    } catch (err) {
+      toast.error('Gửi báo cáo thất bại. Vui lòng thử lại.');
       console.error(err);
     }
   };
@@ -171,58 +227,120 @@ export default function JobSearchPage() {
       <Navbar activeNav="jobs" search={filters.search} onSearchChange={e => handleFilterChange('search', e.target.value)} showSearch={true} />
 
       {/* Filters Bar */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2 flex-none">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-2">
-          <select
-            className="text-xs border border-gray-300 rounded-full px-3 py-1.5 text-gray-600 focus:ring-1 focus:ring-primary bg-white cursor-pointer"
-            value={filters.niche}
-            onChange={e => handleFilterChange('niche', e.target.value)}
-          >
-            <option value="">🎯 {t('jobSearch.filters.experienceLevel')}</option>
-            {NICHES.map(n => <option key={n} value={n}>{n}</option>)}
-          </select>
-          <select
-            className="text-xs border border-gray-300 rounded-full px-3 py-1.5 text-gray-600 focus:ring-1 focus:ring-primary bg-white cursor-pointer"
-            value={filters.workType}
-            onChange={e => handleFilterChange('workType', e.target.value)}
-          >
-            <option value="">🏢 {t('jobSearch.filters.jobType')}</option>
-            {WORK_TYPES.map(w => <option key={w} value={w}>{w}</option>)}
-          </select>
-          <select
-            className="text-xs border border-gray-300 rounded-full px-3 py-1.5 text-gray-600 focus:ring-1 focus:ring-primary bg-white cursor-pointer"
-            value={filters.budgetType}
-            onChange={e => handleFilterChange('budgetType', e.target.value)}
-          >
-            <option value="">💰 Loại ngân sách</option>
-            {BUDGET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
-          </select>
-          <select
-            className="text-xs border border-gray-300 rounded-full px-3 py-1.5 text-gray-600 focus:ring-1 focus:ring-primary bg-white cursor-pointer"
-            value={filters.sort}
-            onChange={e => handleFilterChange('sort', e.target.value)}
-          >
-            <option value="-createdAt">⏰ Mới nhất</option>
-            <option value="-applicantCount">🔥 Nhiều ứng viên</option>
-            <option value="-views">👁 Nhiều lượt xem</option>
-          </select>
+      <div className="bg-white border-b border-gray-200 px-4 py-2.5 flex-none shadow-sm sticky top-16 z-30">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-3">
+          {/* Niche Filter */}
+          <div className="relative group">
+            <select
+              className={`appearance-none text-xs border rounded-full pl-8 pr-8 py-1.5 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 ${filters.niche ? 'bg-primary/5 border-primary text-primary font-bold shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              value={filters.niche}
+              onChange={e => handleFilterChange('niche', e.target.value)}
+            >
+              <option value="">{t('jobSearch.filters.experienceLevel')}</option>
+              {NICHES.map(n => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <span className={`material-icons absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none ${filters.niche ? 'text-primary' : 'text-gray-400'}`}>
+              explore
+            </span>
+            <span className="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none group-hover:text-gray-600 transition-colors">
+              expand_more
+            </span>
+          </div>
 
+          {/* Work Type Filter */}
+          <div className="relative group">
+            <select
+              className={`appearance-none text-xs border rounded-full pl-8 pr-8 py-1.5 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 ${filters.workType ? 'bg-primary/5 border-primary text-primary font-bold shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              value={filters.workType}
+              onChange={e => handleFilterChange('workType', e.target.value)}
+            >
+              <option value="">{t('jobSearch.filters.jobType')}</option>
+              {WORK_TYPES.map(w => <option key={w} value={w}>{w}</option>)}
+            </select>
+            <span className={`material-icons absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none ${filters.workType ? 'text-primary' : 'text-gray-400'}`}>
+              location_on
+            </span>
+            <span className="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none group-hover:text-gray-600 transition-colors">
+              expand_more
+            </span>
+          </div>
+
+          {/* Budget Type Filter */}
+          <div className="relative group">
+            <select
+              className={`appearance-none text-xs border rounded-full pl-8 pr-8 py-1.5 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 ${filters.budgetType ? 'bg-primary/5 border-primary text-primary font-bold shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              value={filters.budgetType}
+              onChange={e => handleFilterChange('budgetType', e.target.value)}
+            >
+              <option value="">Loại ngân sách</option>
+              {BUDGET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+            <span className={`material-icons absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none ${filters.budgetType ? 'text-primary' : 'text-gray-400'}`}>
+              payments
+            </span>
+            <span className="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none group-hover:text-gray-600 transition-colors">
+              expand_more
+            </span>
+          </div>
+
+          <div className="w-[1px] h-6 bg-gray-200 mx-1 hidden sm:block" />
+
+          {/* Toggle Buttons */}
           <button
-            onClick={() => setShowSavedOnly(!showSavedOnly)}
-            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${showSavedOnly ? 'bg-blue-100 border-blue-200 text-blue-700 font-semibold' : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'}`}
+            onClick={() => { setShowSavedOnly(!showSavedOnly); setShowAppliedOnly(false); }}
+            className={`text-xs px-4 py-1.5 rounded-full border transition-all flex items-center gap-1.5 shadow-sm active:scale-95 ${showSavedOnly ? 'bg-blue-600 border-blue-600 text-white font-bold' : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-white'}`}
           >
-            🔖 Việc đã lưu
+            <span className={`material-icons text-[16px] ${showSavedOnly ? 'text-white' : 'text-blue-500'}`}>bookmark</span>
+            Việc đã lưu
           </button>
 
-          {(filters.niche || filters.workType || filters.budgetType || showSavedOnly) && (
-            <button
-              onClick={() => setFilters(prev => ({ ...prev, niche: '', workType: '', budgetType: '' }))}
-              className="text-xs text-red-500 hover:underline"
+          <button
+            onClick={() => { setShowAppliedOnly(!showAppliedOnly); setShowSavedOnly(false); }}
+            className={`text-xs px-4 py-1.5 rounded-full border transition-all flex items-center gap-1.5 shadow-sm active:scale-95 ${showAppliedOnly ? 'bg-green-600 border-green-600 text-white font-bold' : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-white'}`}
+          >
+            <span className={`material-icons text-[16px] ${showAppliedOnly ? 'text-white' : 'text-green-500'}`}>assignment_turned_in</span>
+            Đã ứng tuyển
+          </button>
+
+          {/* Sort Filter - Right side if space allows */}
+          <div className="relative group ml-auto flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-wider text-gray-400 font-bold hidden lg:block">Sắp xếp:</span>
+            <select
+              className="appearance-none text-xs border border-gray-200 bg-gray-50 rounded-full pl-8 pr-8 py-1.5 text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer hover:border-gray-300 transition-all font-medium"
+              value={filters.sort}
+              onChange={e => handleFilterChange('sort', e.target.value)}
             >
-              ✕ Xóa filter
-            </button>
-          )}
-          <span className="text-xs text-gray-400 ml-auto">{total} công việc</span>
+              <option value="-createdAt">⏰ Mới nhất</option>
+              <option value="-applicantCount">🔥 Nhiều ứng viên</option>
+              <option value="-views">👁 Nhiều lượt xem</option>
+            </select>
+            <span className="material-icons absolute left-2.5 lg:left-[60px] top-1/2 -translate-y-1/2 text-[16px] text-gray-400 pointer-events-none">
+              sort
+            </span>
+            <span className="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none group-hover:text-gray-600">
+              expand_more
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            {(filters.niche || filters.workType || filters.budgetType || showSavedOnly || showAppliedOnly || filters.search) && (
+              <button
+                onClick={() => {
+                  setFilters(prev => ({ ...prev, niche: '', workType: '', budgetType: '', search: '', sort: '-createdAt' }));
+                  setShowSavedOnly(false);
+                  setShowAppliedOnly(false);
+                  setPage(1);
+                }}
+                className="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 transition-colors font-medium border-b border-transparent hover:border-red-200"
+              >
+                <span className="material-icons text-sm">filter_alt_off</span>
+                Xóa tất cả bộ lọc
+              </button>
+            )}
+            <span className="text-[11px] font-bold text-gray-400 ml-auto whitespace-nowrap bg-gray-100 px-2 py-1 rounded">
+              {total} <span className="font-medium">công việc</span>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -261,38 +379,38 @@ export default function JobSearchPage() {
 
           {/* Right: Job Detail */}
           <div className="hidden md:flex flex-1 flex-col overflow-y-auto h-full bg-white">
-            {selectedJob ? (
+            {activeJob ? (
               <div className="p-6 max-w-2xl">
                 {/* Header */}
                 <div className="flex items-start gap-4 mb-6">
                   <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center border border-gray-200 overflow-hidden flex-shrink-0">
-                    {selectedJob.client?.avatar
-                      ? <img alt={selectedJob.client?.name} src={selectedJob.client.avatar} className="w-full h-full object-cover" />
+                    {activeJob.client?.avatar
+                      ? <img alt={activeJob.client?.name} src={activeJob.client.avatar} className="w-full h-full object-cover" />
                       : <span className="material-icons text-primary text-2xl">business</span>
                     }
                   </div>
                   <div className="flex-1">
-                    <h1 className="text-xl font-bold text-gray-900">{selectedJob.title}</h1>
-                    <p className="text-gray-600 mt-0.5">{selectedJob.client?.name || selectedJob.client?.company || 'Khách hàng'}</p>
+                    <h1 className="text-xl font-bold text-gray-900">{activeJob.title}</h1>
+                    <p className="text-gray-600 mt-0.5">{activeJob.client?.name || activeJob.client?.company || 'Khách hàng'}</p>
                     <div className="flex flex-wrap gap-2 mt-2 text-xs text-gray-500">
-                      {selectedJob.workType && <span className="flex items-center gap-1"><span className="material-icons text-xs">place</span>{selectedJob.workType}</span>}
-                      {selectedJob.budget?.min && (
+                      {activeJob.workType && <span className="flex items-center gap-1"><span className="material-icons text-xs">place</span>{activeJob.workType}</span>}
+                      {activeJob.budget?.min && (
                         <span className="flex items-center gap-1">
                           <span className="material-icons text-xs">payments</span>
-                          {selectedJob.budget.min.toLocaleString()}
-                          {selectedJob.budget.max ? `–${selectedJob.budget.max.toLocaleString()}` : '+'}
-                          {' '}{selectedJob.budget.currency || 'VND'}/{selectedJob.budget.type || 'dự án'}
+                          {activeJob.budget.min.toLocaleString()}
+                          {activeJob.budget.max ? `–${activeJob.budget.max.toLocaleString()}` : '+'}
+                          {' '}{activeJob.budget.currency || 'VND'}/{activeJob.budget.type || 'dự án'}
                         </span>
                       )}
-                      <span className="flex items-center gap-1"><span className="material-icons text-xs">group</span>{selectedJob.applicantCount || 0} ứng viên</span>
-                      <span className="flex items-center gap-1"><span className="material-icons text-xs">schedule</span>{new Date(selectedJob.createdAt).toLocaleDateString('vi-VN')}</span>
+                      <span className="flex items-center gap-1"><span className="material-icons text-xs">group</span>{activeJob.applicantCount || 0} ứng viên</span>
+                      <span className="flex items-center gap-1"><span className="material-icons text-xs">schedule</span>{new Date(activeJob.createdAt).toLocaleDateString('vi-VN')}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Action buttons */}
                 <div className="flex gap-3 mb-6">
-                  {selectedJob.hasApplied ? (
+                  {activeJob.hasApplied ? (
                     <button disabled className="flex-1 bg-green-100 text-green-700 font-semibold py-2.5 rounded-full text-sm flex items-center justify-center gap-2">
                       <span className="material-icons text-sm">check_circle</span>Đã ứng tuyển
                     </button>
@@ -311,21 +429,32 @@ export default function JobSearchPage() {
                       Đăng nhập để ứng tuyển
                     </button>
                   ) : null}
-                  <button onClick={handleToggleSave} className={`px-4 py-2.5 border border-gray-300 rounded-full text-sm font-medium transition-colors flex items-center gap-1 ${selectedJob.isSaved ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-700 hover:bg-gray-50'}`}>
-                    <span className="material-icons text-sm">{selectedJob.isSaved ? 'bookmark' : 'bookmark_border'}</span>
-                    {selectedJob.isSaved ? 'Đã lưu' : 'Lưu'}
+                  <button
+                    onClick={handleToggleSave}
+                    className={`px-4 py-2.5 border rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-1 shrink-0 shadow-sm ${activeJob.isSaved
+                      ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                      : 'text-gray-700 hover:bg-gray-50 bg-white border-gray-300'
+                      }`}
+                  >
+                    <span className="material-icons text-sm">{activeJob.isSaved ? 'bookmark' : 'bookmark_border'}</span>
+                    {activeJob.isSaved ? 'Đã lưu' : 'Lưu'}
                   </button>
+                  {isAuthenticated && activeJob.client?._id?.toString() !== user?._id?.toString() && (
+                    <button onClick={() => setReportModalJob(activeJob)} className="px-3 py-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all flex items-center justify-center group" title="Báo cáo vi phạm">
+                      <span className="material-icons group-hover:scale-110 transition-transform">flag</span>
+                    </button>
+                  )}
                 </div>
 
                 {/* Niche & Type Tags */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {selectedJob.type && (
+                  {activeJob.type && (
                     <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full flex items-center gap-1 uppercase tracking-wider">
-                      <span className="material-icons text-sm">{getTypeIcon(selectedJob.type)}</span>
-                      {selectedJob.type}
+                      <span className="material-icons text-sm">{getTypeIcon(activeJob.type)}</span>
+                      {activeJob.type}
                     </span>
                   )}
-                  {selectedJob.niche?.map(n => (
+                  {activeJob.niche?.map(n => (
                     <span key={n} className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-full flex items-center gap-1 uppercase tracking-wider">
                       <span className="material-icons text-sm">{getNicheIcon(n)}</span>
                       {n}
@@ -336,15 +465,15 @@ export default function JobSearchPage() {
                 {/* Description */}
                 <div className="prose prose-sm max-w-none text-gray-700">
                   <h2 className="text-base font-semibold text-gray-900 mb-2">Mô tả công việc</h2>
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{selectedJob.description}</p>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{activeJob.description}</p>
                 </div>
 
                 {/* Skills */}
-                {selectedJob.requiredSkills?.length > 0 && (
+                {activeJob.requiredSkills?.length > 0 && (
                   <div className="mt-6">
                     <h2 className="text-base font-semibold text-gray-900 mb-3">Kỹ năng yêu cầu</h2>
                     <div className="flex flex-wrap gap-2">
-                      {selectedJob.requiredSkills.map(s => (
+                      {activeJob.requiredSkills.map(s => (
                         <span key={s} className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200">{s}</span>
                       ))}
                     </div>
@@ -352,7 +481,7 @@ export default function JobSearchPage() {
                 )}
 
                 {/* Client info */}
-                {selectedJob.client && (
+                {activeJob.client && (
                   <div className="mt-6 p-5 bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-2xl border border-gray-200">
                     <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                       <span className="material-icons text-primary text-base">verified_user</span>
@@ -360,38 +489,38 @@ export default function JobSearchPage() {
                     </h2>
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
-                        {selectedJob.client.avatar
-                          ? <img alt={selectedJob.client.name} src={selectedJob.client.avatar} className="w-full h-full object-cover" />
+                        {activeJob.client.avatar
+                          ? <img alt={activeJob.client.name} src={activeJob.client.avatar} className="w-full h-full object-cover" />
                           : <span className="material-icons text-primary text-2xl">person</span>
                         }
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-base font-bold text-gray-900 truncate">{selectedJob.client.name || selectedJob.client.company}</p>
+                        <p className="text-base font-bold text-gray-900 truncate">{activeJob.client.name || activeJob.client.company}</p>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                          {selectedJob.client.rating > 0 && (
+                          {activeJob.client.rating > 0 && (
                             <span className="text-xs font-semibold text-amber-600 flex items-center gap-0.5 bg-amber-50 px-2 py-0.5 rounded">
-                              ⭐ {selectedJob.client.rating.toFixed(1)}
+                              ⭐ {activeJob.client.rating.toFixed(1)}
                             </span>
                           )}
                           <span className="text-xs text-gray-500 font-medium flex items-center gap-1">
                             <span className="material-icons text-[14px]">work_history</span>
-                            {selectedJob.client.postedJobsCount || 0} tin tuyển dụng
+                            {activeJob.client.postedJobsCount || 0} tin tuyển dụng
                           </span>
-                          {selectedJob.client.location && (
+                          {activeJob.client.location && (
                             <span className="text-xs text-gray-500 font-medium flex items-center gap-1">
                               <span className="material-icons text-[14px]">location_on</span>
-                              {selectedJob.client.location}
+                              {activeJob.client.location}
                             </span>
                           )}
-                          {selectedJob.client.industry && (
+                          {activeJob.client.industry && (
                             <span className="text-xs text-gray-500 font-medium flex items-center gap-1">
                               <span className="material-icons text-[14px]">business</span>
-                              {selectedJob.client.industry}
+                              {activeJob.client.industry}
                             </span>
                           )}
                         </div>
-                        {selectedJob.client.companySize && (
-                          <p className="text-xs text-gray-400 mt-2 italic">Quy mô: {selectedJob.client.companySize} nhân viên</p>
+                        {activeJob.client.companySize && (
+                          <p className="text-xs text-gray-400 mt-2 italic">Quy mô: {activeJob.client.companySize} nhân viên</p>
                         )}
                       </div>
                     </div>
@@ -411,6 +540,9 @@ export default function JobSearchPage() {
       {/* Apply Modal */}
       {applyModal && selectedJob && (
         <ApplyModal job={selectedJob} onClose={() => setApplyModal(false)} onSuccess={handleApplySuccess} />
+      )}
+      {reportModalJob && (
+        <ReportJobModal job={reportModalJob} onClose={() => setReportModalJob(null)} onSubmit={handleReportSubmit} />
       )}
     </div>
   );

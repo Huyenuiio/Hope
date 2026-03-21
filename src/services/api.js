@@ -79,6 +79,7 @@ export const jobsAPI = {
   shareJob: (id) => api.post(`/jobs/${id}/share`),
   sendJob: (id) => api.post(`/jobs/${id}/send`),
   toggleSavedJob: (id) => api.post(`/users/saved-jobs/${id}`),
+  reportJob: (id, data) => api.post(`/jobs/${id}/report`, data),
   getHistory: () => api.get('/users/me/history'),
   getMarketInsights: () => api.get('/jobs/insights/market'),
 };
@@ -140,6 +141,7 @@ export const adminAPI = {
   getMatches: (jobId) => api.get(`/admin/matching/${jobId}`),
   getReports: () => api.get('/admin/reports'),
   updateReport: (id, data) => api.patch(`/admin/reports/${id}`, data),
+  resolveReport: (id, data) => api.post(`/admin/reports/${id}/resolve`, data),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
   getHealth: () => api.get('/health'),
 };

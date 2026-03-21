@@ -6,13 +6,15 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
 import { usersAPI } from '../services/api';
 
-export default function Navbar({ activeNav = 'home', search, onSearchChange, showSearch = false, extraActions }) {
+export default function Navbar({ activeNav = 'home', search, onSearchChange, showSearch = false, extraActions, searchResults, isSearching }) {
   const { t } = useTranslation();
   const { user, logout, setUser } = useAuth();
   const { notifications, unreadCount, markAllRead, setNotifications } = useNotifications();
 
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
   const notifRef = useRef(null);
+  const searchRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,10 +22,21 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
       if (notifRef.current && !notifRef.current.contains(event.target)) {
         setShowNotifications(false);
       }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchResults(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (search && search.length > 0) {
+      setShowSearchResults(true);
+    } else {
+      setShowSearchResults(false);
+    }
+  }, [search]);
 
   const handleRespondConnection = async (notif, action) => {
     try {
@@ -61,15 +74,23 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
         { id: 'notifications', icon: 'notifications', label: t('nav.notifications'), path: '#' },
       ];
 
+  const homePath = isAdmin
+    ? '/admin/dashboard'
+    : isClient
+      ? '/employer'
+      : user
+        ? '/dashboard'
+        : '/';
+
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-300 h-16 px-4 flex-none shadow-sm">
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
         <div className="flex items-center space-x-4 flex-1">
-          <Link to="/" className="flex-shrink-0 text-primary text-3xl font-bold flex items-center">
+          <Link to={homePath} className="flex-shrink-0 text-primary text-3xl font-bold flex items-center">
             Ho<span className="bg-primary text-white rounded px-1 pb-1 mr-1 text-2xl">pe</span>
           </Link>
           {showSearch && (
-            <div className="relative w-full max-w-xs hidden md:block">
+            <div className="relative w-full max-w-xs hidden md:block" ref={searchRef}>
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                 <span className="material-icons text-gray-500">search</span>
               </span>
@@ -79,7 +100,76 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
                 type="text"
                 value={search}
                 onChange={onSearchChange}
+                onFocus={() => search && setShowSearchResults(true)}
               />
+
+              {/* Search Results Popup */}
+              {showSearchResults && (searchResults?.jobs?.length > 0 || searchResults?.users?.length > 0 || isSearching || (search && search.trim().length > 0)) && (
+                <div className="absolute top-full left-0 mt-2 w-full bg-white shadow-2xl rounded-xl border border-gray-200 overflow-hidden z-[60] py-2 max-h-[400px] overflow-y-auto">
+                  {isSearching ? (
+                    <div className="p-4 text-center text-sm text-gray-500 flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                      Đang tìm kiếm...
+                    </div>
+                  ) : (
+                    <>
+                      {searchResults?.users?.length > 0 && (
+                        <div className="mb-2">
+                          <h4 className="px-4 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Thành viên</h4>
+                          {searchResults.users.map(u => (
+                            <Link
+                              key={u._id}
+                              to={`/profile/${u._id}`}
+                              onClick={() => setShowSearchResults(false)}
+                              className="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 transition-colors"
+                            >
+                              {u.avatar ? (
+                                <img src={u.avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                                  <span className="material-icons text-sm">person</span>
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold text-gray-900 truncate">{u?.name || 'Thành viên'}</p>
+                                <p className="text-[10px] text-gray-500 truncate">{u?.headline || u?.role}</p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+
+                      {searchResults?.jobs?.length > 0 && (
+                        <div>
+                          <h4 className="px-4 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-t border-gray-50 pt-3 mt-1">Công việc</h4>
+                          {searchResults.jobs.map(j => (
+                            <Link
+                              key={j._id}
+                              to={`/jobs?id=${j._id}`}
+                              onClick={() => setShowSearchResults(false)}
+                              className="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 transition-colors"
+                            >
+                              <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+                                <span className="material-icons text-sm">work</span>
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold text-gray-900 truncate">{j?.title || 'Công việc'}</p>
+                                <p className="text-[10px] text-gray-500 truncate">{j?.client?.name || 'Nhà tuyển dụng'}</p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+
+                      {!isSearching && (!searchResults?.users?.length && !searchResults?.jobs?.length) && (
+                        <div className="p-4 text-center">
+                          <p className="text-sm text-gray-500 italic">Không tìm thấy kết quả nào cho "{search}"</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
