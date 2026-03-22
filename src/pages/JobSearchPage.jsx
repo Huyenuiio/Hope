@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { jobsAPI } from '../services/api';
+import { jobsAPI, usersAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import ApplyModal from '../components/ApplyModal';
@@ -103,7 +103,7 @@ export default function JobSearchPage() {
   const { t } = useTranslation();
   const { isAuthenticated, isFreelancer, user } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const urlJobId = searchParams.get('id');
 
   const [jobs, setJobs] = useState([]);
@@ -124,6 +124,56 @@ export default function JobSearchPage() {
   });
   const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [showAppliedOnly, setShowAppliedOnly] = useState(false);
+  const [localSearch, setLocalSearch] = useState(searchParams.get('search') || '');
+  const [searchResults, setSearchResults] = useState({ jobs: [], users: [] });
+  const [isSearching, setIsSearching] = useState(false);
+
+  const fetchSearchResults = useCallback(async (q) => {
+    if (!q) {
+      setSearchResults({ jobs: [], users: [] });
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const [jobsRes, usersRes] = await Promise.all([
+        jobsAPI.getJobs({ search: q, limit: 5 }),
+        usersAPI.getFreelancers({ search: q, limit: 5 })
+      ]);
+      setSearchResults({
+        jobs: jobsRes.data.jobs || [],
+        users: usersRes.data.users || []
+      });
+    } catch (err) {
+      console.error('Search error:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  // Sync LOCAL input with URL (e.g. on page load)
+  useEffect(() => {
+    setLocalSearch(searchParams.get('search') || '');
+  }, [searchParams]);
+
+  // Debounce: Global Search results & URL Sync
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchSearchResults(localSearch);
+
+      // Update URL search param for consistency with Dashboard (Use a new instance to avoid mutation issues)
+      const newParams = new URLSearchParams(searchParams);
+      if (localSearch) newParams.set('search', localSearch);
+      else newParams.delete('search');
+
+      // ONLY update if it actually changed to prevent infinite loops
+      if (newParams.toString() !== searchParams.toString()) {
+        setSearchParams(newParams, { replace: true });
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [localSearch, fetchSearchResults, setSearchParams, searchParams]);
+
   const [reportModalJob, setReportModalJob] = useState(null);
 
   const fetchJobs = useCallback(async () => {
@@ -224,7 +274,22 @@ export default function JobSearchPage() {
 
   return (
     <div className="bg-gray-100 font-sans h-screen flex flex-col overflow-hidden">
-      <Navbar activeNav="jobs" search={filters.search} onSearchChange={e => handleFilterChange('search', e.target.value)} showSearch={true} />
+      <Navbar
+        activeNav="jobs"
+        search={localSearch}
+        onSearchChange={e => {
+          setLocalSearch(e.target.value);
+          if (e.target.value.trim().length > 0) {
+            setIsSearching(true);
+          } else {
+            setSearchResults({ jobs: [], users: [] });
+            setIsSearching(false);
+          }
+        }}
+        showSearch={true}
+        searchResults={searchResults}
+        isSearching={isSearching}
+      />
 
       {/* Filters Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2.5 flex-none shadow-sm sticky top-16 z-30">
@@ -347,34 +412,60 @@ export default function JobSearchPage() {
       {/* Main 2-col */}
       <div className="flex-1 overflow-hidden">
         <div className="max-w-7xl mx-auto h-full flex gap-0">
-          {/* Left: Job List */}
-          <div className="w-full md:w-[380px] flex-shrink-0 border-r border-gray-200 bg-white overflow-y-auto h-full">
-            {loading ? (
-              <div className="flex flex-col gap-4 p-4">
-                {[1, 2, 3, 4, 5].map(i => (
-                  <div key={i} className="animate-pulse flex gap-3">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-3 bg-gray-200 rounded w-3/4" />
-                      <div className="h-2 bg-gray-200 rounded w-1/2" />
-                      <div className="h-2 bg-gray-200 rounded w-1/3" />
+          {/* Left: Job List Sidebar with Local Search */}
+          <div className="w-full md:w-[380px] flex-shrink-0 border-r border-gray-200 bg-white flex flex-col h-full">
+            {/* Local Sidebar Search */}
+            <div className="p-3 border-b border-gray-100 bg-gray-50/50">
+              <div className="relative group">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                  <span className="material-icons text-gray-400 text-[18px] group-focus-within:text-primary transition-colors">search</span>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm nhanh công việc..."
+                  className="w-full bg-white border border-gray-200 rounded-xl py-2 pl-10 pr-4 text-xs placeholder-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm"
+                  value={filters.search}
+                  onChange={e => handleFilterChange('search', e.target.value)}
+                />
+                {filters.search && (
+                  <button
+                    onClick={() => handleFilterChange('search', '')}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                  >
+                    <span className="material-icons text-sm">cancel</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              {loading ? (
+                <div className="flex flex-col gap-4 p-4">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="animate-pulse flex gap-3">
+                      <div className="w-10 h-10 bg-gray-200 rounded-full" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-3 bg-gray-200 rounded w-3/4" />
+                        <div className="h-2 bg-gray-200 rounded w-1/2" />
+                        <div className="h-2 bg-gray-200 rounded w-1/3" />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : jobs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                <span className="material-icons text-4xl text-gray-300 mb-3">work_off</span>
-                <p className="text-gray-500 font-medium">Không tìm thấy công việc phù hợp</p>
-                <p className="text-xs text-gray-400 mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
-              </div>
-            ) : (
-              <ul>
-                {jobs.map(job => (
-                  <JobCard key={job._id} job={job} isSelected={selectedJob?._id === job._id} onSelect={setSelectedJob} />
-                ))}
-              </ul>
-            )}
+                  ))}
+                </div>
+              ) : jobs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                  <span className="material-icons text-4xl text-gray-300 mb-3">work_off</span>
+                  <p className="text-gray-500 font-medium">Không tìm thấy công việc phù hợp</p>
+                  <p className="text-xs text-gray-400 mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                </div>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {jobs.map(job => (
+                    <JobCard key={job._id} job={job} isSelected={selectedJob?._id === job._id} onSelect={setSelectedJob} />
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           {/* Right: Job Detail */}

@@ -20,8 +20,8 @@ function timeAgo(dateStr) {
 export default function MessagesPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { socket, onlineUsers, emit } = useSocket();
-  const [searchParams] = useSearchParams();
+  const { socket, onlineUsers, emit, setCallData } = useSocket();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [conversations, setConversations] = useState([]);
   const [activeConv, setActiveConv] = useState(null);
@@ -42,6 +42,36 @@ export default function MessagesPage() {
   const myTypingTimeoutRef = useRef(null);
   const otherTypingTimeoutRef = useRef(null);
 
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+
+  // Sync LOCAL input with URL (e.g. on page load)
+  useEffect(() => {
+    setSearchTerm(searchParams.get('search') || '');
+  }, [searchParams]);
+
+  // Debounce: URL Sync
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      const newParams = new URLSearchParams(searchParams);
+      if (searchTerm) newParams.set('search', searchTerm);
+      else newParams.delete('search');
+
+      if (newParams.toString() !== searchParams.toString()) {
+        setSearchParams(newParams, { replace: true });
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm, setSearchParams, searchParams]);
+
+  const filteredConversations = conversations.filter(conv => {
+    if (!searchTerm.trim()) return true;
+    const q = searchTerm.toLowerCase();
+    const otherName = conv.otherUser?.name?.toLowerCase() || '';
+    const lastContent = conv.lastMessage?.content?.toLowerCase() || '';
+    return otherName.includes(q) || lastContent.includes(q);
+  });
+
   // Auto-scroll to bottom
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,13 +87,13 @@ export default function MessagesPage() {
       const convs = (data.conversations || []).map(conv => {
         const lm = conv.lastMessage;
         if (!lm) return { ...conv, otherUser: null };
-        
+
         // After Mongoose populate, sender & receiver are objects with ._id
         // Must use .toString() for comparison, not ===
         const senderId = lm.sender?._id?.toString() || lm.sender?.toString();
         const currentUserId = user?._id?.toString();
         const otherUser = senderId === currentUserId ? lm.receiver : lm.sender;
-        
+
         return { ...conv, otherUser };
       }).filter(c => c.otherUser); // ignore convs where otherUser can't be determined
 
@@ -95,7 +125,7 @@ export default function MessagesPage() {
             if (convs.length > 0) setActiveConv(convs[0]);
           }
         }
-      } 
+      }
       // No auto-select when landing from Navbar - let user choose from the inbox list
 
     } catch (err) {
@@ -297,7 +327,20 @@ export default function MessagesPage() {
               <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                 <span className="material-icons text-gray-400 text-lg">search</span>
               </span>
-              <input className="w-full bg-gray-100 rounded-full py-2 pl-10 pr-4 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder="Tìm cuộc trò chuyện..." />
+              <input
+                className="w-full bg-gray-100 rounded-full py-2 pl-10 pr-4 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                placeholder="Tìm cuộc trò chuyện..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  <span className="material-icons text-sm">cancel</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -314,14 +357,13 @@ export default function MessagesPage() {
                   </div>
                 ))}
               </div>
-            ) : conversations.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-                <span className="material-icons text-4xl text-gray-300 mb-3">chat_bubble_outline</span>
-                <p className="text-sm text-gray-500 font-medium">Chưa có tin nhắn</p>
-                <p className="text-xs text-gray-400 mt-1">Kết nối với freelancer hoặc client để bắt đầu</p>
+            ) : filteredConversations.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full p-6 text-center text-gray-400">
+                <span className="material-icons text-4xl mb-2">search_off</span>
+                <p className="text-sm">Không tìm thấy hội thoại phù hợp</p>
               </div>
             ) : (
-              conversations.map(conv => {
+              filteredConversations.map(conv => {
                 const other = conv.otherUser;
                 const last = conv.lastMessage;
                 const online = other && onlineUsers?.includes(other._id);
@@ -375,7 +417,10 @@ export default function MessagesPage() {
                 </p>
               </div>
               <div className="ml-auto flex gap-2">
-                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition">
+                <button
+                  onClick={() => setCallData({ show: true, mode: 'outbound', target: otherUser, signal: null })}
+                  className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition"
+                >
                   <span className="material-icons text-lg">video_call</span>
                 </button>
                 <button className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition">
@@ -392,8 +437,8 @@ export default function MessagesPage() {
                   {isBlockedByMe ? "Bạn đã chặn người dùng này" : "Nội dung không khả dụng"}
                 </h3>
                 <p className="text-sm text-gray-500 mb-6 max-w-sm">
-                  {isBlockedByMe 
-                    ? "Bạn không thể gửi hoặc nhận tin nhắn với người này. Vui lòng bỏ chặn trong Cài đặt để tiếp tục trò chuyện." 
+                  {isBlockedByMe
+                    ? "Bạn không thể gửi hoặc nhận tin nhắn với người này. Vui lòng bỏ chặn trong Cài đặt để tiếp tục trò chuyện."
                     : "Người dùng không có sẵn hoặc đã chặn tương tác."}
                 </p>
                 {isBlockedByMe && (
@@ -439,8 +484,8 @@ export default function MessagesPage() {
                           )}
                           <div className={`max-w-[70%] ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
                             <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${isMe
-                                ? 'bg-primary text-white rounded-br-md'
-                                : 'bg-white text-gray-900 border border-gray-200 rounded-bl-md shadow-sm'
+                              ? 'bg-primary text-white rounded-br-md'
+                              : 'bg-white text-gray-900 border border-gray-200 rounded-bl-md shadow-sm'
                               } ${msg._temp ? 'opacity-70' : ''}`}>
                               {msg.type === 'image' ? (
                                 <img src={msg.content} alt="Đính kèm" className="max-w-[200px] sm:max-w-[300px] rounded object-cover mt-1 mb-1 border border-white/20" />

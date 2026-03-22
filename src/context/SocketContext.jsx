@@ -11,6 +11,12 @@ export function SocketProvider({ children }) {
   const socketRef = useRef(null);
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [callData, setCallData] = useState({
+    show: false,
+    mode: 'outbound',
+    target: null,
+    signal: null
+  });
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -57,6 +63,22 @@ export function SocketProvider({ children }) {
       setOnlineUsers((prev) => prev.filter((id) => id !== userId));
     });
 
+    socket.on('call:incoming', (data) => {
+      setCallData(prev => {
+        if (prev.show) return prev;
+        return {
+          show: true,
+          mode: 'inbound',
+          target: { _id: data.callerId, name: data.callerName, avatar: data.callerAvatar },
+          signal: data.signal
+        };
+      });
+    });
+
+    socket.on('call:ended', () => {
+      setCallData({ show: false, mode: 'outbound', target: null, signal: null });
+    });
+
     return () => {
       socket.disconnect();
       socketRef.current = null;
@@ -69,6 +91,8 @@ export function SocketProvider({ children }) {
     isConnected,
     onlineUsers,
     isUserOnline: (userId) => onlineUsers.includes(userId),
+    callData,
+    setCallData,
     emit: (event, data) => socketRef.current?.emit(event, data),
     on: (event, handler) => socketRef.current?.on(event, handler),
     off: (event, handler) => socketRef.current?.off(event, handler),

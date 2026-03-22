@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
+import GlobalCallHandler from './components/GlobalCallHandler';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -75,70 +77,25 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public routes */}
+        {/* ... existing routes ... */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/jobs" element={<JobSearchPage />} />
-
-        {/* OAuth callback */}
         <Route path="/auth/callback" element={<AuthCallback />} />
-
-        {/* Protected routes — require login */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute requiredRole="freelancer">
-            <JobSeekerDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/employer" element={
-          <ProtectedRoute requiredRole="client">
-            <EmployerDashboard />
-          </ProtectedRoute>
-        } />
-
-        {/* Phase 4+5 — New Pages */}
-        <Route path="/profile/edit" element={
-          <ProtectedRoute requiredRole={['freelancer', 'client']}>
-            <ProfileEditPage />
-          </ProtectedRoute>
-        } />
+        <Route path="/dashboard" element={<ProtectedRoute requiredRole="freelancer"><JobSeekerDashboard /></ProtectedRoute>} />
+        <Route path="/employer" element={<ProtectedRoute requiredRole="client"><EmployerDashboard /></ProtectedRoute>} />
+        <Route path="/profile/edit" element={<ProtectedRoute requiredRole={['freelancer', 'client']}><ProfileEditPage /></ProtectedRoute>} />
         <Route path="/profile/:id" element={<ProfileViewPage />} />
-        <Route path="/messages" element={
-          <ProtectedRoute requiredRole={['freelancer', 'client']}>
-            <MessagesPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/portfolio" element={
-          <ProtectedRoute requiredRole="freelancer">
-            <PortfolioPage />
-          </ProtectedRoute>
-        } />
+        <Route path="/messages" element={<ProtectedRoute requiredRole={['freelancer', 'client']}><MessagesPage /></ProtectedRoute>} />
+        <Route path="/portfolio" element={<ProtectedRoute requiredRole="freelancer"><PortfolioPage /></ProtectedRoute>} />
         <Route path="/portfolio/:userId" element={<PortfolioPage />} />
-        <Route path="/notifications" element={
-          <ProtectedRoute requiredRole={['freelancer', 'client']}>
-            <NotificationsPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/meetings" element={
-          <ProtectedRoute requiredRole={['freelancer', 'client']}>
-            <MeetingsPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/settings" element={
-          <ProtectedRoute requiredRole={['freelancer', 'client']}>
-            <SettingsPage />
-          </ProtectedRoute>
-        } />
-
-        {/* Admin routes */}
+        <Route path="/notifications" element={<ProtectedRoute requiredRole={['freelancer', 'client']}><NotificationsPage /></ProtectedRoute>} />
+        <Route path="/meetings" element={<ProtectedRoute requiredRole={['freelancer', 'client']}><MeetingsPage /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute requiredRole={['freelancer', 'client']}><SettingsPage /></ProtectedRoute>} />
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={
-          <AdminRoute>
-            <AdminDashboard />
-          </AdminRoute>
-        } />
-
-        {/* Fallback */}
+        <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <GlobalCallHandler />
     </BrowserRouter>
   );
 }
