@@ -138,12 +138,24 @@ export default function VideoCall({
         }
     }, [callStatus]);
 
+    // Bind streams to video elements safely after they render
+    useEffect(() => {
+        if (localVideoRef.current && localStream) {
+            localVideoRef.current.srcObject = localStream;
+        }
+    }, [localStream]);
+
+    useEffect(() => {
+        if (remoteVideoRef.current && remoteStream) {
+            remoteVideoRef.current.srcObject = remoteStream;
+        }
+    }, [remoteStream]);
+
     // 1. Initialize Local Stream
     const initLocalStream = useCallback(async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             setLocalStream(stream);
-            if (localVideoRef.current) localVideoRef.current.srcObject = stream;
             return stream;
         } catch (err) {
             console.error('Lỗi truy cập camera/mic:', err);
@@ -165,7 +177,6 @@ export default function VideoCall({
         // Handle remote tracks
         pc.ontrack = (event) => {
             setRemoteStream(event.streams[0]);
-            if (remoteVideoRef.current) remoteVideoRef.current.srcObject = event.streams[0];
         };
 
         // Handle ICE candidates
@@ -176,7 +187,6 @@ export default function VideoCall({
         };
 
         pc.onconnectionstatechange = () => {
-            console.log('Connection State:', pc.connectionState);
             if (pc.connectionState === 'connected') setCallStatus('active');
             if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
                 // Don't auto-close if it's just a failure, let user see status
@@ -189,7 +199,6 @@ export default function VideoCall({
 
     // Handle Outbound Call
     const startCall = useCallback(async () => {
-        console.log('Starting outbound call to:', otherUser._id);
         const stream = await initLocalStream();
 
         // Even without stream, we can initiate signaling (though video won't work)
@@ -225,6 +234,15 @@ export default function VideoCall({
         if (incomingSignal) {
             if (incomingSignal.type === 'offer') {
                 await pc.setRemoteDescription(new RTCSessionDescription(incomingSignal));
+
+                // Drain ICE queue from early caller candidates
+                while (signalingQueueRef.current.length > 0) {
+                    const candidate = signalingQueueRef.current.shift();
+                    try {
+                        await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                    } catch (e) { console.error('Error adding queued ICE candidate', e); }
+                }
+
                 const answer = await pc.createAnswer();
                 await pc.setLocalDescription(answer);
                 emit('webrtc:signal', { targetId: otherUser._id, signal: answer });
@@ -252,18 +270,32 @@ export default function VideoCall({
 
         const onSignal = async ({ signal }) => {
             const pc = peerConnectionRef.current;
-            if (!pc) return;
 
             try {
                 if (signal.type === 'offer') {
+                    if (!pc) return;
                     await pc.setRemoteDescription(new RTCSessionDescription(signal));
                     const answer = await pc.createAnswer();
                     await pc.setLocalDescription(answer);
                     emit('webrtc:signal', { targetId: otherUser._id, signal: answer });
                 } else if (signal.type === 'answer') {
+                    if (!pc) return;
                     await pc.setRemoteDescription(new RTCSessionDescription(signal));
+
+                    // Drain ICE queue when Answer is received (Caller side)
+                    while (signalingQueueRef.current.length > 0) {
+                        const candidate = signalingQueueRef.current.shift();
+                        try {
+                            await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                        } catch (e) { console.error('Error adding queued candidate:', e); }
+                    }
                 } else if (signal.type === 'candidate') {
-                    await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                    if (!pc || !pc.remoteDescription) {
+                        // Queue candidate if PC is not ready or RemoteDescription not set
+                        signalingQueueRef.current.push(signal.candidate);
+                    } else {
+                        await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                    }
                 }
             } catch (e) { console.error('Signaling error:', e); }
         };
