@@ -417,12 +417,15 @@ export default function MessagesPage() {
                 </p>
               </div>
               <div className="ml-auto flex gap-2">
-                <button
-                  onClick={() => setCallData({ show: true, mode: 'outbound', target: otherUser, signal: null })}
-                  className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition"
-                >
-                  <span className="material-icons text-lg">video_call</span>
-                </button>
+                {user?.connections?.some(c => (c?._id || c) === otherUser?._id) && (
+                  <button
+                    onClick={() => setCallData({ show: true, mode: 'outbound', target: otherUser, signal: null })}
+                    className="p-2 rounded-full hover:bg-gray-100 text-primary transition"
+                    title="Bắt đầu cuộc gọi video"
+                  >
+                    <span className="material-icons text-lg">video_call</span>
+                  </button>
+                )}
                 <button className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition">
                   <span className="material-icons text-lg">info</span>
                 </button>
@@ -508,6 +511,14 @@ export default function MessagesPage() {
                                   <button className="w-full py-1.5 bg-white border border-gray-200 rounded-lg text-[10px] font-bold text-primary hover:border-primary transition-colors flex items-center justify-center gap-1">
                                     <span className="material-icons text-xs">visibility</span> Xem & Ứng tuyển
                                   </button>
+                                </div>
+                              ) : msg.type === 'video_call' ? (
+                                <div className="flex items-center gap-2 py-1 px-1">
+                                  <span className="material-icons text-sm opacity-70">
+                                    {msg.content === 'Cuộc gọi nhỡ' ? 'call_missed' :
+                                      msg.content === 'Kết thúc cuộc gọi' ? 'call_end' : 'videocam'}
+                                  </span>
+                                  <span className="font-medium">{msg.content}</span>
                                 </div>
                               ) : (
                                 msg.content

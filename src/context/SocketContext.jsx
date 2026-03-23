@@ -43,12 +43,10 @@ export function SocketProvider({ children }) {
 
     socket.on('connect', () => {
       setIsConnected(true);
-      console.log('🟢 Socket.io connected');
     });
 
     socket.on('disconnect', () => {
       setIsConnected(false);
-      console.log('🔴 Socket.io disconnected');
     });
 
     socket.on('onlineUsers:list', (list) => {

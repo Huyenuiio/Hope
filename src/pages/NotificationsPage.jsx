@@ -15,6 +15,7 @@ const NOTIFICATION_CONFIG = {
   new_review: { icon: 'star', color: 'text-amber-500 bg-amber-100', label: 'Đánh giá mới' },
   meeting_request: { icon: 'event', color: 'text-purple-500 bg-purple-100', label: 'Lịch họp mới' },
   meeting_accepted: { icon: 'event_available', color: 'text-green-600 bg-green-100', label: 'Lịch họp xác nhận' },
+  video_call: { icon: 'videocam', color: 'text-red-500 bg-red-100', label: 'Cuộc gọi' },
 };
 
 function timeAgo(dateStr) {
@@ -61,7 +62,7 @@ export default function NotificationsPage() {
   const filteredNotifications = notifications.filter(n => {
     if (filter === 'unread') return !n.isRead;
     if (filter === 'job') return ['job_application', 'application_status', 'job_match', 'job_approved', 'job_rejected'].includes(n.type);
-    if (filter === 'message') return n.type === 'new_message';
+    if (filter === 'message') return ['new_message', 'video_call'].includes(n.type);
     if (filter === 'meeting') return ['meeting_request', 'meeting_accepted', 'meeting_reminder'].includes(n.type);
     return true;
   });
@@ -109,11 +110,10 @@ export default function NotificationsPage() {
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
-                filter === f.key
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${filter === f.key
                   ? 'bg-primary text-white shadow-sm'
                   : 'bg-white text-gray-600 border border-gray-200 hover:border-primary hover:text-primary'
-              }`}
+                }`}
             >
               <span className="material-icons text-sm">{f.icon}</span>
               {f.label}

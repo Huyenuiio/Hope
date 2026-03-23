@@ -218,7 +218,8 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
                                       notif.type === 'connection_accepted' ? 'đã chấp nhận kết nối' :
                                         notif.type === 'job_hired' ? 'đã thu nhận bạn vào công việc' :
                                           notif.type === 'application_status' ? 'đã cập nhật trạng thái ứng tuyển của bạn' :
-                                            notif.message}
+                                            notif.type === 'video_call' ? 'đã để lại một cuộc gọi nhỡ' :
+                                              notif.message}
                                 </p>
                                 <span className="text-xs text-gray-500 block mt-1">{new Date(notif.createdAt).toLocaleString()}</span>
 
@@ -246,6 +247,11 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
                                 {(notif.type.includes('job_') || notif.type.includes('comment_') || notif.type.includes('reply_')) && (
                                   <Link to={notif.link || `/dashboard?jobId=${notif.jobRef || ''}`} className="mt-2 inline-block px-4 py-1.5 border border-primary text-primary text-xs font-semibold rounded-full hover:bg-primary/5 transition-colors">
                                     Xem bài đăng
+                                  </Link>
+                                )}
+                                {notif.type === 'video_call' && (
+                                  <Link to={notif.link || `/messages?with=${notif.sender?._id || ''}`} className="mt-2 inline-block px-4 py-1.5 border border-primary text-primary text-xs font-semibold rounded-full hover:bg-primary/5 transition-colors">
+                                    Gọi lại ngay
                                   </Link>
                                 )}
                               </div>

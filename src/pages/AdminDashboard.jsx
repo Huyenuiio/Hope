@@ -476,7 +476,6 @@ export default function AdminDashboard() {
       const token = localStorage.getItem('token');
       const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-      console.log('Initiating fetch for CSV export...');
 
       const response = await fetch(`${apiBase}/admin/users/export`, {
         method: 'GET',
@@ -512,8 +511,6 @@ export default function AdminDashboard() {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
       }, 1500);
-
-      console.log('CSV fetch successful');
     } catch (err) {
       console.error('Fetch export error:', err);
       alert(`Lỗi xuất file: ${err.message}. Hãy thử Refresh (F5) trang web.`);

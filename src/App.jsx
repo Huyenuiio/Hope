@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import GlobalCallHandler from './components/GlobalCallHandler';
+import MessagingWidget from './components/MessagingWidget';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -96,6 +97,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <GlobalCallHandler />
+      <MessagingWidget />
     </BrowserRouter>
   );
 }

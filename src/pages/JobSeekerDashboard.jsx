@@ -1519,26 +1519,6 @@ export default function JobSeekerDashboard() {
         </aside>
       </main>
 
-      {/* Messaging Widget */}
-      <div className="fixed bottom-0 right-4 w-72 bg-white border border-gray-200 rounded-t-lg shadow-lg z-50 hidden md:flex flex-col">
-        <div className="p-2 border-b border-gray-200 flex justify-between items-center cursor-pointer hover:bg-gray-50 rounded-t-lg">
-          <div className="flex items-center space-x-2">
-            <div className="relative">
-              {user?.avatar
-                ? <img alt="Avatar" className="w-8 h-8 rounded-full border border-white object-cover" src={user.avatar} />
-                : <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center"><span className="material-icons text-primary text-sm">person</span></div>
-              }
-              <div className="bg-green-500 w-2.5 h-2.5 rounded-full absolute -bottom-0.5 -right-0.5 border-2 border-white"></div>
-            </div>
-            <span className="text-sm font-semibold text-gray-900">{t('dashboard.messaging')}</span>
-          </div>
-          <div className="flex space-x-1 text-gray-500">
-            <button className="p-1 hover:bg-gray-200 rounded-full"><span className="material-icons text-sm">open_in_new</span></button>
-            <button className="p-1 hover:bg-gray-200 rounded-full"><span className="material-icons text-sm">expand_less</span></button>
-          </div>
-        </div>
-      </div>
-
       {
         applyModalOpen && selectedJobForApply && (
           <ApplyModal

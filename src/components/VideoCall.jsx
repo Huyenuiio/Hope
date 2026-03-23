@@ -302,19 +302,34 @@ export default function VideoCall({
 
         const onAnswered = ({ accepted }) => {
             if (!accepted) {
-                alert('Người dùng bận hoặc đã từ chối cuộc gọi');
+                // 'accepted' is false can mean declined by user
+                alert('Người dùng đã từ chối cuộc gọi');
                 handleEndCall();
             } else {
                 setCallStatus('connecting');
             }
         };
 
+        const onBusy = () => {
+            alert('Người dùng đang trong một cuộc gọi khác.');
+            handleEndCall();
+        };
+
+        const onError = ({ message }) => {
+            alert(message || 'Có lỗi xảy ra khi thực hiện cuộc gọi.');
+            handleEndCall();
+        };
+
         socket.on('webrtc:signal', onSignal);
         socket.on('call:answered', onAnswered);
+        socket.on('call:busy', onBusy);
+        socket.on('call:error', onError);
 
         return () => {
             socket.off('webrtc:signal', onSignal);
             socket.off('call:answered', onAnswered);
+            socket.off('call:busy', onBusy);
+            socket.off('call:error', onError);
         };
     }, [socket, otherUser._id, emit, handleEndCall]);
 
