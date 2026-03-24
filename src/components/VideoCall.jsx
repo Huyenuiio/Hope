@@ -126,9 +126,11 @@ export default function VideoCall({
     }, [isDragging, isResizing, position, size]);
 
     // ─── CRITICAL: Fetch TURN Server Credentials from Metered ───────────────
-    // Using iceTransportPolicy: 'relay' forces ALL media through TURN relay.
-    // This guarantees connectivity across ANY network (corporate, mobile, etc.)
-    // at the cost of routing the stream through a relay server.
+    // Strategy: use iceTransportPolicy 'all' so the browser tries ALL paths:
+    //   1. Host candidates (direct LAN connection)
+    //   2. Server-reflexive via STUN (same-network scenarios)
+    //   3. Relay via TURN (cross-network / NAT traversal fallback)
+    // This is the most robust strategy for any network type.
     useEffect(() => {
         const fetchIceServers = async () => {
             try {
@@ -136,51 +138,45 @@ export default function VideoCall({
                 const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
 
                 if (!domain || !apiKey) {
-                    console.warn('[WebRTC] Metered credentials missing. Operating in STUN-only mode (cross-network may fail).');
+                    console.warn('[WebRTC] Metered credentials missing. Using STUN-only (cross-network may fail).');
                     setIsRtcReady(true);
                     return;
                 }
 
                 console.log('[WebRTC] Fetching TURN credentials from Metered...');
-                const response = await fetch(
+                const res = await fetch(
                     `https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`,
-                    { signal: AbortSignal.timeout(8000) } // 8s timeout
+                    { signal: AbortSignal.timeout(8000) }
                 );
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const iceServers = await response.json();
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const iceServers = await res.json();
 
                 if (!Array.isArray(iceServers) || iceServers.length === 0) {
                     throw new Error('Empty ICE server list returned');
                 }
 
-                const turnServers = iceServers.filter(s =>
+                const hasTurn = iceServers.some(s =>
                     (Array.isArray(s.urls) ? s.urls : [s.urls]).some(u => u.startsWith('turn:') || u.startsWith('turns:'))
                 );
 
-                if (turnServers.length === 0) {
-                    throw new Error('No TURN servers in response');
-                }
-
-                // RELAY policy: forces ALL ICE candidates to be relayed through TURN.
-                // This eliminates any chance of a direct-connection attempt failing
-                // and guarantees connectivity across all network types.
+                // Policy 'all': browser tries every ICE candidate type.
+                // TURN servers serve as fallback when P2P fails (e.g. across NAT/mobile vs Wi-Fi).
+                // DO NOT use 'relay' — it blocks host/srflx candidates and causes black screen
+                // if the TURN server can't establish the relay path.
                 rtcConfigRef.current = {
                     iceServers,
-                    iceTransportPolicy: 'relay',
+                    iceTransportPolicy: 'all',
                     iceCandidatePoolSize: 10,
                     bundlePolicy: 'max-bundle',
                     rtcpMuxPolicy: 'require',
                 };
 
-                setTurnEnabled(true);
-                console.log(`[WebRTC] ✅ TURN enabled: ${turnServers.length} relay servers. Policy: relay-only.`);
-                console.log('[WebRTC] ICE Servers:', iceServers.map(s => s.urls));
+                setTurnEnabled(hasTurn);
+                console.log(`[WebRTC] ✅ {${iceServers.length}} ICE servers loaded. TURN: ${hasTurn}. Policy: all.`);
                 setIsRtcReady(true);
             } catch (error) {
                 console.error('[WebRTC] ❌ Failed to fetch TURN servers:', error.message);
-                console.warn('[WebRTC] Falling back to STUN-only (cross-network calls may NOT work).');
-                // Keep DEFAULT_RTC_CONFIG (STUN-only) as the fallback
+                console.warn('[WebRTC] Falling back to STUN-only.');
                 setIsRtcReady(true);
             }
         };
