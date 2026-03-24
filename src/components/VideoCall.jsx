@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 
-const RTC_CONFIG = {
+// Initial stun configuration
+const DEFAULT_RTC_CONFIG = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
@@ -46,6 +47,8 @@ export default function VideoCall({
     const [isVideoOff, setIsVideoOff] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
     const [mediaError, setMediaError] = useState(null);
+    const [rtcConfig, setRtcConfig] = useState(DEFAULT_RTC_CONFIG);
+    const [isRtcReady, setIsRtcReady] = useState(false);
 
     // Draggable & Resizable State
     const [position, setPosition] = useState({ x: window.innerWidth - 380, y: window.innerHeight - 520 });
@@ -125,6 +128,33 @@ export default function VideoCall({
         };
     }, [isDragging, isResizing, position, size]);
 
+    // Fetch TURN server credentials from Metered
+    useEffect(() => {
+        const fetchIceServers = async () => {
+            try {
+                const domain = import.meta.env.VITE_METERED_DOMAIN;
+                const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
+
+                if (!domain || !apiKey) {
+                    console.warn('Metered credentials missing, using default STUN only');
+                    setIsRtcReady(true);
+                    return;
+                }
+
+                const response = await fetch(`https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`);
+                const iceServers = await response.json();
+
+                setRtcConfig({ iceServers });
+                setIsRtcReady(true);
+            } catch (error) {
+                console.error('Error fetching TURN servers:', error);
+                setIsRtcReady(true); // Fallback to STUN
+            }
+        };
+
+        fetchIceServers();
+    }, []);
+
     // Play ringtone while ringing
     useEffect(() => {
         if (callStatus === 'ringing') {
@@ -166,7 +196,7 @@ export default function VideoCall({
 
     // 2. Setup Peer Connection
     const setupPeerConnection = useCallback((stream) => {
-        const pc = new RTCPeerConnection(RTC_CONFIG);
+        const pc = new RTCPeerConnection(rtcConfig);
         peerConnectionRef.current = pc;
 
         // Add local tracks to PC
@@ -335,10 +365,10 @@ export default function VideoCall({
 
     // Initial Action
     useEffect(() => {
-        if (mode === 'outbound') {
+        if (isRtcReady && mode === 'outbound') {
             startCall();
         }
-    }, [mode, startCall]);
+    }, [mode, startCall, isRtcReady]);
 
     const toggleMute = () => {
         if (localStream) {
@@ -568,7 +598,8 @@ export default function VideoCall({
                                     </button>
                                     <button
                                         onClick={acceptCall}
-                                        className="w-11 h-11 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95 animate-bounce"
+                                        disabled={!isRtcReady}
+                                        className={`w-11 h-11 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95 animate-bounce ${!isRtcReady ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <span className="material-icons text-lg">call</span>
                                     </button>
