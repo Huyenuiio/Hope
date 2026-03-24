@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 // Initial stun configuration
 const DEFAULT_RTC_CONFIG = {
@@ -132,24 +133,11 @@ export default function VideoCall({
     useEffect(() => {
         const fetchIceServers = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-                console.log('[WebRTC] Fetching TURN credentials from backend...');
-                const response = await fetch(`${apiUrl}/webrtc/turn-credentials`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Backend returned ${response.status}`);
-                }
-
-                const iceServers = await response.json();
+                console.log('[WebRTC] Fetching TURN credentials from backend via API layer...');
+                const { data: iceServers } = await api.get('/webrtc/turn-credentials');
 
                 if (!Array.isArray(iceServers) || iceServers.length === 0) {
-                    console.warn('[WebRTC] Backend returned empty ICE servers, using default STUN');
+                    console.warn('[WebRTC] API returned empty ICE servers, using default STUN only');
                     setIsRtcReady(true);
                     return;
                 }
