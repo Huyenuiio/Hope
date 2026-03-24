@@ -8,7 +8,7 @@ import axios from 'axios';
 // --- Chat Window Component ---
 function ChatWindow({ chat, onClose, onMinimize, onMarkRead }) {
     const { user } = useAuth();
-    const { socket, emit } = useSocket();
+    const { socket, emit, setCallData } = useSocket();
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [text, setText] = useState('');
