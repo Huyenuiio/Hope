@@ -128,33 +128,37 @@ export default function VideoCall({
         };
     }, [isDragging, isResizing, position, size]);
 
-    // Fetch TURN server credentials from Metered
+    // Fetch TURN server credentials from our backend
     useEffect(() => {
         const fetchIceServers = async () => {
             try {
-                const domain = import.meta.env.VITE_METERED_DOMAIN;
-                const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
+                const token = localStorage.getItem('token');
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-                if (!domain || !apiKey) {
-                    console.warn('[WebRTC] Metered credentials missing, using default STUN only');
-                    setIsRtcReady(true);
-                    return;
+                console.log('[WebRTC] Fetching TURN credentials from backend...');
+                const response = await fetch(`${apiUrl}/webrtc/turn-credentials`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Backend returned ${response.status}`);
                 }
 
-                const response = await fetch(`https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`);
                 const iceServers = await response.json();
 
                 if (!Array.isArray(iceServers) || iceServers.length === 0) {
-                    console.warn('[WebRTC] TURN fetch returned empty, using default STUN only');
+                    console.warn('[WebRTC] Backend returned empty ICE servers, using default STUN');
                     setIsRtcReady(true);
                     return;
                 }
 
-                console.log(`[WebRTC] Fetched ${iceServers.length} ICE servers (STUN+TURN):`, iceServers.map(s => s.urls));
+                console.log(`[WebRTC] Fetched ${iceServers.length} ICE servers from backend.`);
                 rtcConfigRef.current = { iceServers };
                 setIsRtcReady(true);
             } catch (error) {
-                console.error('[WebRTC] Error fetching TURN servers, falling back to STUN:', error);
+                console.error('[WebRTC] Error fetching TURN servers from backend:', error);
                 setIsRtcReady(true); // Fallback to STUN
             }
         };
