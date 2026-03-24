@@ -47,7 +47,7 @@ export default function VideoCall({
     const [isVideoOff, setIsVideoOff] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
     const [mediaError, setMediaError] = useState(null);
-    const [rtcConfig, setRtcConfig] = useState(DEFAULT_RTC_CONFIG);
+    const rtcConfigRef = useRef(DEFAULT_RTC_CONFIG); // Use ref so setupPeerConnection always reads latest value
     const [isRtcReady, setIsRtcReady] = useState(false);
 
     // Draggable & Resizable State
@@ -136,7 +136,7 @@ export default function VideoCall({
                 const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
 
                 if (!domain || !apiKey) {
-                    console.warn('Metered credentials missing, using default STUN only');
+                    console.warn('[WebRTC] Metered credentials missing, using default STUN only');
                     setIsRtcReady(true);
                     return;
                 }
@@ -144,10 +144,17 @@ export default function VideoCall({
                 const response = await fetch(`https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`);
                 const iceServers = await response.json();
 
-                setRtcConfig({ iceServers });
+                if (!Array.isArray(iceServers) || iceServers.length === 0) {
+                    console.warn('[WebRTC] TURN fetch returned empty, using default STUN only');
+                    setIsRtcReady(true);
+                    return;
+                }
+
+                console.log(`[WebRTC] Fetched ${iceServers.length} ICE servers (STUN+TURN):`, iceServers.map(s => s.urls));
+                rtcConfigRef.current = { iceServers };
                 setIsRtcReady(true);
             } catch (error) {
-                console.error('Error fetching TURN servers:', error);
+                console.error('[WebRTC] Error fetching TURN servers, falling back to STUN:', error);
                 setIsRtcReady(true); // Fallback to STUN
             }
         };
@@ -196,7 +203,9 @@ export default function VideoCall({
 
     // 2. Setup Peer Connection
     const setupPeerConnection = useCallback((stream) => {
-        const pc = new RTCPeerConnection(rtcConfig);
+        // Always read from ref to get the latest TURN config (avoids stale closure bug)
+        const pc = new RTCPeerConnection(rtcConfigRef.current);
+        console.log('[WebRTC] Creating PeerConnection with ICE servers:', rtcConfigRef.current.iceServers?.map(s => s.urls));
         peerConnectionRef.current = pc;
 
         // Add local tracks to PC
@@ -225,7 +234,7 @@ export default function VideoCall({
         };
 
         return pc;
-    }, [otherUser._id, emit]);
+    }, [otherUser._id, emit]); // rtcConfigRef intentionally omitted — refs don't cause re-renders
 
     // Handle Outbound Call
     const startCall = useCallback(async () => {
