@@ -273,7 +273,9 @@ export default function MessagingWidget() {
             // Don't show our own messages in bubbles automatically unless we have it open
             if (msg.sender?._id === user?._id || msg.sender === user?._id) return;
 
-            const senderObj = msg.sender?._id ? msg.sender : { _id: msg.sender, name: 'Người dùng', avatar: null };
+            const senderObj = msg.sender?._id
+                ? msg.sender
+                : { _id: msg.sender || 'unknown', name: msg.callerName || 'Người dùng', avatar: msg.callerAvatar || null };
 
             setActiveChats(prev => {
                 const existingIndex = prev.findIndex(c => c.user._id === senderObj._id);

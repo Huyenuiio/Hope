@@ -204,7 +204,10 @@ export default function VideoCall({
     // 2. Setup Peer Connection
     const setupPeerConnection = useCallback((stream) => {
         // Always read from ref to get the latest TURN config (avoids stale closure bug)
-        const pc = new RTCPeerConnection(rtcConfigRef.current);
+        const pc = new RTCPeerConnection({
+            ...rtcConfigRef.current,
+            iceCandidatePoolSize: 10, // Pre-fetch candidates for faster connection
+        });
         console.log('[WebRTC] Creating PeerConnection with ICE servers:', rtcConfigRef.current.iceServers?.map(s => s.urls));
         peerConnectionRef.current = pc;
 
@@ -226,11 +229,19 @@ export default function VideoCall({
         };
 
         pc.onconnectionstatechange = () => {
+            console.log(`[WebRTC] Connection State: ${pc.connectionState}`);
             if (pc.connectionState === 'connected') setCallStatus('active');
             if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-                // Don't auto-close if it's just a failure, let user see status
                 setCallStatus('failed');
             }
+        };
+
+        pc.oniceconnectionstatechange = () => {
+            console.log(`[WebRTC] ICE Connection State: ${pc.iceConnectionState}`);
+        };
+
+        pc.onicegatheringstatechange = () => {
+            console.log(`[WebRTC] ICE Gathering State: ${pc.iceGatheringState}`);
         };
 
         return pc;
@@ -537,8 +548,8 @@ export default function VideoCall({
                     </div>
                 </div>
 
-                {/* Main Content Area */}
-                {!isMinimized && (
+                {/* Main Content Area - Use hidden class instead of conditional rendering to keep video streams alive */}
+                <div className={`flex-1 flex flex-col relative overflow-hidden ${isMinimized ? 'hidden' : 'flex'}`}>
                     <div className="flex-1 flex flex-col relative overflow-hidden">
                         {/* Video Area */}
                         <div className="flex-1 relative bg-gray-950 flex items-center justify-center overflow-hidden">
@@ -663,7 +674,7 @@ export default function VideoCall({
                             <div className="w-2 h-2 border-r-2 border-b-2 border-white/20 rounded-br-sm group-hover/resizer:border-primary transition-colors" />
                         </div>
                     </div>
-                )}
+                </div>
 
                 <style jsx>{`
                 .mirror { transform: scaleX(-1); }
