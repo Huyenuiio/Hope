@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
 
-// Initial stun configuration
+// Default STUN-only config (fallback when Metered fetch fails)
 const DEFAULT_RTC_CONFIG = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -33,7 +32,7 @@ const playRingtone = () => {
 };
 
 export default function VideoCall({
-    mode, // 'outbound' | 'inbound' 
+    mode, // 'outbound' | 'inbound'
     otherUser,
     onClose,
     incomingSignal = null
@@ -48,8 +47,12 @@ export default function VideoCall({
     const [isVideoOff, setIsVideoOff] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
     const [mediaError, setMediaError] = useState(null);
-    const rtcConfigRef = useRef(DEFAULT_RTC_CONFIG); // Use ref so setupPeerConnection always reads latest value
+
+    // --- TURN Server State ---
+    // Using ref so setupPeerConnection always reads the latest value (avoids stale closure bug)
+    const rtcConfigRef = useRef(DEFAULT_RTC_CONFIG);
     const [isRtcReady, setIsRtcReady] = useState(false);
+    const [turnEnabled, setTurnEnabled] = useState(false); // Track if TURN was fetched successfully
 
     // Draggable & Resizable State
     const [position, setPosition] = useState({ x: window.innerWidth - 380, y: window.innerHeight - 520 });
@@ -64,6 +67,7 @@ export default function VideoCall({
     const peerConnectionRef = useRef(null);
     const signalingQueueRef = useRef([]);
     const ringtoneIntervalRef = useRef(null);
+    const iceRestartTimeoutRef = useRef(null);
 
     // Dragging Logic
     const handleDragStart = (e) => {
@@ -72,7 +76,6 @@ export default function VideoCall({
             x: e.clientX - position.x,
             y: e.clientY - position.y
         };
-        // Prevent text selection
         document.body.style.userSelect = 'none';
     };
 
@@ -92,14 +95,9 @@ export default function VideoCall({
 
     useEffect(() => {
         const handleMouseMove = (e) => {
-            // Clear any accidental selection
             window.getSelection()?.removeAllRanges();
-
             if (isDragging) {
-                setPosition({
-                    x: e.clientX - dragStart.current.x,
-                    y: e.clientY - dragStart.current.y
-                });
+                setPosition({ x: e.clientX - dragStart.current.x, y: e.clientY - dragStart.current.y });
             }
             if (isResizing) {
                 const deltaX = e.clientX - resizeStart.current.x;
@@ -110,14 +108,12 @@ export default function VideoCall({
                 });
             }
         };
-
         const handleMouseUp = () => {
             setIsDragging(false);
             setIsResizing(false);
             document.body.style.userSelect = '';
             document.body.style.cursor = '';
         };
-
         if (isDragging || isResizing) {
             document.body.style.cursor = isDragging ? 'grabbing' : 'nwse-resize';
             window.addEventListener('mousemove', handleMouseMove);
@@ -129,28 +125,65 @@ export default function VideoCall({
         };
     }, [isDragging, isResizing, position, size]);
 
-    // Fetch TURN server credentials from our backend
+    // ─── CRITICAL: Fetch TURN Server Credentials from Metered ───────────────
+    // Using iceTransportPolicy: 'relay' forces ALL media through TURN relay.
+    // This guarantees connectivity across ANY network (corporate, mobile, etc.)
+    // at the cost of routing the stream through a relay server.
     useEffect(() => {
         const fetchIceServers = async () => {
             try {
-                console.log('[WebRTC] Fetching TURN credentials from backend via API layer...');
-                const { data: iceServers } = await api.get('/webrtc/turn-credentials');
+                const domain = import.meta.env.VITE_METERED_DOMAIN;
+                const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
 
-                if (!Array.isArray(iceServers) || iceServers.length === 0) {
-                    console.warn('[WebRTC] API returned empty ICE servers, using default STUN only');
+                if (!domain || !apiKey) {
+                    console.warn('[WebRTC] Metered credentials missing. Operating in STUN-only mode (cross-network may fail).');
                     setIsRtcReady(true);
                     return;
                 }
 
-                console.log(`[WebRTC] Fetched ${iceServers.length} ICE servers from backend.`);
-                rtcConfigRef.current = { iceServers };
+                console.log('[WebRTC] Fetching TURN credentials from Metered...');
+                const response = await fetch(
+                    `https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`,
+                    { signal: AbortSignal.timeout(8000) } // 8s timeout
+                );
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const iceServers = await response.json();
+
+                if (!Array.isArray(iceServers) || iceServers.length === 0) {
+                    throw new Error('Empty ICE server list returned');
+                }
+
+                const turnServers = iceServers.filter(s =>
+                    (Array.isArray(s.urls) ? s.urls : [s.urls]).some(u => u.startsWith('turn:') || u.startsWith('turns:'))
+                );
+
+                if (turnServers.length === 0) {
+                    throw new Error('No TURN servers in response');
+                }
+
+                // RELAY policy: forces ALL ICE candidates to be relayed through TURN.
+                // This eliminates any chance of a direct-connection attempt failing
+                // and guarantees connectivity across all network types.
+                rtcConfigRef.current = {
+                    iceServers,
+                    iceTransportPolicy: 'relay',
+                    iceCandidatePoolSize: 10,
+                    bundlePolicy: 'max-bundle',
+                    rtcpMuxPolicy: 'require',
+                };
+
+                setTurnEnabled(true);
+                console.log(`[WebRTC] ✅ TURN enabled: ${turnServers.length} relay servers. Policy: relay-only.`);
+                console.log('[WebRTC] ICE Servers:', iceServers.map(s => s.urls));
                 setIsRtcReady(true);
             } catch (error) {
-                console.error('[WebRTC] Error fetching TURN servers from backend:', error);
-                setIsRtcReady(true); // Fallback to STUN
+                console.error('[WebRTC] ❌ Failed to fetch TURN servers:', error.message);
+                console.warn('[WebRTC] Falling back to STUN-only (cross-network calls may NOT work).');
+                // Keep DEFAULT_RTC_CONFIG (STUN-only) as the fallback
+                setIsRtcReady(true);
             }
         };
-
         fetchIceServers();
     }, []);
 
@@ -164,7 +197,7 @@ export default function VideoCall({
         }
         return () => {
             if (ringtoneIntervalRef.current) clearInterval(ringtoneIntervalRef.current);
-        }
+        };
     }, [callStatus]);
 
     // Bind streams to video elements safely after they render
@@ -187,7 +220,7 @@ export default function VideoCall({
             setLocalStream(stream);
             return stream;
         } catch (err) {
-            console.error('Lỗi truy cập camera/mic:', err);
+            console.error('[WebRTC] Camera/mic access error:', err);
             setMediaError('Không thể truy cập Camera/Micro. Vui lòng kiểm tra quyền thiết bị.');
             return null;
         }
@@ -196,12 +229,12 @@ export default function VideoCall({
     // 2. Setup Peer Connection
     const setupPeerConnection = useCallback((stream) => {
         // Always read from ref to get the latest TURN config (avoids stale closure bug)
-        const pc = new RTCPeerConnection({
-            ...rtcConfigRef.current,
-            iceCandidatePoolSize: 10, // Pre-fetch candidates for faster connection
-        });
-        console.log('[WebRTC] Creating PeerConnection with ICE servers:', rtcConfigRef.current.iceServers?.map(s => s.urls));
+        const config = rtcConfigRef.current;
+        const pc = new RTCPeerConnection(config);
         peerConnectionRef.current = pc;
+
+        const policy = config.iceTransportPolicy || 'all';
+        console.log(`[WebRTC] ✅ PeerConnection created. Policy: ${policy}. Servers: ${config.iceServers?.length}`);
 
         // Add local tracks to PC
         if (stream) {
@@ -210,43 +243,71 @@ export default function VideoCall({
 
         // Handle remote tracks
         pc.ontrack = (event) => {
+            console.log('[WebRTC] Remote track received:', event.track.kind);
             setRemoteStream(event.streams[0]);
         };
 
-        // Handle ICE candidates
+        // Handle ICE candidates - send immediately to the other peer
         pc.onicecandidate = (event) => {
             if (event.candidate) {
-                emit('webrtc:signal', { targetId: otherUser._id, signal: { type: 'candidate', candidate: event.candidate } });
+                emit('webrtc:signal', {
+                    targetId: otherUser._id,
+                    signal: { type: 'candidate', candidate: event.candidate }
+                });
             }
         };
 
+        // Track connection state with auto-restart on failure
         pc.onconnectionstatechange = () => {
-            console.log(`[WebRTC] Connection State: ${pc.connectionState}`);
-            if (pc.connectionState === 'connected') setCallStatus('active');
-            if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+            const state = pc.connectionState;
+            console.log(`[WebRTC] Connection State → ${state}`);
+
+            if (state === 'connected') {
+                setCallStatus('active');
+                if (iceRestartTimeoutRef.current) clearTimeout(iceRestartTimeoutRef.current);
+            }
+
+            if (state === 'failed') {
                 setCallStatus('failed');
+                console.warn('[WebRTC] Connection failed. Attempting ICE restart...');
+                // Auto-restart ICE if we are the caller
+                if (mode === 'outbound' && pc.restartIce) {
+                    iceRestartTimeoutRef.current = setTimeout(async () => {
+                        try {
+                            pc.restartIce();
+                            const offer = await pc.createOffer({ iceRestart: true });
+                            await pc.setLocalDescription(offer);
+                            emit('webrtc:signal', { targetId: otherUser._id, signal: offer });
+                            console.log('[WebRTC] ICE Restart offer sent.');
+                        } catch (e) {
+                            console.error('[WebRTC] ICE Restart failed:', e);
+                        }
+                    }, 1500);
+                }
+            }
+
+            if (state === 'disconnected') {
+                setCallStatus('connecting');
             }
         };
 
         pc.oniceconnectionstatechange = () => {
-            console.log(`[WebRTC] ICE Connection State: ${pc.iceConnectionState}`);
+            console.log(`[WebRTC] ICE Connection → ${pc.iceConnectionState}`);
         };
 
         pc.onicegatheringstatechange = () => {
-            console.log(`[WebRTC] ICE Gathering State: ${pc.iceGatheringState}`);
+            console.log(`[WebRTC] ICE Gathering → ${pc.iceGatheringState}`);
         };
 
         return pc;
-    }, [otherUser._id, emit]); // rtcConfigRef intentionally omitted — refs don't cause re-renders
+    }, [otherUser._id, emit, mode]);
 
     // Handle Outbound Call
     const startCall = useCallback(async () => {
         const stream = await initLocalStream();
-
-        // Even without stream, we can initiate signaling (though video won't work)
-        // But let's show error to user
         if (!stream) {
             setCallStatus('error');
+            return;
         }
 
         const pc = setupPeerConnection(stream);
@@ -265,30 +326,27 @@ export default function VideoCall({
     const acceptCall = useCallback(async () => {
         setCallStatus('connecting');
         const stream = await initLocalStream();
-
         if (!stream) {
             setCallStatus('error');
+            return;
         }
 
         const pc = setupPeerConnection(stream);
 
-        // Process initial signal if exists
-        if (incomingSignal) {
-            if (incomingSignal.type === 'offer') {
-                await pc.setRemoteDescription(new RTCSessionDescription(incomingSignal));
+        if (incomingSignal?.type === 'offer') {
+            await pc.setRemoteDescription(new RTCSessionDescription(incomingSignal));
 
-                // Drain ICE queue from early caller candidates
-                while (signalingQueueRef.current.length > 0) {
-                    const candidate = signalingQueueRef.current.shift();
-                    try {
-                        await pc.addIceCandidate(new RTCIceCandidate(candidate));
-                    } catch (e) { console.error('Error adding queued ICE candidate', e); }
-                }
-
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                emit('webrtc:signal', { targetId: otherUser._id, signal: answer });
+            // Drain any ICE candidates that arrived before we set the remote description
+            while (signalingQueueRef.current.length > 0) {
+                const candidate = signalingQueueRef.current.shift();
+                try {
+                    await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (e) { console.error('[WebRTC] Error adding queued ICE candidate:', e); }
             }
+
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            emit('webrtc:signal', { targetId: otherUser._id, signal: answer });
         }
 
         emit('call:respond', { callerId: otherUser._id, accepted: true });
@@ -297,9 +355,10 @@ export default function VideoCall({
     const declineCall = useCallback(() => {
         emit('call:respond', { callerId: otherUser._id, accepted: false });
         handleEndCall();
-    }, [otherUser._id, emit, onClose]);
+    }, [otherUser._id, emit]);
 
     const handleEndCall = useCallback(() => {
+        if (iceRestartTimeoutRef.current) clearTimeout(iceRestartTimeoutRef.current);
         if (localStream) localStream.getTracks().forEach(t => t.stop());
         if (peerConnectionRef.current) peerConnectionRef.current.close();
         emit('call:end', { targetId: otherUser._id });
@@ -320,36 +379,48 @@ export default function VideoCall({
                     const answer = await pc.createAnswer();
                     await pc.setLocalDescription(answer);
                     emit('webrtc:signal', { targetId: otherUser._id, signal: answer });
-                } else if (signal.type === 'answer') {
-                    if (!pc) return;
-                    await pc.setRemoteDescription(new RTCSessionDescription(signal));
 
-                    // Drain ICE queue when Answer is received (Caller side)
+                    // Drain queued ICE candidates after setting remote desc
                     while (signalingQueueRef.current.length > 0) {
                         const candidate = signalingQueueRef.current.shift();
                         try {
                             await pc.addIceCandidate(new RTCIceCandidate(candidate));
-                        } catch (e) { console.error('Error adding queued candidate:', e); }
+                        } catch (e) { console.error('[WebRTC] Error draining ICE queue:', e); }
+                    }
+                } else if (signal.type === 'answer') {
+                    if (!pc) return;
+                    await pc.setRemoteDescription(new RTCSessionDescription(signal));
+                    // Drain queued candidates after answer is set
+                    while (signalingQueueRef.current.length > 0) {
+                        const candidate = signalingQueueRef.current.shift();
+                        try {
+                            await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                        } catch (e) { console.error('[WebRTC] Error draining ICE queue (answer):', e); }
                     }
                 } else if (signal.type === 'candidate') {
                     if (!pc || !pc.remoteDescription) {
-                        // Queue candidate if PC is not ready or RemoteDescription not set
+                        // Queue candidate if remote description isn't set yet
                         signalingQueueRef.current.push(signal.candidate);
                     } else {
-                        await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                        try {
+                            await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                        } catch (e) { console.error('[WebRTC] Error adding ICE candidate:', e); }
                     }
                 }
-            } catch (e) { console.error('Signaling error:', e); }
+            } catch (e) { console.error('[WebRTC] Signaling error:', e); }
         };
 
         const onAnswered = ({ accepted }) => {
             if (!accepted) {
-                // 'accepted' is false can mean declined by user
                 alert('Người dùng đã từ chối cuộc gọi');
                 handleEndCall();
             } else {
                 setCallStatus('connecting');
             }
+        };
+
+        const onEndedByRemote = () => {
+            handleEndCall();
         };
 
         const onBusy = () => {
@@ -364,18 +435,20 @@ export default function VideoCall({
 
         socket.on('webrtc:signal', onSignal);
         socket.on('call:answered', onAnswered);
+        socket.on('call:ended', onEndedByRemote);
         socket.on('call:busy', onBusy);
         socket.on('call:error', onError);
 
         return () => {
             socket.off('webrtc:signal', onSignal);
             socket.off('call:answered', onAnswered);
+            socket.off('call:ended', onEndedByRemote);
             socket.off('call:busy', onBusy);
             socket.off('call:error', onError);
         };
     }, [socket, otherUser._id, emit, handleEndCall]);
 
-    // Initial Action
+    // Initial Action — wait until TURN is ready before initiating
     useEffect(() => {
         if (isRtcReady && mode === 'outbound') {
             startCall();
@@ -385,16 +458,20 @@ export default function VideoCall({
     const toggleMute = () => {
         if (localStream) {
             const audioTrack = localStream.getAudioTracks()[0];
-            audioTrack.enabled = !audioTrack.enabled;
-            setIsMuted(!audioTrack.enabled);
+            if (audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                setIsMuted(!audioTrack.enabled);
+            }
         }
     };
 
     const toggleVideo = () => {
         if (localStream) {
             const videoTrack = localStream.getVideoTracks()[0];
-            videoTrack.enabled = !videoTrack.enabled;
-            setIsVideoOff(!videoTrack.enabled);
+            if (videoTrack) {
+                videoTrack.enabled = !videoTrack.enabled;
+                setIsVideoOff(!videoTrack.enabled);
+            }
         }
     };
 
@@ -404,10 +481,10 @@ export default function VideoCall({
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
             containerRef.current.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+                console.error(`Fullscreen error: ${err.message}`);
             });
             setIsFullscreen(true);
-            setIsMinimized(false); // Can't be fullscreen and minimized
+            setIsMinimized(false);
         } else {
             document.exitFullscreen();
             setIsFullscreen(false);
@@ -416,10 +493,7 @@ export default function VideoCall({
 
     const handleToggleMinimize = () => {
         if (!isMinimized && isFullscreen) {
-            // If we are fullscreen and want to minimize, exit fullscreen first
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            }
+            if (document.fullscreenElement) document.exitFullscreen();
             setIsFullscreen(false);
         }
         setIsMinimized(!isMinimized);
@@ -440,15 +514,11 @@ export default function VideoCall({
             alert('Trình duyệt của bạn không hỗ trợ chế độ Picture-in-Picture');
             return;
         }
-
         const video = remoteVideoRef.current;
-
-        // Prevent PiP if there is no active video stream (e.g., HTTP restriction)
         if (!video || !remoteStream) {
-            alert('Chưa có kết nối hình ảnh. Tính năng PiP cần có luồng video đang chạy (Yêu cầu HTTPS hoặc đang trong cuộc gọi).');
+            alert('Chưa có kết nối hình ảnh. Tính năng PiP cần có luồng video đang chạy.');
             return;
         }
-
         try {
             if (document.pictureInPictureElement) {
                 await document.exitPictureInPicture();
@@ -456,7 +526,7 @@ export default function VideoCall({
                 await video.requestPictureInPicture();
             }
         } catch (error) {
-            console.error('Lỗi PiP:', error);
+            console.error('PiP error:', error);
             alert('Không thể bật PiP: ' + error.message);
         }
     };
@@ -474,7 +544,6 @@ export default function VideoCall({
         };
     }, [remoteStream]);
 
-    // Draggable & Resizable Floating Window
     return (
         <>
             {/* Global Drag/Resize Overlay */}
@@ -495,7 +564,7 @@ export default function VideoCall({
                     height: isMinimized ? 64 : size.height,
                 }}
             >
-                {/* Background Blur Overlay for Glassmorphism */}
+                {/* Background Blur Overlay */}
                 <div className="absolute inset-0 bg-white/5 backdrop-blur-3xl pointer-events-none" />
 
                 {/* Header / Drag Bar */}
@@ -513,8 +582,9 @@ export default function VideoCall({
                                 {mediaError ? 'Lỗi thiết bị' :
                                     callStatus === 'ringing' ? 'Cuộc gọi đến...' :
                                         callStatus === 'calling' ? 'Đang gọi...' :
-                                            callStatus === 'connecting' ? 'Đăng kết nối...' :
-                                                callStatus === 'failed' ? 'Kết nối lỗi' : 'Trực tuyến'}
+                                            callStatus === 'connecting' ? 'Đang kết nối...' :
+                                                callStatus === 'failed' ? 'Kết nối lỗi' :
+                                                    callStatus === 'active' ? (turnEnabled ? '🔒 Bảo mật (TURN)' : 'Trực tuyến') : 'Trực tuyến'}
                             </p>
                         </div>
                     </div>
@@ -524,7 +594,7 @@ export default function VideoCall({
                             onMouseDown={(e) => e.stopPropagation()}
                             onClick={handleToggleMinimize}
                             className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all cursor-pointer relative z-20"
-                            title={isMinimized ? "Phóng to" : "Thu nhỏ"}
+                            title={isMinimized ? 'Phóng to' : 'Thu nhỏ'}
                         >
                             <span className="material-symbols-outlined text-[18px]">{isMinimized ? 'open_in_full' : 'close_fullscreen'}</span>
                         </button>
@@ -540,7 +610,7 @@ export default function VideoCall({
                     </div>
                 </div>
 
-                {/* Main Content Area - Use hidden class instead of conditional rendering to keep video streams alive */}
+                {/* Main Content Area - CSS hidden instead of unmount to preserve video streams */}
                 <div className={`flex-1 flex flex-col relative overflow-hidden ${isMinimized ? 'hidden' : 'flex'}`}>
                     <div className="flex-1 flex flex-col relative overflow-hidden">
                         {/* Video Area */}
@@ -550,10 +620,7 @@ export default function VideoCall({
                                     <div className="flex flex-col items-center gap-4">
                                         <span className="material-icons text-3xl text-red-500">videocam_off</span>
                                         <p className="text-white text-xs font-medium leading-relaxed">{mediaError}</p>
-                                        <button
-                                            onClick={handleEndCall}
-                                            className="mt-2 px-5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-bold transition-all"
-                                        >
+                                        <button onClick={handleEndCall} className="mt-2 px-5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-bold transition-all">
                                             Đóng
                                         </button>
                                     </div>
@@ -562,22 +629,18 @@ export default function VideoCall({
 
                             {/* Remote Video (Full Size) */}
                             {remoteStream ? (
-                                <video
-                                    ref={remoteVideoRef}
-                                    autoPlay
-                                    playsInline
-                                    className="w-full h-full object-cover"
-                                />
+                                <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
                             ) : (
                                 <div className="flex flex-col items-center gap-4">
-                                    <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center animate-pulse">
-                                        <span className="material-icons text-2xl text-gray-600">person</span>
+                                    <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20">
+                                        <img src={otherUser.avatar || '/default-avatar.png'} alt={otherUser.name} className="w-full h-full object-cover" />
                                     </div>
-                                    {callStatus === 'ringing' && (
+                                    <p className="text-white/60 text-xs font-medium">{otherUser.name}</p>
+                                    {(callStatus === 'calling' || callStatus === 'connecting') && (
                                         <div className="flex gap-1">
-                                            <div className="w-1 h-1 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-                                            <div className="w-1 h-1 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                                            <div className="w-1 h-1 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
                                         </div>
                                     )}
                                 </div>
@@ -586,13 +649,7 @@ export default function VideoCall({
                             {/* Local Video (Floating) */}
                             {localStream && (
                                 <div className={`absolute bottom-4 right-4 w-28 h-20 bg-gray-800 rounded-xl overflow-hidden border border-white/20 shadow-xl z-20 transition-opacity ${isVideoOff ? 'opacity-50' : 'opacity-100'}`}>
-                                    <video
-                                        ref={localVideoRef}
-                                        autoPlay
-                                        playsInline
-                                        muted
-                                        className="w-full h-full object-cover mirror"
-                                    />
+                                    <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover mirror" />
                                     {isVideoOff && <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80"><span className="material-icons text-white/30 text-sm">videocam_off</span></div>}
                                 </div>
                             )}
@@ -611,7 +668,7 @@ export default function VideoCall({
                                     <button
                                         onClick={acceptCall}
                                         disabled={!isRtcReady}
-                                        className={`w-11 h-11 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95 animate-bounce ${!isRtcReady ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        className={`w-11 h-11 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95 animate-bounce ${!isRtcReady ? 'opacity-50 cursor-not-allowed animate-pulse' : ''}`}
                                     >
                                         <span className="material-icons text-lg">call</span>
                                     </button>
