@@ -125,12 +125,7 @@ export default function VideoCall({
         };
     }, [isDragging, isResizing, position, size]);
 
-    // ─── CRITICAL: Fetch TURN Server Credentials from Metered ───────────────
-    // Strategy: use iceTransportPolicy 'all' so the browser tries ALL paths:
-    //   1. Host candidates (direct LAN connection)
-    //   2. Server-reflexive via STUN (same-network scenarios)
-    //   3. Relay via TURN (cross-network / NAT traversal fallback)
-    // This is the most robust strategy for any network type.
+    // ─── Fetch TURN Server Credentials from Metered ─────────────────────────
     useEffect(() => {
         const fetchIceServers = async () => {
             try {
@@ -138,31 +133,44 @@ export default function VideoCall({
                 const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
 
                 if (!domain || !apiKey) {
-                    console.warn('[WebRTC] Metered credentials missing. Using STUN-only (cross-network may fail).');
+                    console.warn('[WebRTC] Metered credentials missing. Using STUN-only.');
                     setIsRtcReady(true);
                     return;
                 }
 
-                console.log('[WebRTC] Fetching TURN credentials from Metered...');
-                const res = await fetch(
-                    `https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`,
-                    { signal: AbortSignal.timeout(8000) }
-                );
+                console.log('[WebRTC] Fetching TURN credentials...');
+
+                // Use AbortController instead of AbortSignal.timeout() for Cốc Cốc / older browser compatibility
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                let res;
+                try {
+                    res = await fetch(
+                        `https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`,
+                        { signal: controller.signal }
+                    );
+                } finally {
+                    clearTimeout(timeoutId);
+                }
+
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const iceServers = await res.json();
+
+                // Log full response to console for debugging
+                console.log('[WebRTC] Raw TURN response:', JSON.stringify(iceServers));
 
                 if (!Array.isArray(iceServers) || iceServers.length === 0) {
                     throw new Error('Empty ICE server list returned');
                 }
 
-                const hasTurn = iceServers.some(s =>
+                const turnServers = iceServers.filter(s =>
                     (Array.isArray(s.urls) ? s.urls : [s.urls]).some(u => u.startsWith('turn:') || u.startsWith('turns:'))
                 );
 
-                // Policy 'all': browser tries every ICE candidate type.
-                // TURN servers serve as fallback when P2P fails (e.g. across NAT/mobile vs Wi-Fi).
-                // DO NOT use 'relay' — it blocks host/srflx candidates and causes black screen
-                // if the TURN server can't establish the relay path.
+                console.log(`[WebRTC] ✅ Loaded ${iceServers.length} servers (${turnServers.length} TURN relay).`);
+                console.log('[WebRTC] Server URLs:', iceServers.map(s => s.urls));
+
                 rtcConfigRef.current = {
                     iceServers,
                     iceTransportPolicy: 'all',
@@ -171,17 +179,28 @@ export default function VideoCall({
                     rtcpMuxPolicy: 'require',
                 };
 
-                setTurnEnabled(hasTurn);
-                console.log(`[WebRTC] ✅ {${iceServers.length}} ICE servers loaded. TURN: ${hasTurn}. Policy: all.`);
+                setTurnEnabled(turnServers.length > 0);
                 setIsRtcReady(true);
             } catch (error) {
-                console.error('[WebRTC] ❌ Failed to fetch TURN servers:', error.message);
-                console.warn('[WebRTC] Falling back to STUN-only.');
+                console.error('[WebRTC] ❌ TURN fetch failed:', error.message, '— using STUN-only fallback.');
+                // Fallback: multiple public STUN servers to maximize connectivity
+                rtcConfigRef.current = {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' },
+                        { urls: 'stun:stun3.l.google.com:19302' },
+                        { urls: 'stun:stun4.l.google.com:19302' },
+                    ],
+                    iceTransportPolicy: 'all',
+                    iceCandidatePoolSize: 10,
+                };
                 setIsRtcReady(true);
             }
         };
         fetchIceServers();
     }, []);
+
 
     // Play ringtone while ringing
     useEffect(() => {
