@@ -70,12 +70,13 @@ export default function ProfileViewPage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
       {/* ── BANNER & HEADER ── */}
-      <div className="h-48 bg-gradient-to-r from-primary to-blue-400 relative">
+      <div className="h-40 md:h-48 bg-gradient-to-r from-primary to-blue-400 relative">
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-6 left-6 flex items-center gap-2 bg-black/20 hover:bg-black/40 text-white px-4 py-2 rounded-full backdrop-blur-sm transition-all text-sm font-semibold"
+          className="absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-2 bg-black/30 hover:bg-black/40 text-white px-3 py-2 md:px-4 md:py-2 rounded-full backdrop-blur-md transition-all text-xs md:text-sm font-semibold shadow-lg z-20"
         >
-          <span className="material-icons text-sm">arrow_back</span> Quay lại
+          <span className="material-icons text-xs md:text-sm">arrow_back</span>
+          <span className="hidden xs:inline">Quay lại</span>
         </button>
       </div>
 
@@ -89,8 +90,8 @@ export default function ProfileViewPage() {
                 {profile.isBlockedByMe ? "Bạn đã chặn người dùng này" : "Nội dung không khả dụng"}
               </h3>
               <p className="text-sm text-gray-500 mb-6">
-                {profile.isBlockedByMe 
-                  ? "Bạn hiện không thể xem hồ sơ hoặc nhắn tin với người này. Vui lòng bỏ chặn trong Cài đặt để tiếp tục tương tác." 
+                {profile.isBlockedByMe
+                  ? "Bạn hiện không thể xem hồ sơ hoặc nhắn tin với người này. Vui lòng bỏ chặn trong Cài đặt để tiếp tục tương tác."
                   : "Bạn không thể xem hồ sơ này do cài đặt quyền riêng tư hoặc chặn."}
               </p>
               <div className="flex gap-3">
@@ -127,11 +128,11 @@ export default function ProfileViewPage() {
                 <span className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white rounded-full shadow-sm z-10" title="Đang hoạt động"></span>
               )}
             </div>
-            <div className="flex-1 mt-2 md:mt-10">
-              <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
-              <p className="text-lg text-gray-600 font-medium mt-1">
+            <div className="flex-1 mt-0 md:mt-10 w-full">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 line-clamp-1">{profile.name}</h1>
+              <p className="text-base md:text-lg text-gray-600 font-medium mt-1">
                 {profile.headline || profile.role.toUpperCase()}
-                {profile.role === 'client' && profile.company && <span className="text-primary ml-2 font-bold block md:inline-block">@ {profile.company}</span>}
+                {profile.role === 'client' && profile.company && <span className="text-primary ml-2 font-bold block sm:inline-block">@ {profile.company}</span>}
               </p>
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-gray-500">
@@ -150,7 +151,7 @@ export default function ProfileViewPage() {
               </div>
             </div>
 
-            <div className="w-full md:w-auto mt-6 md:mt-12 flex gap-3">
+            <div className="w-full md:w-auto mt-4 md:mt-12 flex flex-wrap gap-2 sm:gap-3">
               {user?.connections?.some(c => (c._id || c) === profile._id) ? (
                 <button
                   onClick={async () => {
@@ -159,13 +160,13 @@ export default function ProfileViewPage() {
                       setUser(prev => ({ ...prev, connections: prev.connections.filter(c => (c._id || c) !== profile._id) }));
                     } catch (e) { }
                   }}
-                  className="flex-1 md:flex-none px-6 py-2 border-2 border-gray-300 text-gray-600 font-semibold rounded-full hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 md:flex-none px-4 md:px-6 py-2 border-2 border-gray-200 text-gray-600 font-semibold rounded-full hover:bg-gray-50 transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
-                  <span className="material-icons">person_remove</span> Hủy kết nối
+                  <span className="material-icons text-lg">person_remove</span> Hủy
                 </button>
               ) : (requestSent || profile?.connectionRequests?.some(r => r.from === user?._id && r.status === 'pending')) ? (
-                <button disabled className="flex-1 md:flex-none px-6 py-2 bg-gray-300 text-gray-600 font-semibold rounded-full shadow-md transition-all flex items-center justify-center gap-2 cursor-not-allowed">
-                  <span className="material-icons">hourglass_empty</span> Đã gửi yêu cầu
+                <button disabled className="flex-1 md:flex-none px-4 md:px-6 py-2 bg-gray-200 text-gray-500 font-semibold rounded-full shadow-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed text-sm sm:text-base">
+                  <span className="material-icons text-lg">hourglass_empty</span> Gửi yêu cầu
                 </button>
               ) : (
                 <button onClick={async () => {
@@ -173,19 +174,19 @@ export default function ProfileViewPage() {
                     await usersAPI.connect(profile._id);
                     setRequestSent(true);
                   } catch (e) { }
-                }} className="flex-1 md:flex-none px-6 py-2 bg-primary text-white font-semibold rounded-full shadow-md hover:bg-primary-dark transition-all flex items-center justify-center gap-2">
-                  <span className="material-icons">person_add</span> Kết nối
+                }} className="flex-1 md:flex-none px-4 md:px-6 py-2 bg-primary text-white font-semibold rounded-full shadow-md hover:bg-primary-dark transition-all flex items-center justify-center gap-2 text-sm sm:text-base active:scale-95">
+                  <span className="material-icons text-lg">person_add</span> Kết nối
                 </button>
               )}
-              <button onClick={() => navigate(`/messages?with=${profile._id}`)} className="flex-1 md:flex-none px-6 py-2 border-2 border-primary text-primary font-semibold rounded-full hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
-                <span className="material-icons">chat</span> Nhắn tin
+              <button onClick={() => navigate(`/messages?with=${profile._id}`)} className="flex-1 md:flex-none px-4 md:px-6 py-2 border-2 border-primary text-primary font-semibold rounded-full hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-sm sm:text-base active:scale-95">
+                <span className="material-icons text-lg">chat</span> Nhắn tin
               </button>
               {canReview && user?._id !== profile._id && (
                 <button
                   onClick={() => setReviewModalOpen(true)}
-                  className="flex-1 md:flex-none px-6 py-2 bg-amber-500 text-white font-semibold rounded-full shadow-md hover:bg-amber-600 transition-all flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-6 py-2 bg-amber-500 text-white font-semibold rounded-full shadow-md hover:bg-amber-600 transition-all flex items-center justify-center gap-2 text-sm sm:text-base active:scale-95"
                 >
-                  <span className="material-icons">star</span> Đánh giá
+                  <span className="material-icons text-lg">star</span> Đánh giá
                 </button>
               )}
             </div>
@@ -506,7 +507,7 @@ export default function ProfileViewPage() {
               {reviewableJobs.length > 1 && (
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">Chọn công việc để đánh giá</label>
-                  <select 
+                  <select
                     className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 text-sm focus:border-primary focus:outline-none transition-all"
                     value={reviewForm.jobId}
                     onChange={e => setReviewForm(p => ({ ...p, jobId: e.target.value }))}

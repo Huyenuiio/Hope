@@ -215,6 +215,20 @@ export default function VideoCall({
         };
     }, [callStatus]);
 
+    // Cleanup media on unmount
+    useEffect(() => {
+        return () => {
+            if (localStream) {
+                console.log('[WebRTC] Cleaning up local stream tracks on unmount');
+                localStream.getTracks().forEach(t => t.stop());
+            }
+            if (peerConnectionRef.current) {
+                console.log('[WebRTC] Closing PeerConnection on unmount');
+                peerConnectionRef.current.close();
+            }
+        };
+    }, [localStream]);
+
     // Bind streams to video elements safely after they render
     useEffect(() => {
         if (localVideoRef.current && localStream) {

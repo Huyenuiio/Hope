@@ -308,11 +308,26 @@ export default function MessagesPage() {
   const otherUser = activeConv?.otherUser;
   const isOnline = otherUser && onlineUsers?.includes(otherUser._id);
 
+  // Mobile: toggle between sidebar and chat
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
+
   return (
     <div className="flex flex-col h-screen bg-gray-50 font-sans">
       {/* Top bar */}
       <header className="bg-white border-b border-gray-200 h-14 flex items-center px-4 gap-4 flex-shrink-0 z-10">
-        <Link to="/dashboard" className="flex items-center gap-1">
+        {/* Mobile back button (shows when chat is open on mobile) */}
+        {mobileChatOpen && (
+          <button
+            onClick={() => setMobileChatOpen(false)}
+            className="md:hidden flex items-center gap-1 text-primary font-semibold"
+          >
+            <span className="material-icons text-lg">arrow_back</span>
+          </button>
+        )}
+        <Link
+          to={user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : '/')}
+          className="flex items-center gap-1"
+        >
           <span className="text-primary font-bold text-xl">Ho</span>
           <span className="bg-primary text-white rounded px-1 font-bold text-sm">pe</span>
         </Link>
@@ -320,8 +335,8 @@ export default function MessagesPage() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Conversations List */}
-        <aside className="w-80 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
+        {/* Conversations List - hidden on mobile when chat is open */}
+        <aside className={`${mobileChatOpen ? 'hidden' : 'flex'} md:flex w-full md:w-80 flex-shrink-0 bg-white border-r border-gray-200 flex-col overflow-hidden`}>
           <div className="p-3 border-b border-gray-100 flex-shrink-0">
             <div className="relative">
               <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -372,7 +387,7 @@ export default function MessagesPage() {
                 return (
                   <button
                     key={conv._id || other?._id}
-                    onClick={() => setActiveConv(conv)}
+                    onClick={() => { setActiveConv(conv); setMobileChatOpen(true); }}
                     className={`w-full flex items-start gap-3 p-3 hover:bg-gray-50 transition-colors border-l-4 text-left ${isActive ? 'border-l-primary bg-primary/5' : 'border-l-transparent'}`}
                   >
                     <div className="relative flex-shrink-0">
@@ -398,9 +413,9 @@ export default function MessagesPage() {
           </div>
         </aside>
 
-        {/* Chat Area */}
+        {/* Chat Area - hidden on mobile when not active */}
         {activeConv && otherUser ? (
-          <main className="flex-1 flex flex-col overflow-hidden">
+          <main className={`${mobileChatOpen ? 'flex' : 'hidden'} md:flex flex-1 flex-col overflow-hidden w-full`}>
             {/* Chat Header */}
             <div className="bg-white border-b border-gray-200 px-5 py-3 flex items-center gap-3 flex-shrink-0">
               <div className="relative">
@@ -587,10 +602,9 @@ export default function MessagesPage() {
             )}
           </main>
         ) : (
-          <main className="flex-1 flex flex-col items-center justify-center text-gray-400">
-            <span className="material-icons text-6xl mb-4 text-gray-200">forum</span>
-            <p className="text-lg font-medium text-gray-500">Chọn cuộc trò chuyện</p>
-            <p className="text-sm mt-1">hoặc bắt đầu trò chuyện mới</p>
+          <main className={`${mobileChatOpen ? 'flex' : 'hidden'} md:flex flex-1 items-center justify-center bg-gray-50 flex-col text-gray-400 w-full`}>
+            <span className="material-icons text-6xl text-gray-300 mb-4">chat</span>
+            <p className="text-lg font-medium text-gray-500">Chọn một cuộc trò chuyện để bắt đầu</p>
           </main>
         )}
       </div>

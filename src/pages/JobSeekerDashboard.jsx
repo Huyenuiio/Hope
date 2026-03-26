@@ -386,7 +386,7 @@ function JobCard({ job, t, onApply, isHighlighted, onRefresh, setPreviewImage, o
   return (
     <article
       id={`job-${job._id}`}
-      className={`rounded-lg shadow-sm border border-gray-200 mb-4 relative transition-all duration-1000 ${isHighlighted ? 'ring-2 ring-primary ring-offset-2 bg-blue-50/20' : 'bg-white'}`}
+      className={`glass-card premium-lift mb-4 relative rounded-xl transition-all duration-1000 ${isHighlighted ? 'ring-2 ring-primary ring-offset-4 glow-primary highlight-pulse' : ''}`}
     >
       <div className="p-4 pb-2">
         <div className="flex justify-between items-start mb-2">
@@ -448,49 +448,48 @@ function JobCard({ job, t, onApply, isHighlighted, onRefresh, setPreviewImage, o
             )}
           </div>
         </div>
-        <div className="flex gap-4">
-          <div className="bg-white rounded p-1 w-12 h-12 flex items-center justify-center border border-gray-100 flex-shrink-0 overflow-hidden">
-            {job.client?.avatar
-              ? <img alt={job.client?.name} className="w-10 h-10 object-contain" src={job.client.avatar} />
-              : <span className="material-icons text-primary text-2xl">business</span>
-            }
-          </div>
-          <div className="flex-1">
-            <h3 className="text-base font-semibold text-primary hover:underline cursor-pointer">{job.title}</h3>
-            <p className="text-sm text-gray-800">{job.client?.name || job.client?.company || 'Khách hàng'}</p>
-            <div className="flex flex-wrap gap-2 mt-1.5">
-              <p className="text-xs text-gray-500 flex items-center gap-1">
-                {job.workType === 'remote' ? '🌐' : job.workType === 'hybrid' ? '🏢' : '📍'} {job.workType} · {job.applicantCount || 0} ứng viên · {new Date(job.createdAt).toLocaleDateString('vi-VN')}
-              </p>
-              {job.type && (
-                <span className="flex items-center gap-0.5 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">
-                  <span className="material-icons text-[12px]">{getTypeIcon(job.type)}</span>
-                  {job.type}
-                </span>
-              )}
-              {job.niche && (Array.isArray(job.niche) ? job.niche : [job.niche]).map(n => (
-                <span key={n} className="flex items-center gap-0.5 text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">
-                  <span className="material-icons text-[12px]">{getNicheIcon(n)}</span>
-                  {n}
-                </span>
-              ))}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <div className="flex gap-4 items-start flex-1 min-w-0">
+            <div className="bg-white rounded p-1 w-12 h-12 flex items-center justify-center border border-gray-100 flex-shrink-0 overflow-hidden">
+              {job.client?.avatar
+                ? <img alt={job.client?.name} className="w-10 h-10 object-contain" src={job.client.avatar} />
+                : <span className="material-icons text-primary text-2xl">business</span>
+              }
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-semibold text-primary hover:underline cursor-pointer truncate">{job.title}</h3>
+              <p className="text-sm text-gray-800 truncate">{job.client?.name || job.client?.company || 'Khách hàng'}</p>
+              <div className="flex flex-wrap gap-2 mt-1.5">
+                <p className="text-xs text-gray-500 flex items-center gap-1">
+                  {job.workType === 'remote' ? '🌐' : job.workType === 'hybrid' ? '🏢' : '📍'} {job.workType} · {job.applicantCount || 0} ứng viên
+                </p>
+                {job.type && (
+                  <span className="flex items-center gap-0.5 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">
+                    <span className="material-icons text-[12px]">{getTypeIcon(job.type)}</span>
+                    {job.type}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-          {job.client?._id === user?._id ? (
-            <span className="text-xs bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full font-medium">Bạn là chủ bài đăng</span>
-          ) : job.hasApplied ? (
-            <button disabled className="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-semibold h-fit flex items-center gap-1">
-              <span className="material-icons text-sm">check_circle</span>
-              Đã ứng tuyển
-            </button>
-          ) : (
-            <button
-              onClick={() => onApply(job)}
-              className="bg-primary hover:bg-primary-dark text-white px-4 py-1.5 rounded-full text-sm font-semibold h-fit transition-colors"
-            >
-              {t('jobSearch.detail.apply')}
-            </button>
-          )}
+
+          <div className="flex w-full sm:w-auto mt-2 sm:mt-0">
+            {job.client?._id === user?._id ? (
+              <span className="text-xs bg-gray-100 text-gray-500 px-3 py-1.5 rounded-full font-medium w-full text-center">Bạn là chủ bài đăng</span>
+            ) : job.hasApplied ? (
+              <button disabled className="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-semibold flex items-center justify-center gap-1 w-full">
+                <span className="material-icons text-sm">check_circle</span>
+                Đã ứng tuyển
+              </button>
+            ) : (
+              <button
+                onClick={() => onApply(job)}
+                className="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-full text-sm font-semibold transition-colors w-full"
+              >
+                {t('jobSearch.detail.apply')}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -1120,13 +1119,13 @@ function JobCard({ job, t, onApply, isHighlighted, onRefresh, setPreviewImage, o
 // Skeleton loader for profile
 function ProfileSkeleton() {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden animate-pulse">
-      <div className="h-16 bg-gray-200" />
-      <div className="px-4 pb-4 text-center relative">
-        <div className="w-16 h-16 rounded-full bg-gray-300 mx-auto absolute -top-8 left-1/2 -translate-x-1/2 border-2 border-white" />
-        <div className="mt-10 space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto" />
-          <div className="h-3 bg-gray-200 rounded w-3/4 mx-auto" />
+    <div className="glass-card premium-lift rounded-xl animate-pulse">
+      <div className="h-20 bg-gray-200 rounded-t-xl" />
+      <div className="px-4 pb-6 flex flex-col items-center -mt-10">
+        <div className="w-20 h-20 rounded-full bg-gray-300 border-4 border-white shadow shadow-white/50" />
+        <div className="mt-3 space-y-2 w-full flex flex-col items-center">
+          <div className="h-4 bg-gray-200 rounded w-1/2" />
+          <div className="h-3 bg-gray-200 rounded w-3/4" />
         </div>
       </div>
     </div>
@@ -1279,7 +1278,7 @@ export default function JobSeekerDashboard() {
 
 
   return (
-    <div className="bg-gray-100 min-h-screen font-sans">
+    <div className="bg-mesh min-h-screen font-sans">
       <Navbar
         activeNav="home"
         showSearch={true}
@@ -1294,30 +1293,37 @@ export default function JobSeekerDashboard() {
         {/* Left Sidebar — Profile Card */}
         <aside className="md:col-span-3 space-y-4">
           {!user ? <ProfileSkeleton /> : (
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
-              <div className="h-16 bg-gradient-to-r from-blue-400 to-primary relative" />
-              <div className="px-4 pb-4 text-center relative">
-                {user.avatar
-                  ? <img alt="User Profile" className="h-16 w-16 rounded-full border-4 border-white absolute -top-8 left-1/2 transform -translate-x-1/2 object-cover shadow" src={user.avatar} />
-                  : <div className="h-16 w-16 rounded-full border-4 border-white absolute -top-8 left-1/2 transform -translate-x-1/2 bg-primary/20 flex items-center justify-center shadow"><span className="material-icons text-primary text-2xl">person</span></div>
-                }
-                <div className="mt-10">
-                  <h2 className="text-base font-semibold hover:underline cursor-pointer">{user.name}</h2>
-                  <p className="text-xs text-gray-500 mt-1">{user.headline || 'Cập nhật tiêu đề hồ sơ'}</p>
-                </div>
+            <div className="glass-card premium-lift rounded-xl relative group overflow-hidden">
+              <div className="h-20 bg-gradient-to-r from-blue-400 to-primary" />
+              <div className="px-4 pb-6 text-center flex flex-col items-center -mt-10">
+                <Link to={`/profile/${user._id}`} className="group/avatar flex flex-col items-center">
+                  <div className="h-20 w-20 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white relative z-10 transition-transform group-hover/avatar:scale-110 duration-500">
+                    {user.avatar
+                      ? <img alt="User Profile" className="w-full h-full object-cover" src={user.avatar} />
+                      : <div className="w-full h-full bg-primary/20 flex items-center justify-center"><span className="material-icons text-primary text-3xl">person</span></div>
+                    }
+                  </div>
+                  <div className="mt-3 relative z-20">
+                    <h2 className="text-base md:text-lg font-bold text-gray-900 group-hover/avatar:text-primary transition-colors">{user.name || 'Người dùng'}</h2>
+                    <p className="text-xs font-medium text-gray-600 mt-1 max-w-[200px] mx-auto line-clamp-2">{user.headline || 'Cập nhật tiêu đề hồ sơ'}</p>
+                  </div>
+                </Link>
               </div>
-              <div className="border-t border-gray-200 py-3 px-4">
-                <div className="flex justify-between items-center text-sm font-medium text-gray-500 hover:bg-gray-50 p-1 rounded cursor-pointer">
+
+              {/* Stats - hidden on extra small mobile if needed, but keeping for now with grid */}
+              <div className="border-t border-gray-100 py-3 px-4 grid grid-cols-2 md:block gap-2">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center text-xs md:text-sm font-medium text-gray-500 hover:bg-gray-50 p-2 rounded cursor-pointer transition-colors">
                   <span>{t('dashboard.profile.profileViewers')}</span>
-                  <span className="text-primary font-semibold">{user.profileViews || 0}</span>
+                  <span className="text-primary font-bold">{user.profileViews || 0}</span>
                 </div>
-                <div className="flex justify-between items-center text-sm font-medium text-gray-500 hover:bg-gray-50 p-1 rounded cursor-pointer mt-1">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center text-xs md:text-sm font-medium text-gray-500 hover:bg-gray-50 p-2 rounded cursor-pointer transition-colors border-l md:border-l-0 md:border-t border-gray-100 mt-0 md:mt-1">
                   <span>{t('dashboard.profile.connections')}</span>
-                  <span className="text-primary font-semibold">{user.connections?.length || 0}</span>
+                  <span className="text-primary font-bold">{user.connections?.length || 0}</span>
                 </div>
               </div>
+
               {/* Profile strength */}
-              <div className="border-t border-gray-200 p-4">
+              <div className="border-t border-gray-100 p-4 hidden md:block">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-xs font-semibold text-gray-700">{t('dashboard.profile.strength')}</span>
                   <span className="text-xs font-bold text-primary">{profileScore}%</span>
@@ -1325,11 +1331,6 @@ export default function JobSeekerDashboard() {
                 <div className="w-full bg-gray-200 rounded-full h-1.5">
                   <div className="bg-primary h-1.5 rounded-full transition-all duration-700" style={{ width: `${profileScore}%` }} />
                 </div>
-                {profileScore < 100 && (
-                  <Link to="/profile/edit" className="block text-center mt-2 w-full text-xs font-semibold text-primary border border-primary rounded-full py-1 hover:bg-blue-50 transition-colors">
-                    {t('dashboard.profile.completeProfile')}
-                  </Link>
-                )}
               </div>
             </div>
           )}
@@ -1338,7 +1339,7 @@ export default function JobSeekerDashboard() {
         {/* Main Feed */}
         <section className="md:col-span-6 space-y-4">
           {/* Post Composer */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="glass-card premium-lift p-4 rounded-xl mb-4">
             <div className="flex space-x-3 mb-3">
               {user?.avatar
                 ? <img alt="User" className="h-12 w-12 rounded-full object-cover" src={user.avatar} />
@@ -1416,7 +1417,7 @@ export default function JobSeekerDashboard() {
 
         {/* Right Sidebar */}
         <aside className="md:col-span-3 space-y-4 sticky top-20 h-fit max-h-[calc(100vh-80px)] overflow-y-auto custom-scrollbar pb-4 pr-1">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="glass-card premium-lift p-4 rounded-xl">
             <h2 className="text-base font-semibold text-gray-900 mb-4">{t('dashboard.sidebar.peopleYouMayKnow')}</h2>
             <ul className="space-y-4">
               {freelancers
@@ -1471,7 +1472,7 @@ export default function JobSeekerDashboard() {
           </div>
 
           {/* Friends List (Connections) */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-4">
+          <div className="glass-card premium-lift p-4 mt-4 rounded-xl">
             <h2 className="text-base font-semibold text-gray-900 mb-4 flex items-center justify-between">
               Danh sách bạn bè <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">{user?.connections?.length || 0}</span>
             </h2>

@@ -53,67 +53,80 @@ function AddPortfolioModal({ onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="font-bold text-lg text-gray-900">Thêm mục portfolio</h2>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full"><span className="material-icons text-gray-400">close</span></button>
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-0 sm:p-4">
+      <div className="bg-white rounded-none sm:rounded-2xl shadow-2xl w-full max-w-2xl h-full sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="p-4 md:p-5 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
+          <h2 className="font-bold text-base md:text-lg text-gray-900">Thêm mục portfolio</h2>
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors"><span className="material-icons text-gray-400">close</span></button>
         </div>
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5 flex-1 custom-scrollbar">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-1">Tiêu đề *</label>
-              <input type="text" value={form.title} onChange={e => set('title', e.target.value)} placeholder="Vd: Kênh review tech 1M views" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+              <label className="text-xs font-bold text-gray-600 uppercase tracking-wide block mb-1.5">Tiêu đề *</label>
+              <input type="text" value={form.title} onChange={e => set('title', e.target.value)} placeholder="Vd: Kênh review tech 1M views" className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" />
             </div>
             <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-1">Nền tảng</label>
-              <select value={form.platform} onChange={e => set('platform', e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 bg-white">
+              <label className="text-xs font-bold text-gray-600 uppercase tracking-wide block mb-1.5">Nền tảng</label>
+              <select value={form.platform} onChange={e => set('platform', e.target.value)} className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%207L10%2012L15%207%22%20stroke%3D%22%236B7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat">
                 {['YouTube', 'TikTok', 'Instagram', 'Facebook', 'Other'].map(p => <option key={p}>{p}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-1">Link video / Portfolio *</label>
-            <input type="url" value={form.mediaUrl} onChange={e => set('mediaUrl', e.target.value)} placeholder="https://youtube.com/watch?v=..." className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+            <label className="text-xs font-bold text-gray-600 uppercase tracking-wide block mb-1.5">Link video / Portfolio *</label>
+            <div className="relative">
+              <span className="absolute left-3 top-3 text-gray-400 material-icons text-sm">link</span>
+              <input type="url" value={form.mediaUrl} onChange={e => set('mediaUrl', e.target.value)} placeholder="https://youtube.com/watch?v=..." className="w-full border border-gray-200 rounded-xl p-3 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm" />
+            </div>
           </div>
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-1">Mô tả</label>
-            <textarea rows={2} value={form.description} onChange={e => set('description', e.target.value)} placeholder="Mô tả ngắn về video/project này..." className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none" />
+            <label className="text-xs font-bold text-gray-600 uppercase tracking-wide block mb-1.5">Mô tả dự án</label>
+            <textarea rows={2} value={form.description} onChange={e => set('description', e.target.value)} placeholder="Mô tả ngắn về vai trò và nhiệm vụ của bạn..." className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm resize-none" />
           </div>
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-1">Tags (phân cách bằng dấu phẩy)</label>
-            <input type="text" value={form.tags} onChange={e => set('tags', e.target.value)} placeholder="talking head, color grading, motion graphics..." className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+            <label className="text-xs font-bold text-gray-600 uppercase tracking-wide block mb-1.5">Kỹ năng (phân cách bằng dấu phẩy)</label>
+            <input type="text" value={form.tags} onChange={e => set('tags', e.target.value)} placeholder="talking head, color grading, motion graphics..." className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm" />
           </div>
 
-          {/* Case Study */}
-          <div className="border-t border-gray-100 pt-4">
-            <h3 className="text-sm font-bold text-gray-800 mb-3">📊 Case Study (Tùy chọn nhưng quan trọng!)</h3>
-            <div className="space-y-3">
-              <textarea rows={2} value={form.caseStudy.problem} onChange={e => setCaseStudy('problem', e.target.value)} placeholder="🔴 Vấn đề ban đầu: Channel niche nhưng CTR thấp 1.2%..." className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none" />
-              <textarea rows={2} value={form.caseStudy.solution} onChange={e => setCaseStudy('solution', e.target.value)} placeholder="💡 Giải pháp tôi đưa ra: Thiết kế lại thumbnail, hook 5 giây..." className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none" />
-              <textarea rows={2} value={form.caseStudy.result} onChange={e => setCaseStudy('result', e.target.value)} placeholder="✅ Kết quả: CTR tăng lên 8%, views x10 trong 2 tháng..." className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none" />
-              <div className="grid grid-cols-3 gap-3">
+          <div className="bg-gray-50/50 p-4 md:p-5 rounded-2xl border border-gray-100">
+            <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="material-icons text-amber-500">analytics</span> Case Study (Khuyên dùng)
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Vấn đề ban đầu</label>
+                <textarea rows={2} value={form.caseStudy.problem} onChange={e => setCaseStudy('problem', e.target.value)} placeholder="🔴 Vd: Channel niche nhưng CTR thấp 1.2%..." className="w-full border border-gray-200 rounded-xl p-3 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm resize-none" />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Giải pháp</label>
+                <textarea rows={2} value={form.caseStudy.solution} onChange={e => setCaseStudy('solution', e.target.value)} placeholder="💡 Vd: Thiết kế lại thumbnail, hook 5 giây lôi cuốn..." className="w-full border border-gray-200 rounded-xl p-3 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm resize-none" />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Kết quả đạt được</label>
+                <textarea rows={2} value={form.caseStudy.result} onChange={e => setCaseStudy('result', e.target.value)} placeholder="✅ Vd: CTR tăng lên 8%, views x10 trong 2 tháng..." className="w-full border border-gray-200 rounded-xl p-3 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm resize-none" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-gray-500 block mb-1">👁 Views tăng</label>
-                  <input type="number" value={form.caseStudy.metrics.viewsGained} onChange={e => setMetric('viewsGained', e.target.value)} placeholder="500000" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">👁 Views tăng</label>
+                  <input type="number" value={form.caseStudy.metrics.viewsGained} onChange={e => setMetric('viewsGained', e.target.value)} placeholder="500000" className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-500 block mb-1">👥 Sub tăng</label>
-                  <input type="number" value={form.caseStudy.metrics.subscribersGained} onChange={e => setMetric('subscribersGained', e.target.value)} placeholder="10000" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">👥 Sub tăng</label>
+                  <input type="number" value={form.caseStudy.metrics.subscribersGained} onChange={e => setMetric('subscribersGained', e.target.value)} placeholder="10000" className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-500 block mb-1">💰 Doanh thu ($)</label>
-                  <input type="number" value={form.caseStudy.metrics.revenueGenerated} onChange={e => setMetric('revenueGenerated', e.target.value)} placeholder="1000" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">💰 Doanh thu ($)</label>
+                  <input type="number" value={form.caseStudy.metrics.revenueGenerated} onChange={e => setMetric('revenueGenerated', e.target.value)} placeholder="1000" className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
                 </div>
               </div>
             </div>
           </div>
-          {error && <p className="text-sm text-red-500 bg-red-50 p-2 rounded">{error}</p>}
+          {error && <p className="text-sm text-red-500 bg-red-50 p-3 rounded-xl border border-red-100 flex items-center gap-2 animate-shake"><span className="material-icons text-sm">error</span>{error}</p>}
         </div>
-        <div className="p-5 border-t border-gray-100 flex gap-3">
-          <button onClick={onClose} className="flex-1 py-2.5 border border-gray-300 rounded-full text-sm font-medium">Hủy</button>
-          <button onClick={handleSubmit} disabled={loading} className="flex-1 py-2.5 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary-dark disabled:opacity-50">
-            {loading ? 'Đang thêm...' : '+ Thêm portfolio'}
+        <div className="p-4 md:p-5 border-t border-gray-100 flex gap-3 flex-shrink-0 bg-gray-50/50">
+          <button onClick={onClose} className="flex-1 py-3 border border-gray-200 bg-white rounded-full text-sm font-bold text-gray-600 hover:bg-gray-50 active:scale-95 transition-all">Hủy</button>
+          <button onClick={handleSubmit} disabled={loading} className="flex-1 py-3 bg-primary text-white rounded-full text-sm font-bold hover:bg-primary-dark shadow-lg shadow-primary/20 disabled:opacity-50 active:scale-95 transition-all flex items-center justify-center gap-2">
+            {loading ? <span className="material-icons animate-spin text-sm">refresh</span> : <span>+ Thêm mới</span>}
           </button>
         </div>
       </div>
@@ -175,18 +188,23 @@ export default function PortfolioPage() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-1">
+          <Link
+            to={user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : '/')}
+            className="flex items-center gap-1"
+          >
             <span className="text-primary font-bold text-xl">Ho</span>
             <span className="bg-primary text-white rounded px-1 font-bold text-sm">pe</span>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {isOwner && (
               <>
-                <Link to="/profile/edit" className="text-sm font-semibold text-primary border border-primary rounded-full px-4 py-1.5 hover:bg-primary/5 transition">
-                  Chỉnh sửa hồ sơ
+                <Link to="/profile/edit" className="text-xs sm:text-sm font-semibold text-primary border border-primary px-3 sm:px-4 py-1.5 rounded-full hover:bg-primary/5 transition-all active:scale-95">
+                  <span className="md:hidden"><span className="material-icons text-sm">edit</span></span>
+                  <span className="hidden md:inline">Chỉnh sửa hồ sơ</span>
                 </Link>
-                <button onClick={() => setAddModal(true)} className="text-sm font-semibold bg-primary text-white rounded-full px-4 py-1.5 hover:bg-primary-dark transition flex items-center gap-1">
-                  <span className="material-icons text-sm">add</span>Thêm portfolio
+                <button onClick={() => setAddModal(true)} className="text-xs sm:text-sm font-semibold bg-primary text-white px-3 sm:px-4 py-1.5 rounded-full hover:bg-primary-dark transition-all flex items-center gap-1 active:scale-95 shadow-md shadow-primary/20">
+                  <span className="material-icons text-sm">add</span>
+                  <span className="hidden sm:inline">Thêm portfolio</span>
                 </button>
               </>
             )}
@@ -199,22 +217,25 @@ export default function PortfolioPage() {
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-8">
           <div className="h-32 bg-gradient-to-r from-primary/80 to-blue-600" />
           <div className="px-6 pb-6 relative">
-            <div className="flex items-end gap-4 -mt-10 mb-4">
-              {displayUser?.avatar
-                ? <img src={displayUser.avatar} alt={displayUser?.name} className="w-20 h-20 rounded-full border-4 border-white object-cover shadow-md" />
-                : <div className="w-20 h-20 rounded-full border-4 border-white bg-primary/20 flex items-center justify-center shadow-md"><span className="material-icons text-primary text-3xl">person</span></div>
-              }
-              <div className="pb-2 flex-1">
-                <h1 className="text-xl font-bold text-gray-900">{displayUser?.name}</h1>
-                <p className="text-sm text-gray-600 mt-0.5">{displayUser?.headline}</p>
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-10 sm:-mt-12 mb-6 sm:mb-8 text-center sm:text-left">
+              <div className="relative group">
+                {displayUser?.avatar
+                  ? <img src={displayUser.avatar} alt={displayUser?.name} className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white object-cover shadow-xl bg-white" />
+                  : <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white bg-primary/20 flex items-center justify-center shadow-xl"><span className="material-icons text-primary text-3xl sm:text-4xl">person</span></div>
+                }
+                <div className="absolute inset-0 rounded-full border border-gray-100 group-hover:border-primary/50 transition-colors pointer-events-none" />
+              </div>
+              <div className="pb-1 flex-1">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">{displayUser?.name}</h1>
+                <p className="text-sm text-gray-600 mt-0.5 line-clamp-1">{displayUser?.headline}</p>
               </div>
               {reviews.length > 0 && (
-                <div className="pb-2 flex flex-col items-end">
-                  <div className="flex items-center gap-1">
-                    <span className="text-2xl font-bold text-gray-900">{avgRating.toFixed(1)}</span>
-                    <span className="material-icons text-amber-400">star</span>
+                <div className="pb-1 flex flex-col items-center sm:items-end">
+                  <div className="flex items-center gap-1 bg-amber-50 px-3 py-1 rounded-full border border-amber-100/50">
+                    <span className="text-lg font-bold text-amber-600">{avgRating.toFixed(1)}</span>
+                    <span className="material-icons text-amber-400 text-sm">star</span>
                   </div>
-                  <span className="text-xs text-gray-500">{reviews.length} đánh giá</span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase mt-1 tracking-wider">{reviews.length} đánh giá</span>
                 </div>
               )}
             </div>

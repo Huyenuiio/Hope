@@ -13,6 +13,240 @@
     "notifications": "Thông báo",
     "me": "Tôi"
   },
+  "landing": {
+    "hero": {
+      "title": "Khám phá cơ hội mới",
+      "continueGoogle": "Tiếp tục với Google",
+      "signInEmail": "Đăng nhập bằng email",
+      "agreement": "Khi nhấn Tiếp tục để tham gia hoặc đăng nhập, bạn đồng ý với",
+      "userAgreement": "Điều khoản Sử dụng",
+      "privacyPolicy": "Chính sách Bảo mật",
+      "cookiePolicy": "Chính sách Cookie",
+      "newToLinkedIn": "Chưa có tài khoản?",
+      "joinNow": "Đăng ký ngay"
+    },
+    "topics": {
+      "title": "Khám phá nội dung hàng đầu trên Hope",
+      "desc": "Khám phá các bài đăng và thông tin chuyên sâu từ chuyên gia — được chọn lọc theo chủ đề.",
+      "showAll": "Xem tất cả",
+      "tags": [
+        "Sự nghiệp",
+        "Năng suất",
+        "Tài chính",
+        "Kỹ năng mềm & EQ",
+        "Quản lý dự án",
+        "Giáo dục",
+        "Công nghệ"
+      ]
+    },
+    "jobCategories": {
+      "title": "Tìm công việc hoặc thực tập phù hợp với bạn",
+      "showMore": "Xem thêm",
+      "tags": [
+        "Kỹ thuật",
+        "Phát triển kinh doanh",
+        "Tài chính",
+        "Trợ lý hành chính",
+        "Bán lẻ",
+        "Dịch vụ khách hàng",
+        "Vận hành",
+        "Công nghệ thông tin"
+      ]
+    },
+    "postJob": {
+      "title": "Đăng tin tuyển dụng của bạn để hàng triệu người nhìn thấy",
+      "btn": "Đăng tin ngay"
+    },
+    "software": {
+      "title": "Khám phá các công cụ phần mềm tốt nhất",
+      "desc": "Kết nối với người dùng có kinh nghiệm thực tế để tìm sản phẩm phù hợp nhất cho bạn.",
+      "showAll": "Xem tất cả",
+      "tags": [
+        "Nền tảng thương mại điện tử",
+        "Phần mềm CRM",
+        "Hệ thống quản lý nhân sự",
+        "Phần mềm tuyển dụng",
+        "Công cụ Sales Intelligence",
+        "Phần mềm quản lý dự án",
+        "Phần mềm Help Desk"
+      ]
+    },
+    "games": {
+      "title": "Giữ cho tâm trí sắc bén với các trò chơi",
+      "desc": "Nghỉ ngơi và kết nối lại với mạng lưới của bạn qua các trò chơi nhanh hàng ngày."
+    },
+    "openToWork": {
+      "title": "Hãy để đúng người biết bạn đang tìm kiếm công việc",
+      "desc": "Với tính năng Mở đến công việc, bạn có thể thông báo riêng cho nhà tuyển dụng hoặc chia sẻ công khai rằng bạn đang tìm kiếm cơ hội việc làm mới."
+    },
+    "connect": {
+      "title": "Kết nối với những người có thể giúp đỡ bạn",
+      "btn": "Tìm người quen"
+    },
+    "learn": {
+      "title": "Học những kỹ năng bạn cần để thành công",
+      "chooseTopic": "Chọn chủ đề để học",
+      "topics": [
+        "Phân tích kinh doanh",
+        "Digital Marketing",
+        "Phát triển phần mềm"
+      ]
+    },
+    "whoIsFor": {
+      "title": "Hope dành cho ai?",
+      "desc": "Bất kỳ ai muốn phát triển sự nghiệp chuyên nghiệp.",
+      "items": [
+        "Tìm đồng nghiệp hoặc bạn học",
+        "Tìm công việc mới",
+        "Tìm khóa học hoặc đào tạo"
+      ]
+    },
+    "cta": {
+      "title": "Tham gia cùng đồng nghiệp, bạn học và bạn bè trên Hope.",
+      "btn": "Bắt đầu ngay"
+    }
+  },
+  "employer": {
+    "welcome": "Xin chào trở lại",
+    "subtitle": "Đây là những gì đang diễn ra với tin tuyển dụng của bạn hôm nay.",
+    "postJob": "Đăng tin mới",
+    "stats": {
+      "activeJobs": "Tin đang hoạt động",
+      "totalViews": "Tổng lượt xem",
+      "totalApplications": "Tổng ứng viên",
+      "newCandidates": "Ứng viên mới",
+      "sinceYesterday": "so với hôm qua"
+    },
+    "postings": {
+      "title": "Tin tuyển dụng đang hoạt động",
+      "viewAll": "Xem tất cả",
+      "showMore": "Hiển thị thêm",
+      "views": "Lượt xem",
+      "applicants": "Ứng viên",
+      "new": "Mới"
+    },
+    "candidates": {
+      "title": "Ứng viên phù hợp gần đây",
+      "viewAll": "Xem tất cả ứng viên",
+      "message": "Nhắn tin",
+      "profile": "Hồ sơ",
+      "match": "Phù hợp"
+    },
+    "insights": {
+      "title": "Phân tích thị trường",
+      "desc": "Dựa trên dữ liệu tin tuyển dụng và xu hướng tìm việc hiện tại trên hệ thống Hope.",
+      "readMore": "Đọc báo cáo đầy đủ"
+    }
+  },
+  "jobSearch": {
+    "searchPlaceholder": "Tìm kiếm bài viết hoặc thành viên...",
+    "basedOnProfile": "Công việc phù hợp với hồ sơ của bạn",
+    "results": "kết quả",
+    "filters": {
+      "datePosted": "Ngày đăng",
+      "experienceLevel": "Lĩnh vực",
+      "company": "Công ty",
+      "jobType": "Hình thức",
+      "remote": "Địa điểm",
+      "allFilters": "Tất cả bộ lọc"
+    },
+    "detail": {
+      "apply": "Ứng tuyển",
+      "save": "Lưu",
+      "hiringTeam": "Gặp nhóm tuyển dụng",
+      "aboutJob": "Về công việc",
+      "responsibilities": "Trách nhiệm chính:",
+      "requirements": "Yêu cầu:",
+      "skills": "Kỹ năng:",
+      "aboutCompany": "Về công ty",
+      "follow": "Theo dõi",
+      "activelyHiring": "Đang tuyển dụng tích cực",
+      "yourProfileMatches": "Hồ sơ của bạn phù hợp với công việc này"
+    }
+  },
+  "dashboard": {
+    "startPost": "Viết gì đó...",
+    "media": "Ảnh/Video",
+    "event": "Sự kiện",
+    "writeArticle": "Viết bài",
+    "sortBy": "Sắp xếp:",
+    "top": "Nổi bật",
+    "like": "Thích",
+    "comment": "Bình luận",
+    "share": "Chia sẻ",
+    "send": "Gửi",
+    "seeMore": "...xem thêm",
+    "activelyRecruiting": "Đang tuyển dụng",
+    "easyApply": "Ứng tuyển nhanh",
+    "ignore": "Bỏ qua",
+    "profile": {
+      "profileViewers": "Lượt xem hồ sơ",
+      "connections": "Kết nối",
+      "myItems": "Mục của tôi",
+      "strength": "Độ hoàn thiện hồ sơ",
+      "intermediate": "Trung bình",
+      "strengthTip": "Thêm portfolio để thu hút 3x nhà tuyển dụng.",
+      "completeProfile": "Hoàn thiện hồ sơ",
+      "recent": "Gần đây",
+      "discoverMore": "Khám phá thêm"
+    },
+    "sidebar": {
+      "trendingJobs": "Việc làm nổi bật",
+      "peopleYouMayKnow": "Người bạn có thể biết",
+      "connect": "Kết nối",
+      "seeAll": "Xem tất cả gợi ý",
+      "showMore": "Xem thêm"
+    },
+    "messaging": "Nhắn tin"
+  },
+  "footer": {
+    "general": "Tổng quát",
+    "browseLI": "Khám phá Hope",
+    "businessSolutions": "Giải pháp doanh nghiệp",
+    "directories": "Danh mục",
+    "generalLinks": [
+      "Đăng ký",
+      "Trung tâm trợ giúp",
+      "Giới thiệu",
+      "Báo chí",
+      "Blog",
+      "Tuyển dụng",
+      "Nhà phát triển"
+    ],
+    "browseLinks": [
+      "Học tập",
+      "Việc làm",
+      "Trò chơi",
+      "Di động",
+      "Dịch vụ",
+      "Sản phẩm"
+    ],
+    "businessLinks": [
+      "Nhân tài",
+      "Marketing",
+      "Kinh doanh",
+      "Học tập"
+    ],
+    "directoriesLinks": [
+      "Thành viên",
+      "Việc làm",
+      "Công ty",
+      "Tin tức",
+      "Bản tin",
+      "Dịch vụ"
+    ],
+    "bottomLinks": [
+      "Giới thiệu",
+      "Khả năng tiếp cận",
+      "Điều khoản Sử dụng",
+      "Chính sách Bảo mật",
+      "Chính sách Cookie",
+      "Chính sách Bản quyền",
+      "Chính sách Thương hiệu",
+      "Kiểm soát khách"
+    ],
+    "language": "Ngôn ngữ"
+  },
   "notifications": {
     "title": "Thông báo hệ thống",
     "new": "MỚI",
@@ -199,14 +433,5 @@
       "medium": "TRUNG BÌNH",
       "critical": "RẤT CAO"
     }
-  },
-  "employer": {
-    "insights": {
-      "title": "Phân tích thị trường",
-      "desc": "Dựa trên dữ liệu tin tuyển dụng và xu hướng tìm việc hiện tại trên hệ thống Hope."
-    }
-  },
-  "jobSearch": {
-    "searchPlaceholder": "Tìm kiếm bài viết hoặc thành viên..."
   }
 }

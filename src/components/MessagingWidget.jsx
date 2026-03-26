@@ -151,7 +151,7 @@ function ChatWindow({ chat, onClose, onMinimize, onMarkRead }) {
     };
 
     return (
-        <div className="w-80 bg-white border border-gray-200 shadow-2xl rounded-t-xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5">
+        <div className="w-80 glass-card shadow-2xl rounded-t-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5">
             {/* Header */}
             <div
                 className="bg-primary text-white p-2.5 flex items-center justify-between cursor-pointer hover:bg-primary/90 transition-colors"
@@ -355,9 +355,13 @@ export default function MessagingWidget() {
                     <button
                         key={chat.user._id}
                         onClick={() => toggleMinimize(chat.user._id)}
-                        className="relative w-14 h-14 rounded-full bg-white shadow-2xl border-2 border-primary/20 hover:scale-105 transition-transform flex items-center justify-center p-0.5 group animate-in zoom-in-50"
+                        className="relative w-14 h-14 glass-card premium-lift rounded-full shadow-2xl flex items-center justify-center p-0.5 group animate-in zoom-in-50"
                     >
-                        <img src={chat.user.avatar || '/default-avatar.png'} alt={chat.user.name} className="w-full h-full rounded-full object-cover" />
+                        {chat.user.avatar ? (
+                            <img src={chat.user.avatar} alt={chat.user.name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full rounded-full bg-primary/10 flex items-center justify-center"><span className="material-icons text-primary">person</span></div>
+                        )}
 
                         {/* Unread Badge */}
                         {chat.unread > 0 && (

@@ -566,15 +566,15 @@ export default function ProfileEditPage() {
     setSaving(true); setError('');
     try {
       const mainNiche = form.niche[0];
-      
+
       // Filter out subNiches that don't belong to the selected main niche
-      const validSubNiches = mainNiche && SUB_NICHES[mainNiche] 
+      const validSubNiches = mainNiche && SUB_NICHES[mainNiche]
         ? form.subNiche.filter(sn => SUB_NICHES[mainNiche].includes(sn))
         : [];
 
       // Filter out tools that don't belong to the selected main niche or COMMON_TOOLS
-      const validTools = form.tools.filter(t => 
-        COMMON_TOOLS.includes(t) || 
+      const validTools = form.tools.filter(t =>
+        COMMON_TOOLS.includes(t) ||
         (mainNiche && NICHE_TOOLS[mainNiche] && NICHE_TOOLS[mainNiche].includes(t))
       );
 
@@ -624,16 +624,20 @@ export default function ProfileEditPage() {
       {/* ── HEADER ── */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-1">
+          <Link
+            to={user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : '/')}
+            className="flex items-center gap-1"
+          >
             <span className="text-primary font-bold text-2xl tracking-tight">Ho</span>
             <span className="bg-primary text-white rounded px-1.5 font-bold text-lg">pe</span>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <LanguageSwitcher variant="compact" />
-            <button onClick={() => navigate(-1)} className="text-sm font-semibold text-gray-500 hover:text-gray-800 px-4 py-2">Hủy</button>
-            <button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary-dark text-white text-sm font-bold px-6 py-2 rounded-full transition-colors flex items-center gap-2 shadow-md shadow-primary/20">
+            <button onClick={() => navigate(-1)} className="text-xs md:text-sm font-semibold text-gray-500 hover:text-gray-800 px-2 md:px-4 py-2">Hủy</button>
+            <button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary-dark text-white text-[11px] md:text-sm font-bold px-4 md:px-6 py-2 rounded-full transition-colors flex items-center gap-1 md:gap-2 shadow-md shadow-primary/20">
               {saving ? <span className="material-icons animate-spin text-sm">refresh</span> : <span className="material-icons text-sm">check_circle</span>}
-              Hoàn tất
+              <span className="hidden sm:inline">Hoàn tất</span>
+              <span className="sm:hidden">Lưu</span>
             </button>
           </div>
         </div>
@@ -641,25 +645,25 @@ export default function ProfileEditPage() {
 
       <main className="max-w-5xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
         {/* ── SIDEBAR NAVIGATION ── */}
-        <aside className="md:w-64 flex-shrink-0">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sticky top-24">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-2">Tiến trình hồ sơ</h3>
-            <ul className="space-y-1">
+        <aside className="w-full md:w-64 flex-shrink-0">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3 md:p-4 sticky top-20 md:top-24">
+            <h3 className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 md:mb-4 px-2">Tiến trình hồ sơ</h3>
+            <ul className="flex md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
               {(isFreelancer ? tabsFreelancer : [{ id: 1, name: 'Thông tin & Vấn đề', icon: 'info' }, { id: 2, name: 'Dự án & Ngân sách', icon: 'business' }]).map(tab => (
-                <li key={tab.id}>
+                <li key={tab.id} className="flex-shrink-0">
                   <button
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${activeTab === tab.id ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    className={`flex items-center gap-2 md:gap-3 px-3 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                       }`}
                   >
-                    <span className="material-icons text-lg">{tab.icon}</span>
+                    <span className="material-icons text-base md:text-lg">{tab.icon}</span>
                     {tab.name}
                   </button>
                 </li>
               ))}
             </ul>
 
-            <div className="mt-8 px-2">
+            <div className="mt-4 md:mt-8 px-2 hidden md:block">
               <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
                 <div className="bg-green-500 h-2 rounded-full transition-all duration-500" style={{ width: `${(activeTab / (isFreelancer ? 5 : 2)) * 100}%` }}></div>
               </div>
@@ -683,7 +687,7 @@ export default function ProfileEditPage() {
 
           {error && <div className="m-6 bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-sm font-medium flex items-center gap-2"><span className="material-icons">error</span>{error}</div>}
 
-          <div className="p-8">
+          <div className="p-4 md:p-8">
             {/* ── TAB 1: DANH TÍNH & NGÁCH ── */}
             {activeTab === 1 && (
               <div className="space-y-8 animate-fade-in">
@@ -1123,20 +1127,19 @@ export default function ProfileEditPage() {
       {showStatusModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl w-full max-w-sm p-8 shadow-2xl text-center animate-in zoom-in-95 duration-200 border border-gray-100">
-            <div className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-6 shadow-sm ${
-              showStatusModal === 'success' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
-            }`}>
+            <div className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-6 shadow-sm ${showStatusModal === 'success' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+              }`}>
               <span className="material-icons text-5xl">
                 {showStatusModal === 'success' ? 'check_circle' : 'error'}
               </span>
             </div>
-            
+
             <h3 className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">
               {showStatusModal === 'success' ? 'Thành công!' : 'Thất bại'}
             </h3>
             <p className="text-gray-500 mb-8 leading-relaxed text-sm">
-              {showStatusModal === 'success' 
-                ? 'Hồ sơ của bạn đã được cập nhật thành công và sẵn sàng để xuất bản.' 
+              {showStatusModal === 'success'
+                ? 'Hồ sơ của bạn đã được cập nhật thành công và sẵn sàng để xuất bản.'
                 : error || 'Đã có lỗi xảy ra trong quá trình lưu hồ sơ. Vui lòng thử lại.'
               }
             </p>
@@ -1144,13 +1147,13 @@ export default function ProfileEditPage() {
             <div className="flex flex-col gap-3">
               {showStatusModal === 'success' ? (
                 <>
-                  <button 
+                  <button
                     onClick={() => navigate(`/profile/${user?._id}`)}
                     className="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2"
                   >
                     <span className="material-icons text-lg">visibility</span> Xem hồ sơ
                   </button>
-                  <button 
+                  <button
                     onClick={() => setShowStatusModal(null)}
                     className="w-full py-4 bg-gray-50 text-gray-600 font-bold rounded-2xl hover:bg-gray-100 transition-all"
                   >
@@ -1158,7 +1161,7 @@ export default function ProfileEditPage() {
                   </button>
                 </>
               ) : (
-                <button 
+                <button
                   onClick={() => setShowStatusModal(null)}
                   className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-gray-800 transition-all shadow-lg"
                 >

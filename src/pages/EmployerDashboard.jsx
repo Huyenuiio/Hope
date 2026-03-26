@@ -19,15 +19,14 @@ function StatCard({ icon, label, value, trend, note, iconBg, iconColor, loading,
         <div className={`flex-shrink-0 ${iconBg} rounded-md p-3`}>
           <span className={`material-icons ${iconColor}`}>{icon}</span>
         </div>
-        <div className="ml-5 w-0 flex-1">
-          <dt className="text-sm font-medium text-gray-500 truncate">{label}</dt>
+        <div className="ml-3 md:ml-5 w-0 flex-1">
+          <dt className="text-[10px] md:text-sm font-medium text-gray-500 truncate">{label}</dt>
           <dd className="flex items-baseline">
             {loading
               ? <div className="h-6 w-12 bg-gray-200 rounded animate-pulse" />
-              : <div className="text-2xl font-semibold text-gray-900">{value ?? '—'}</div>
+              : <div className="text-lg md:text-2xl font-semibold text-gray-900">{value ?? '—'}</div>
             }
-            {trend && !loading && <span className="ml-2 flex items-baseline text-sm font-semibold text-green-600"><span className="material-icons text-xs mr-0.5">arrow_upward</span>{trend}</span>}
-            {note && !loading && <span className="ml-2 text-sm text-gray-500">{note}</span>}
+            {trend && !loading && <span className="ml-1 md:ml-2 flex items-baseline text-[10px] md:text-sm font-semibold text-green-600"><span className="material-icons text-[10px] md:text-xs mr-0.5">arrow_upward</span>{trend}</span>}
           </dd>
         </div>
       </div>
@@ -147,103 +146,130 @@ function PostJobModal({ onClose, onSuccess, job }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col">
-        <div className="p-5 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
-          <h2 className="font-bold text-lg text-gray-900">{job ? 'Chỉnh sửa tin tuyển dụng' : 'Đăng tin tuyển dụng'}</h2>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full"><span className="material-icons text-gray-400">close</span></button>
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-0 sm:p-4">
+      <div className="bg-white rounded-none sm:rounded-xl shadow-2xl w-full max-w-xl h-full sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="p-4 md:p-5 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
+          <h2 className="font-bold text-base md:text-lg text-gray-900">{job ? 'Chỉnh sửa tin tuyển dụng' : 'Đăng tin tuyển dụng'}</h2>
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors"><span className="material-icons text-gray-400">close</span></button>
         </div>
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto">
-          <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-1">Tiêu đề công việc *</label>
-            <input type="text" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Vd: Cần editor video Talking Head..." className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
-          </div>
-          <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-1">Mô tả chi tiết *</label>
-            <textarea rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Mô tả yêu cầu công việc, kết quả mong đợi..." className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
-          </div>
-          <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">Lĩnh vực (Niche)</label>
-            <div className="flex flex-wrap gap-2">
-              {NICHES.map(n => (
-                <button key={n.id} type="button" onClick={() => toggleNiche(n.id)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${form.niche.includes(n.id) ? 'bg-primary text-white border-primary' : 'bg-white text-gray-600 border-gray-300 hover:border-primary'}`}
-                >{n.label}</button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">Ngách chuyên sâu (Sub-Niches)</label>
-            <div className="flex flex-wrap gap-2">
-              {form.niche.map(nId => (
-                SUB_NICHES[nId]?.map(sn => (
-                  <button key={`${nId}-${sn}`} type="button" onClick={() => toggleSubNiche(sn)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${form.subNiche.includes(sn) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:border-blue-600'}`}
-                  >{sn}</button>
-                ))
-              ))}
-              {form.niche.length === 0 && <p className="text-xs text-gray-400 italic">Chọn Lĩnh vực trước để chọn Ngách...</p>}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
+        <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-4 md:space-y-6 overflow-y-auto flex-1 custom-scrollbar">
+          <div className="space-y-4">
             <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-1">Hình thức</label>
-              <select value={form.workType} onChange={e => setForm(p => ({ ...p, workType: e.target.value }))} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="remote">🌐 Remote</option>
-                <option value="hybrid">🏢 Hybrid</option>
-                <option value="onsite">📍 On-site</option>
-              </select>
+              <label className="text-xs md:text-sm font-bold text-gray-700 block mb-1.5 italic">1. Thông tin cơ bản</label>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 block mb-1">Tiêu đề công việc *</label>
+                  <input type="text" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Vd: Cần editor video Talking Head..." className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 block mb-1">Mô tả chi tiết *</label>
+                  <textarea rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Mô tả yêu cầu công việc, kết quả mong đợi..." className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm resize-none" />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-1">Trình độ yêu cầu</label>
-              <select value={form.expertiseLevel} onChange={e => setForm(p => ({ ...p, expertiseLevel: e.target.value }))} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="intern">Intern</option>
-                <option value="junior">Junior</option>
-                <option value="middle">Middle</option>
-                <option value="senior">Senior</option>
-                <option value="expert">Expert</option>
-              </select>
+
+            <div className="pt-2">
+              <label className="text-xs md:text-sm font-bold text-gray-700 block mb-3 italic">2. Phân loại & Ngách</label>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Lĩnh vực (Niches)</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {NICHES.map(n => (
+                      <button key={n.id} type="button" onClick={() => toggleNiche(n.id)}
+                        className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all ${form.niche.includes(n.id) ? 'bg-primary text-white border-primary shadow-md shadow-primary/20 scale-105' : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-primary hover:bg-white'}`}
+                      >{n.label}</button>
+                    ))}
+                  </div>
+                </div>
+                {form.niche.length > 0 && (
+                  <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100/50 animate-fade-in">
+                    <label className="text-[11px] font-bold text-blue-400 uppercase tracking-wider block mb-2">Ngách chuyên sâu (Sub-Niches)</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {form.niche.map(nId => (
+                        SUB_NICHES[nId]?.map(sn => (
+                          <button key={`${nId}-${sn}`} type="button" onClick={() => toggleSubNiche(sn)}
+                            className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all ${form.subNiche.includes(sn) ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-105' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-600'}`}
+                          >{sn}</button>
+                        ))
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-1">Loại ngân sách</label>
-              <select value={form['budget.type']} onChange={e => setForm(p => ({ ...p, 'budget.type': e.target.value }))} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="fixed">💵 Cố định</option>
-                <option value="hourly">⏱ Theo giờ</option>
-                <option value="monthly">📅 Theo tháng</option>
-              </select>
+
+            <div className="pt-2">
+              <label className="text-xs md:text-sm font-bold text-gray-700 block mb-3 italic">3. Ngân sách & Hình thức</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 block mb-1">Hình thức làm việc</label>
+                  <select value={form.workType} onChange={e => setForm(p => ({ ...p, workType: e.target.value }))} className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%207L10%2012L15%207%22%20stroke%3D%22%236B7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat shadow-sm">
+                    <option value="remote">🌐 Remote (Từ xa)</option>
+                    <option value="hybrid">🏢 Hybrid (Linh hoạt)</option>
+                    <option value="onsite">📍 On-site (Tại chỗ)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 block mb-1">Trình độ yêu cầu</label>
+                  <select value={form.expertiseLevel} onChange={e => setForm(p => ({ ...p, expertiseLevel: e.target.value }))} className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%207L10%2012L15%207%22%20stroke%3D%22%236B7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat shadow-sm">
+                    <option value="intern">Học việc (Intern)</option>
+                    <option value="junior">Mới đi làm (Junior)</option>
+                    <option value="middle">Dày dạn (Middle)</option>
+                    <option value="senior">Chuyên gia (Senior)</option>
+                    <option value="expert">Bậc thầy (Expert)</option>
+                  </select>
+                </div>
+                <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs font-semibold text-gray-500 block mb-1">Loại ngân sách</label>
+                    <select value={form['budget.type']} onChange={e => setForm(p => ({ ...p, 'budget.type': e.target.value }))} className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none bg-no-repeat shadow-sm">
+                      <option value="fixed">💵 Cố định</option>
+                      <option value="hourly">⏱ Theo giờ</option>
+                      <option value="monthly">📅 Theo tháng</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-500 block mb-1">Tối thiểu</label>
+                    <input type="number" value={form['budget.min']} onChange={e => setForm(p => ({ ...p, 'budget.min': e.target.value }))} placeholder="0" className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm" />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <label className="text-xs font-semibold text-gray-500 block mb-1">Tối đa</label>
+                      <input type="number" value={form['budget.max']} onChange={e => setForm(p => ({ ...p, 'budget.max': e.target.value }))} placeholder="0" className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-gray-500 block mb-1">Đơn vị</label>
+                      <select value={form['budget.currency']} onChange={e => setForm(p => ({ ...p, 'budget.currency': e.target.value }))} className="w-20 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm">
+                        <option value="VND">VND</option>
+                        <option value="USD">USD</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <label className="text-xs md:text-sm font-bold text-gray-700 block mb-3 italic">4. Kỹ năng & Hạn chót</label>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 block mb-1">Kỹ năng (phân cách bằng dấu phẩy)</label>
+                  <input type="text" value={form.requiredSkills} onChange={e => setForm(p => ({ ...p, requiredSkills: e.target.value }))} placeholder="Premiere Pro, After Effects, DaVinci Resolve..." className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm" />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 block mb-1">Hạn nộp hồ sơ (tùy chọn)</label>
+                  <input type="date" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm" />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-1">Tối thiểu</label>
-              <input type="number" value={form['budget.min']} onChange={e => setForm(p => ({ ...p, 'budget.min': e.target.value }))} placeholder="0" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-1">Tối đa</label>
-              <input type="number" value={form['budget.max']} onChange={e => setForm(p => ({ ...p, 'budget.max': e.target.value }))} placeholder="0" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-1">Đơn vị</label>
-              <select value={form['budget.currency']} onChange={e => setForm(p => ({ ...p, 'budget.currency': e.target.value }))} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="VND">VND</option>
-                <option value="USD">USD</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-1">Kỹ năng yêu cầu (phân cách bằng dấu phẩy)</label>
-            <input type="text" value={form.requiredSkills} onChange={e => setForm(p => ({ ...p, requiredSkills: e.target.value }))} placeholder="Premiere Pro, After Effects, DaVinci Resolve..." className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
-          </div>
-          <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-1">Hạn nộp hồ sơ (tùy chọn)</label>
-            <input type="date" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
-          </div>
-          {error && <p className="text-sm text-red-500 bg-red-50 p-2 rounded">{error}</p>}
+          {error && <p className="text-sm text-red-500 bg-red-50 p-3 rounded-xl border border-red-100 animate-shake">{error}</p>}
         </form>
-        <div className="p-5 border-t border-gray-100 flex gap-3 flex-shrink-0">
-          <button onClick={onClose} className="flex-1 py-2.5 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50">Hủy</button>
-          <button onClick={handleSubmit} disabled={loading} className="flex-1 py-2.5 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary-dark disabled:opacity-50 transition-colors">
-            {loading ? (job ? 'Đang cập nhật...' : 'Đang đăng...') : (job ? 'Lưu thay đổi' : 'Đăng tin')}
+        <div className="p-4 md:p-5 border-t border-gray-100 flex gap-3 flex-shrink-0 bg-gray-50/50">
+          <button onClick={onClose} className="flex-1 py-3 border border-gray-200 bg-white rounded-full text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all active:scale-95">Hủy</button>
+          <button onClick={handleSubmit} disabled={loading} className="flex-1 py-3 bg-primary text-white rounded-full text-sm font-bold hover:bg-primary-dark disabled:opacity-50 transition-all shadow-lg shadow-primary/20 active:scale-95 flex items-center justify-center gap-2">
+            {loading ? <span className="material-icons animate-spin text-sm">refresh</span> : null}
+            {loading ? (job ? 'Đang lưu...' : 'Đang đăng...') : (job ? 'Lưu thay đổi' : 'Đăng tin ngay')}
           </button>
         </div>
       </div>
@@ -537,12 +563,12 @@ export default function EmployerDashboard() {
       />
 
       <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6 flex justify-between items-start">
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start gap-4">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Xin chào, {user?.name?.split(' ')[0] || 'Nhà tuyển dụng'}! 👋</h1>
-            <p className="mt-1 text-sm text-gray-500">{t('employer.subtitle')}</p>
+            <h1 className="text-xl md:text-2xl font-semibold text-gray-900 line-clamp-1">Xin chào, {user?.name?.split(' ')[0] || 'Nhà tuyển dụng'}! 👋</h1>
+            <p className="mt-1 text-xs md:text-sm text-gray-500 line-clamp-1">{t('employer.subtitle')}</p>
           </div>
-          <button onClick={() => setPostModal(true)} className="bg-primary text-white font-semibold px-5 py-2 rounded-full text-sm hover:bg-primary-dark flex items-center gap-2 shadow-sm">
+          <button onClick={() => setPostModal(true)} className="w-full sm:w-auto bg-primary text-white font-semibold px-5 py-2.5 rounded-full text-sm hover:bg-primary-dark flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95">
             <span className="material-icons text-sm">add_circle</span>Đăng tin mới
           </button>
         </div>
@@ -589,10 +615,10 @@ export default function EmployerDashboard() {
                 <ul className="divide-y divide-gray-200">
                   {filteredJobs.map(job => (
                     <li key={job._id} className="px-6 py-5 hover:bg-gray-50 transition-colors">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-semibold text-primary hover:underline cursor-pointer truncate">{job.title}</h4>
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div className="flex-1 min-w-0 w-full lg:w-auto">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h4 className="text-sm font-semibold text-primary hover:underline cursor-pointer truncate lg:max-w-md">{job.title}</h4>
                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${job.status === 'open' ? 'bg-green-100 text-green-700' :
                               job.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                                 job.status === 'closed' ? 'bg-gray-100 text-gray-500' : 'bg-red-100 text-red-500'
@@ -601,11 +627,11 @@ export default function EmployerDashboard() {
                           </div>
                           <p className="text-xs text-gray-500 mt-1">{job.workType} · {new Date(job.createdAt).toLocaleDateString('vi-VN')}</p>
                           {job.niche?.length > 0 && (
-                            <div className="flex gap-1 mt-1.5">
+                            <div className="flex flex-wrap gap-1 mt-1.5">
                               {job.niche.slice(0, 3).map(n => <span key={n} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded">{n}</span>)}
                             </div>
                           )}
-                          <div className="mt-3 flex gap-4">
+                          <div className="mt-3 flex flex-wrap gap-4">
                             <div className="flex items-center gap-1 text-xs">
                               <span className="material-icons text-sm text-blue-500">visibility</span>
                               <span className="font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">{job.views || 0}</span>
@@ -613,7 +639,7 @@ export default function EmployerDashboard() {
                             </div>
                             <button
                               onClick={() => setAppModal(job)}
-                              className="flex items-center gap-1 text-xs hover:text-primary transition-colors"
+                              className="flex items-center gap-1 text-xs hover:text-primary transition-colors hover:scale-105 active:scale-95 duration-200"
                             >
                               <span className="material-icons text-sm text-green-500">people</span>
                               <span className="font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded">{job.applicantCount || 0}</span>
@@ -621,7 +647,7 @@ export default function EmployerDashboard() {
                             </button>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 ml-3 relative">
+                        <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-gray-100 relative">
                           {job.status === 'pending' && (
                             <button
                               onClick={() => handleDeleteJob(job._id)}
@@ -684,29 +710,35 @@ export default function EmployerDashboard() {
           {/* Right Sidebar */}
           <div className="space-y-6">
             {/* Profile card */}
-            <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-5">
-              <div className="flex items-center gap-3 mb-4">
-                {user?.avatar
-                  ? <img alt="Avatar" className="h-12 w-12 rounded-full object-cover border border-gray-200" src={user.avatar} />
-                  : <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center"><span className="material-icons text-primary">business</span></div>
-                }
+            <div className="glass-card premium-lift rounded-xl overflow-hidden relative group p-5">
+              <div className="flex items-center gap-4 mb-4">
+                <Link to={`/profile/${user?._id}`} className="relative group/avatar">
+                  <div className="h-14 w-14 rounded-full border-2 border-white shadow-md overflow-hidden bg-white transition-transform group-hover/avatar:scale-110 duration-500">
+                    {user?.avatar
+                      ? <img alt="Avatar" className="w-full h-full object-cover" src={user.avatar} />
+                      : <div className="w-full h-full bg-primary/10 flex items-center justify-center"><span className="material-icons text-primary text-2xl">business</span></div>
+                    }
+                  </div>
+                </Link>
                 <div>
-                  <p className="font-semibold text-gray-900">{user?.name}</p>
-                  <p className="text-xs text-gray-500">{user?.company || user?.role || 'Khách hàng'}</p>
+                  <Link to={`/profile/${user?._id}`} className="block group/name">
+                    <p className="font-bold text-gray-900 group-hover/name:text-primary transition-colors">{user?.name}</p>
+                    <p className="text-xs text-gray-500 font-medium">{user?.company || user?.role || 'Khách hàng'}</p>
+                  </Link>
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 pt-2 border-t border-gray-100/50">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Tin đã đăng</span>
-                  <span className="font-semibold text-primary">{myJobs.length}</span>
+                  <span className="text-gray-500 font-medium">Tin đã đăng</span>
+                  <span className="font-bold text-primary">{myJobs.length}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Đang mở</span>
-                  <span className="font-semibold text-green-600">{openJobs}</span>
+                  <span className="text-gray-500 font-medium">Đang mở</span>
+                  <span className="font-bold text-green-600">{openJobs}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Tổng ứng viên</span>
-                  <span className="font-semibold">{totalApplications}</span>
+                  <span className="text-gray-500 font-medium">Tổng ứng viên</span>
+                  <span className="font-bold text-gray-900">{totalApplications}</span>
                 </div>
               </div>
             </div>

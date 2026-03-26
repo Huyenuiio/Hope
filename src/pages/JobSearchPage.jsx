@@ -108,6 +108,7 @@ export default function JobSearchPage() {
 
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -413,7 +414,7 @@ export default function JobSearchPage() {
       <div className="flex-1 overflow-hidden">
         <div className="max-w-7xl mx-auto h-full flex gap-0">
           {/* Left: Job List Sidebar with Local Search */}
-          <div className="w-full md:w-[380px] flex-shrink-0 border-r border-gray-200 bg-white flex flex-col h-full">
+          <div className={`${mobileDetailOpen ? 'hidden' : 'flex'} w-full md:w-[380px] md:flex flex-shrink-0 border-r border-gray-200 bg-white flex-col h-full`}>
             {/* Local Sidebar Search */}
             <div className="p-3 border-b border-gray-100 bg-gray-50/50">
               <div className="relative group">
@@ -461,7 +462,12 @@ export default function JobSearchPage() {
               ) : (
                 <ul className="divide-y divide-gray-100">
                   {jobs.map(job => (
-                    <JobCard key={job._id} job={job} isSelected={selectedJob?._id === job._id} onSelect={setSelectedJob} />
+                    <JobCard
+                      key={job._id}
+                      job={job}
+                      isSelected={selectedJob?._id === job._id}
+                      onSelect={(j) => { setSelectedJob(j); setMobileDetailOpen(true); }}
+                    />
                   ))}
                 </ul>
               )}
@@ -469,12 +475,20 @@ export default function JobSearchPage() {
           </div>
 
           {/* Right: Job Detail */}
-          <div className="hidden md:flex flex-1 flex-col overflow-y-auto h-full bg-white">
+          <div className={`${mobileDetailOpen ? 'flex' : 'hidden'} md:flex flex-1 flex-col overflow-y-auto h-full bg-white`}>
             {activeJob ? (
               <div className="p-6 max-w-2xl">
                 {/* Header */}
                 <div className="flex items-start gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center border border-gray-200 overflow-hidden flex-shrink-0">
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center border border-gray-200 overflow-hidden flex-shrink-0 relative">
+                    {/* Mobile Back Button */}
+                    <button
+                      onClick={() => setMobileDetailOpen(false)}
+                      className="md:hidden absolute -top-1 -left-1 bg-white rounded-full shadow-md border border-gray-200 p-1 text-primary z-20"
+                    >
+                      <span className="material-icons text-xl">arrow_back</span>
+                    </button>
+
                     {activeJob.client?.avatar
                       ? <img alt={activeJob.client?.name} src={activeJob.client.avatar} className="w-full h-full object-cover" />
                       : <span className="material-icons text-primary text-2xl">business</span>

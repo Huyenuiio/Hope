@@ -275,6 +275,8 @@
       "operations": "Operations",
       "matching": "Matching & Scheduling",
       "analytics": "Analytics",
+      "support": "Support & Disputes",
+      "reports": "Violation Reports",
       "system": "System",
       "securityMonitor": "Security Monitor",
       "systemStatus": "System Status",
@@ -282,9 +284,12 @@
       "logout": "Logout"
     },
     "stats": {
+      "totalUsers": "Total Users",
       "newUsers": "New Users",
+      "newUsersToday": "New Users Today",
       "successfulMatches": "Successful Matches",
       "monthlyRevenue": "Monthly Revenue",
+      "openJobs": "Open Jobs",
       "securityAlerts": "Security Alerts",
       "vsLast30": "v.s. last 30 days",
       "vsLastMonth": "v.s. last month",

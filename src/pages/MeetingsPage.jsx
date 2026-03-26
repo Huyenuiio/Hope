@@ -43,7 +43,7 @@ function ScheduleMeetingModal({ onClose, onSuccess }) {
   useEffect(() => {
     usersAPI.getFreelancers({ limit: 20 })
       .then(({ data }) => setFreelancers(data.users || []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const set = (key, val) => setForm(p => ({ ...p, [key]: val }));
@@ -193,10 +193,16 @@ export default function MeetingsPage() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/dashboard" className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500">
+            <Link
+              to={user?.role === 'client' ? '/employer' : '/dashboard'}
+              className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500"
+            >
               <span className="material-icons">arrow_back</span>
             </Link>
-            <Link to="/" className="flex items-center gap-0.5">
+            <Link
+              to={user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : '/')}
+              className="flex items-center gap-0.5"
+            >
               <span className="text-primary font-bold text-xl">Ho</span>
               <span className="bg-primary text-white rounded px-1 font-bold text-sm">pe</span>
             </Link>

@@ -73,22 +73,22 @@ export default function SettingsPage() {
       <Navbar activeNav="none" />
 
       <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar */}
-          <aside className="w-full md:w-64 shrink-0">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6 px-4">Cài đặt</h1>
-            <nav className="space-y-1">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+          {/* Sidebar - Horizontal on mobile, vertical on desktop */}
+          <aside className="w-full md:w-64 shrink-0 overflow-hidden">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">Cài đặt</h1>
+            <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
               {menuItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${activeTab === item.id
+                  className={`flex items-center space-x-2 md:space-x-3 px-4 py-2.5 md:py-3 rounded-xl transition-all whitespace-nowrap ${activeTab === item.id
                     ? 'bg-primary text-white shadow-md shadow-primary/20'
                     : 'text-gray-600 hover:bg-white hover:shadow-sm'
                     }`}
                 >
                   <span className="material-icons text-xl">{item.icon}</span>
-                  <span className="font-semibold">{item.label}</span>
+                  <span className="font-semibold text-sm md:text-base">{item.label}</span>
                 </button>
               ))}
             </nav>

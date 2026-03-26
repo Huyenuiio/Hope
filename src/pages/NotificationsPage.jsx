@@ -83,10 +83,16 @@ export default function NotificationsPage() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/dashboard" className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 transition">
+            <Link
+              to={user?.role === 'client' ? '/employer' : '/dashboard'}
+              className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 transition"
+            >
               <span className="material-icons">arrow_back</span>
             </Link>
-            <Link to="/" className="flex items-center gap-0.5">
+            <Link
+              to={user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : '/')}
+              className="flex items-center gap-0.5"
+            >
               <span className="text-primary font-bold text-xl">Ho</span>
               <span className="bg-primary text-white rounded px-1 font-bold text-sm">pe</span>
             </Link>
@@ -111,8 +117,8 @@ export default function NotificationsPage() {
               key={f.key}
               onClick={() => setFilter(f.key)}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${filter === f.key
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-primary hover:text-primary'
+                ? 'bg-primary text-white shadow-sm'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-primary hover:text-primary'
                 }`}
             >
               <span className="material-icons text-sm">{f.icon}</span>

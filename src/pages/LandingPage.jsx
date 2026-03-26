@@ -43,12 +43,12 @@ export default function LandingPage() {
       <LandingNavbar />
 
       {/* Hero Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-24 py-12 md:py-20 flex flex-col md:flex-row items-center gap-12">
-        <div className="w-full md:w-1/2 space-y-8">
-          <h1 className="text-5xl md:text-6xl font-extralight text-orange-800 leading-tight">
+      <section className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-24 py-10 md:py-20 flex flex-col md:flex-row items-center gap-10 md:gap-12">
+        <div className="w-full md:w-1/2 space-y-8 text-center md:text-left">
+          <h1 className="text-4xl md:text-6xl font-extralight text-orange-800 leading-tight">
             {t('landing.hero.title')}
           </h1>
-          <div className="space-y-4 max-w-md">
+          <div className="space-y-4 max-w-md mx-auto md:mx-0">
             {/* Google Sign-In button — calls backend OAuth */}
             <button
               onClick={loginWithGoogle}
@@ -75,10 +75,10 @@ export default function LandingPage() {
             <button onClick={loginWithGoogle} className="text-primary font-semibold hover:underline">{t('landing.hero.joinNow')}</button>
           </div>
         </div>
-        <div className="w-full md:w-1/2 relative">
+        <div className="w-full md:w-1/2 relative px-4 md:px-0">
           <img
             alt="Professional working on laptop"
-            className="w-full h-auto rounded-tl-[100px] rounded-br-[100px] object-cover shadow-2xl"
+            className="w-full h-auto rounded-tl-[60px] md:rounded-tl-[100px] rounded-br-[60px] md:rounded-br-[100px] object-cover shadow-2xl"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBALUxKlNO8w-X2NTCgEnW8iKpYSlrILo-XEsEIKed3Mq7trtMER9ehf3JEngH8c70nvyndJqi1fOiaOEVb00BEiSEJEsrUDEPbvw0Wl5_8zupehPDfLo60i5No55k83BFEHHSUsKDM47a2G_xzq-aZkVJYSl5HDuoJyaW_UP3woIfvpAVZog4OamoL5KVzobv5uzXNpDxOoroL7sJzcgdtQLvgP8pcwLGiDu163cUxUODZQOZRbef__Z93K7vXsC_ujeMEcAAWHwI"
           />
         </div>
@@ -150,12 +150,12 @@ export default function LandingPage() {
 
       {/* Open To Work */}
       <section className="bg-accent-light py-16 md:py-24 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-24 flex flex-col md:flex-row items-center gap-12">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-24 flex flex-col md:flex-row items-center gap-12 text-center md:text-left">
           <div className="w-full md:w-1/2 space-y-6">
-            <h2 className="text-4xl md:text-5xl font-light text-orange-800 leading-tight">{t('landing.openToWork.title')}</h2>
-            <p className="text-xl font-light text-gray-700">{t('landing.openToWork.desc')}</p>
+            <h2 className="text-3xl md:text-5xl font-light text-orange-800 leading-tight">{t('landing.openToWork.title')}</h2>
+            <p className="text-lg md:text-xl font-light text-gray-700">{t('landing.openToWork.desc')}</p>
           </div>
-          <div className="w-full md:w-1/2 flex justify-center relative">
+          <div className="w-full md:w-1/2 flex justify-center relative mt-8 md:mt-0">
             <div className="bg-black rounded-full h-[400px] w-[400px] absolute -top-10 opacity-10 blur-3xl"></div>
             <div className="relative z-10 w-72 md:w-80">
               <img
