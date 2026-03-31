@@ -19,11 +19,11 @@ export default function LandingNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { icon: 'article', label: t('nav.articles') },
-    { icon: 'people', label: t('nav.people') },
-    { icon: 'ondemand_video', label: t('nav.learning') },
-    { icon: 'work', label: t('nav.jobs') },
-    { icon: 'extension', label: t('nav.games') },
+    { icon: 'article', label: t('nav.articles'), href: '#topics-section' },
+    { icon: 'people', label: t('nav.people'), href: '#people-section' },
+    { icon: 'ondemand_video', label: t('nav.learning'), href: '#learning-section' },
+    { icon: 'work', label: t('nav.jobs'), to: '/jobs' },
+    { icon: 'extension', label: t('nav.games'), href: '#games-section' },
   ];
 
   return (
@@ -35,11 +35,18 @@ export default function LandingNavbar() {
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-6">
           <div className="flex gap-6 border-r border-gray-200 pr-6">
-            {navItems.map(({ icon, label }) => (
-              <div key={icon} className="icon-nav">
-                <span className="material-icons">{icon}</span>
-                <span>{label}</span>
-              </div>
+            {navItems.map(({ icon, label, to, href }) => (
+              to ? (
+                <Link key={icon} to={to} className="icon-nav no-underline">
+                  <span className="material-icons">{icon}</span>
+                  <span>{label}</span>
+                </Link>
+              ) : (
+                <a key={icon} href={href} className="icon-nav no-underline">
+                  <span className="material-icons">{icon}</span>
+                  <span>{label}</span>
+                </a>
+              )
             ))}
           </div>
           <div className="flex items-center gap-3">
@@ -78,11 +85,18 @@ export default function LandingNavbar() {
               </button>
             </div>
             <div className="flex flex-col gap-4 overflow-y-auto flex-1">
-              {navItems.map(({ icon, label }) => (
-                <div key={icon} className="flex items-center gap-4 text-gray-700 font-medium p-2 hover:bg-gray-50 rounded-lg">
-                  <span className="material-icons text-gray-400">{icon}</span>
-                  <span>{label}</span>
-                </div>
+              {navItems.map(({ icon, label, to, href }) => (
+                to ? (
+                  <Link key={icon} to={to} onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 text-gray-700 font-medium p-2 hover:bg-gray-50 rounded-lg no-underline">
+                    <span className="material-icons text-gray-400">{icon}</span>
+                    <span>{label}</span>
+                  </Link>
+                ) : (
+                  <a key={icon} href={href} onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 text-gray-700 font-medium p-2 hover:bg-gray-50 rounded-lg no-underline">
+                    <span className="material-icons text-gray-400">{icon}</span>
+                    <span>{label}</span>
+                  </a>
+                )
               ))}
               <hr className="my-2" />
               <Link to="/dashboard" className="w-full">

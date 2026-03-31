@@ -85,7 +85,7 @@ export default function LandingPage() {
       </section>
 
       {/* Topics + Job Categories */}
-      <section className="bg-surface-light py-16 md:py-20">
+      <section id="topics-section" className="bg-surface-light py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-24 space-y-16">
           <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/3">
@@ -97,7 +97,7 @@ export default function LandingPage() {
               <button className="px-6 py-3 bg-gray-100 rounded-full font-semibold text-primary hover:bg-gray-200 transition">{t('landing.topics.showAll')}</button>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row gap-8">
+          <div id="jobs-section" className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/3">
               <h2 className="text-3xl md:text-4xl font-light">{t('landing.jobCategories.title')}</h2>
             </div>
@@ -124,7 +124,7 @@ export default function LandingPage() {
       </section>
 
       {/* Software + Games */}
-      <section className="bg-background-light py-16 md:py-20">
+      <section id="games-section" className="bg-background-light py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-24 space-y-16">
           <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/3">
@@ -179,7 +179,7 @@ export default function LandingPage() {
       </section>
 
       {/* Connect + Learn */}
-      <section className="bg-background-light py-16 md:py-24">
+      <section id="learning-section" className="bg-background-light py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-24 grid md:grid-cols-2 gap-12">
           <div className="flex flex-col items-start gap-6">
             <div className="relative w-full aspect-[4/3] max-w-sm">
@@ -211,7 +211,7 @@ export default function LandingPage() {
       </section>
 
       {/* Who Is LinkedIn For */}
-      <section className="bg-surface-light py-16 md:py-24">
+      <section id="people-section" className="bg-surface-light py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-24 flex flex-col md:flex-row gap-12">
           <div className="w-full md:w-1/2 space-y-6">
             <h2 className="text-4xl font-light text-orange-900">{t('landing.whoIsFor.title')}</h2>
