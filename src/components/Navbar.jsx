@@ -8,7 +8,7 @@ import { usersAPI } from '../services/api';
 
 export default function Navbar({ activeNav = 'home', search, onSearchChange, showSearch = false, extraActions, searchResults, isSearching }) {
   const { t } = useTranslation();
-  const { user, logout, setUser, isAuthenticated } = useAuth();
+  const { user, logout, setUser, isAuthenticated, loginWithGoogle } = useAuth();
   const { notifications, unreadCount, markAllRead, setNotifications } = useNotifications();
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -270,8 +270,8 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
               {extraActions}
               {!isAuthenticated ? (
                 <div className="flex items-center gap-3 h-full">
-                  <Link to="/" className="text-gray-600 font-semibold hover:bg-gray-100 px-4 py-2 rounded-md transition text-sm">Tham gia ngay</Link>
-                  <Link to="/" className="text-primary border border-primary font-semibold rounded-full px-5 py-2 hover:bg-blue-50 transition text-sm">Đăng nhập</Link>
+                  <button onClick={loginWithGoogle} className="text-gray-600 font-semibold hover:bg-gray-100 px-4 py-2 rounded-md transition text-sm">Tham gia ngay</button>
+                  <button onClick={loginWithGoogle} className="text-primary border border-primary font-semibold rounded-full px-5 py-2 hover:bg-blue-50 transition text-sm">Đăng nhập</button>
                 </div>
               ) : (
                 <>
@@ -465,14 +465,14 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
             </>
           ) : (
             <>
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-primary hover:bg-blue-50 font-bold border border-primary/20 mb-2">
+              <button onClick={() => { loginWithGoogle(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-primary hover:bg-blue-50 font-bold border border-primary/20 mb-2">
                 <span className="material-icons">login</span>
                 Đăng nhập
-              </Link>
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold border border-gray-200">
+              </button>
+              <button onClick={() => { loginWithGoogle(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold border border-gray-200">
                 <span className="material-icons">person_add</span>
                 Tham gia ngay
-              </Link>
+              </button>
               <div className="px-4 py-3 mt-4">
                 <LanguageSwitcher />
               </div>
