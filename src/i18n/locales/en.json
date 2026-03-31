@@ -18,15 +18,17 @@
       "title": "Discover new opportunities",
       "continueGoogle": "Continue with Google",
       "signInEmail": "Sign in with email",
-      "agreement": "By clicking Continue to join or sign in, you agree to LinkedIn's",
+      "agreement": "By clicking Continue to join or sign in, you agree to Hope's",
       "userAgreement": "User Agreement",
       "privacyPolicy": "Privacy Policy",
       "cookiePolicy": "Cookie Policy",
-      "newToLinkedIn": "New to LinkedIn?",
-      "joinNow": "Join now"
+      "newToLinkedIn": "New to Hope?",
+      "joinNow": "Join now",
+      "devLogin": "Quick login (Dev)",
+      "and": "and"
     },
     "topics": {
-      "title": "Explore top LinkedIn content",
+      "title": "Explore top Hope content",
       "desc": "Discover relevant posts and expert insights — curated by topic and in one place.",
       "showAll": "Show all",
       "tags": [
@@ -77,7 +79,7 @@
     },
     "openToWork": {
       "title": "Let the right people know you're open to work",
-      "desc": "With the Open To Work feature, you can privately tell recruiters or publicly share with the LinkedIn community that you are looking for new job opportunities."
+      "desc": "With the Open To Work feature, you can privately tell recruiters or publicly share with the Hope community that you are looking for new job opportunities."
     },
     "connect": {
       "title": "Connect with people who can help",
@@ -93,7 +95,7 @@
       ]
     },
     "whoIsFor": {
-      "title": "Who is LinkedIn for?",
+      "title": "Who is Hope for?",
       "desc": "Anyone looking to navigate their professional life.",
       "items": [
         "Find a coworker or classmate",
@@ -102,7 +104,7 @@
       ]
     },
     "cta": {
-      "title": "Join your colleagues, classmates, and friends on LinkedIn.",
+      "title": "Join your colleagues, classmates, and friends on Hope.",
       "btn": "Get started"
     }
   },
@@ -201,7 +203,7 @@
   },
   "footer": {
     "general": "General",
-    "browseLI": "Browse LinkedIn",
+    "browseLI": "Browse Hope",
     "businessSolutions": "Business Solutions",
     "directories": "Directories",
     "generalLinks": [

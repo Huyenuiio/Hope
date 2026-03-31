@@ -23,7 +23,9 @@
       "privacyPolicy": "Chính sách Bảo mật",
       "cookiePolicy": "Chính sách Cookie",
       "newToLinkedIn": "Chưa có tài khoản?",
-      "joinNow": "Đăng ký ngay"
+      "joinNow": "Đăng ký ngay",
+      "devLogin": "Đăng nhập nhanh để test",
+      "and": "và"
     },
     "topics": {
       "title": "Khám phá nội dung hàng đầu trên Hope",

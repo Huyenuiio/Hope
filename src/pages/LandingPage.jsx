@@ -61,13 +61,13 @@ export default function LandingPage() {
               onClick={handleDevLogin}
               className="w-full border border-gray-400 rounded-full py-3 font-medium hover:bg-gray-50 transition"
             >
-              {'Đăng nhập nhanh để test'}
+              <span>{t('landing.hero.devLogin')}</span>
             </button>
           </div>
           <p className="text-xs text-gray-500 max-w-sm">
             {t('landing.hero.agreement')}{' '}
             <a className="text-primary font-bold hover:underline" href="#">{t('landing.hero.userAgreement')}</a>,{' '}
-            <a className="text-primary font-bold hover:underline" href="#">{t('landing.hero.privacyPolicy')}</a>, và{' '}
+            <a className="text-primary font-bold hover:underline" href="#">{t('landing.hero.privacyPolicy')}</a>, {t('landing.hero.and')}{' '}
             <a className="text-primary font-bold hover:underline" href="#">{t('landing.hero.cookiePolicy')}</a>.
           </p>
           <div className="pt-4 text-lg">
