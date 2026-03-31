@@ -8,7 +8,7 @@ import { usersAPI } from '../services/api';
 
 export default function Navbar({ activeNav = 'home', search, onSearchChange, showSearch = false, extraActions, searchResults, isSearching }) {
   const { t } = useTranslation();
-  const { user, logout, setUser } = useAuth();
+  const { user, logout, setUser, isAuthenticated } = useAuth();
   const { notifications, unreadCount, markAllRead, setNotifications } = useNotifications();
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -186,6 +186,7 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
           <div className="hidden md:flex items-center h-full">
             <ul className="flex items-center space-x-1 h-full">
               {navItems.map((item) => {
+                if (item.id === 'notifications' && !isAuthenticated) return null;
                 const active = item.id === activeNav;
                 return (
                   <li key={item.id} ref={item.id === 'notifications' ? notifRef : null} className={`flex flex-col items-center justify-center cursor-pointer h-full px-2 transition-colors relative group ${active ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-primary'}`}>
@@ -267,59 +268,68 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
             </ul>
             <div className="ml-4 flex items-center pl-4 border-l border-gray-200 space-x-3 h-full">
               {extraActions}
-              <LanguageSwitcher variant="compact" />
-              <div className="relative group p-1 flex flex-col items-center cursor-pointer">
-                <Link to="/profile/edit" className="flex flex-col items-center">
-                  {user?.avatar ? (
-                    <img src={user.avatar} alt="Me" className="w-6 h-6 rounded-full object-cover shadow-sm border border-gray-100" />
-                  ) : (
-                    <span className="material-icons text-gray-500 text-[24px]">account_circle</span>
-                  )}
-                  <span className="text-[10px] hidden md:block text-gray-500 mt-0.5 font-semibold">Tôi ▼</span>
-                </Link>
+              {!isAuthenticated ? (
+                <div className="flex items-center gap-3 h-full">
+                  <Link to="/" className="text-gray-600 font-semibold hover:bg-gray-100 px-4 py-2 rounded-md transition text-sm">Tham gia ngay</Link>
+                  <Link to="/" className="text-primary border border-primary font-semibold rounded-full px-5 py-2 hover:bg-blue-50 transition text-sm">Đăng nhập</Link>
+                </div>
+              ) : (
+                <>
+                  <LanguageSwitcher variant="compact" />
+                  <div className="relative group p-1 flex flex-col items-center cursor-pointer">
+                    <Link to="/profile/edit" className="flex flex-col items-center">
+                      {user?.avatar ? (
+                        <img src={user.avatar} alt="Me" className="w-6 h-6 rounded-full object-cover shadow-sm border border-gray-100" />
+                      ) : (
+                        <span className="material-icons text-gray-500 text-[24px]">account_circle</span>
+                      )}
+                      <span className="text-[10px] hidden md:block text-gray-500 mt-0.5 font-semibold">Tôi ▼</span>
+                    </Link>
 
-                {/* Profile Dropdown */}
-                <div className="absolute top-full right-0 mt-3 w-64 bg-white border border-gray-200 shadow-2xl rounded-2xl py-3 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 z-50 transform origin-top-right group-hover:translate-y-0 translate-y-2">
-                  <div className="px-4 py-3 mb-2">
-                    <div className="flex items-center gap-3">
-                      {user?.avatar
-                        ? <img src={user.avatar} className="w-12 h-12 rounded-full border border-gray-100 object-cover" alt="Profile" />
-                        : <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"><span className="material-icons text-primary">person</span></div>
-                      }
-                      <div className="flex-1 overflow-hidden">
-                        <h4 className="font-bold text-gray-900 truncate">{user?.name}</h4>
-                        <p className="text-xs text-gray-500 truncate">{user?.headline || 'Chuyên viên'}</p>
+                    {/* Profile Dropdown */}
+                    <div className="absolute top-full right-0 mt-3 w-64 bg-white border border-gray-200 shadow-2xl rounded-2xl py-3 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 z-50 transform origin-top-right group-hover:translate-y-0 translate-y-2">
+                      <div className="px-4 py-3 mb-2">
+                        <div className="flex items-center gap-3">
+                          {user?.avatar
+                            ? <img src={user.avatar} className="w-12 h-12 rounded-full border border-gray-100 object-cover" alt="Profile" />
+                            : <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"><span className="material-icons text-primary">person</span></div>
+                          }
+                          <div className="flex-1 overflow-hidden">
+                            <h4 className="font-bold text-gray-900 truncate">{user?.name}</h4>
+                            <p className="text-xs text-gray-500 truncate">{user?.headline || 'Chuyên viên'}</p>
+                          </div>
+                        </div>
+                        <Link to="/profile/edit" className="block mt-3 w-full text-center py-1.5 border border-primary text-primary rounded-full text-sm font-bold hover:bg-primary hover:text-white transition-all">
+                          Chỉnh sửa & Chuyển vai trò
+                        </Link>
+                      </div>
+
+                      <div className="h-px bg-gray-100 my-1" />
+
+                      <div className="px-2">
+                        <h5 className="px-3 py-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tài khoản</h5>
+                        <Link to="/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                          <span className="material-icons text-gray-400 text-lg">settings</span>
+                          <span className="text-sm font-semibold text-gray-700">Cài đặt & Quyền riêng tư</span>
+                        </Link>
+                        <Link to="/help" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                          <span className="material-icons text-gray-400 text-lg">help_outline</span>
+                          <span className="text-sm font-semibold text-gray-700">Trợ giúp</span>
+                        </Link>
+                      </div>
+
+                      <div className="h-px bg-gray-100 my-1" />
+
+                      <div className="px-2 pt-1">
+                        <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors text-left font-bold uppercase text-[10px] tracking-widest">
+                          <span className="material-icons text-lg">logout</span>
+                          <span>Đăng xuất</span>
+                        </button>
                       </div>
                     </div>
-                    <Link to="/profile/edit" className="block mt-3 w-full text-center py-1.5 border border-primary text-primary rounded-full text-sm font-bold hover:bg-primary hover:text-white transition-all">
-                      Chỉnh sửa & Chuyển vai trò
-                    </Link>
                   </div>
-
-                  <div className="h-px bg-gray-100 my-1" />
-
-                  <div className="px-2">
-                    <h5 className="px-3 py-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tài khoản</h5>
-                    <Link to="/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors">
-                      <span className="material-icons text-gray-400 text-lg">settings</span>
-                      <span className="text-sm font-semibold text-gray-700">Cài đặt & Quyền riêng tư</span>
-                    </Link>
-                    <Link to="/help" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors">
-                      <span className="material-icons text-gray-400 text-lg">help_outline</span>
-                      <span className="text-sm font-semibold text-gray-700">Trợ giúp</span>
-                    </Link>
-                  </div>
-
-                  <div className="h-px bg-gray-100 my-1" />
-
-                  <div className="px-2 pt-1">
-                    <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors text-left font-bold uppercase text-[10px] tracking-widest">
-                      <span className="material-icons text-lg">logout</span>
-                      <span>Đăng xuất</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -327,13 +337,15 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
           <div className="flex items-center gap-2 md:hidden">
             {/* Mobile notification (icon only) */}
             <div className="relative" ref={notifRef}>
-              <button
-                onClick={() => { setShowNotifications(!showNotifications); markAllRead(); }}
-                className="p-2 text-gray-500 hover:text-primary relative"
-              >
-                <span className="material-icons">notifications</span>
-                {unreadCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">{unreadCount > 9 ? '9+' : unreadCount}</span>}
-              </button>
+              {isAuthenticated && (
+                <button
+                  onClick={() => { setShowNotifications(!showNotifications); markAllRead(); }}
+                  className="p-2 text-gray-500 hover:text-primary relative"
+                >
+                  <span className="material-icons">notifications</span>
+                  {unreadCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+                </button>
+              )}
               {showNotifications && (
                 <div className="absolute top-full right-0 mt-2 w-80 bg-white shadow-xl rounded-2xl border border-gray-200 overflow-hidden z-50 flex flex-col max-h-[70vh]">
                   <div className="p-3 border-b border-gray-100 flex justify-between items-center">
@@ -392,14 +404,23 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
         {/* Drawer Header */}
         <div className="p-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {user?.avatar
-              ? <img src={user.avatar} alt="" className="w-10 h-10 rounded-full object-cover border-2 border-primary/20" />
-              : <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"><span className="material-icons text-primary">person</span></div>
-            }
-            <div>
-              <p className="font-bold text-gray-900 text-sm">{user?.name}</p>
-              <p className="text-xs text-gray-500 truncate max-w-[140px]">{user?.headline || user?.role}</p>
-            </div>
+            {isAuthenticated ? (
+              <>
+                {user?.avatar
+                  ? <img src={user.avatar} alt="" className="w-10 h-10 rounded-full object-cover border-2 border-primary/20" />
+                  : <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"><span className="material-icons text-primary">person</span></div>
+                }
+                <div>
+                  <p className="font-bold text-gray-900 text-sm">{user?.name}</p>
+                  <p className="text-xs text-gray-500 truncate max-w-[140px]">{user?.headline || user?.role}</p>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col">
+                <p className="font-bold text-gray-900 text-sm">Chào mừng bạn!</p>
+                <p className="text-xs text-gray-500">Đăng nhập để xem thêm</p>
+              </div>
+            )}
           </div>
           <button onClick={() => setMobileMenuOpen(false)} className="text-gray-400 hover:text-gray-700">
             <span className="material-icons">close</span>
@@ -424,21 +445,39 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
         <div className="h-px bg-gray-100 mx-4" />
 
         <div className="p-3">
-          <Link to="/profile/edit" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold">
-            <span className="material-icons text-gray-500">manage_accounts</span>
-            Chỉnh sửa hồ sơ
-          </Link>
-          <Link to="/settings" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold">
-            <span className="material-icons text-gray-500">settings</span>
-            Cài đặt
-          </Link>
-          <div className="px-4 py-3">
-            <LanguageSwitcher />
-          </div>
-          <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 font-semibold">
-            <span className="material-icons">logout</span>
-            Đăng xuất
-          </button>
+          {isAuthenticated ? (
+            <>
+              <Link to="/profile/edit" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold">
+                <span className="material-icons text-gray-500">manage_accounts</span>
+                Chỉnh sửa hồ sơ
+              </Link>
+              <Link to="/settings" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold">
+                <span className="material-icons text-gray-500">settings</span>
+                Cài đặt
+              </Link>
+              <div className="px-4 py-3">
+                <LanguageSwitcher />
+              </div>
+              <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 font-semibold">
+                <span className="material-icons">logout</span>
+                Đăng xuất
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-primary hover:bg-blue-50 font-bold border border-primary/20 mb-2">
+                <span className="material-icons">login</span>
+                Đăng nhập
+              </Link>
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold border border-gray-200">
+                <span className="material-icons">person_add</span>
+                Tham gia ngay
+              </Link>
+              <div className="px-4 py-3 mt-4">
+                <LanguageSwitcher />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
