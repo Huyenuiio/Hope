@@ -71,7 +71,7 @@ export default function LandingPage() {
             <a className="text-primary font-bold hover:underline" href="#">{t('landing.hero.cookiePolicy')}</a>.
           </p>
           <div className="pt-4 text-lg">
-            {t('landing.hero.newToLinkedIn')}{' '}
+            {t('landing.hero.newToHope')}{' '}
             <button onClick={loginWithGoogle} className="text-primary font-semibold hover:underline">{t('landing.hero.joinNow')}</button>
           </div>
         </div>

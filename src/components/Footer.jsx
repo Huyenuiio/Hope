@@ -6,7 +6,7 @@ export default function Footer() {
 
   const sections = [
     { title: t('footer.general'), links: t('footer.generalLinks', { returnObjects: true }) },
-    { title: t('footer.browseLI'), links: t('footer.browseLinks', { returnObjects: true }) },
+    { title: t('footer.browseHope'), links: t('footer.browseLinks', { returnObjects: true }) },
     { title: t('footer.businessSolutions'), links: t('footer.businessLinks', { returnObjects: true }) },
     { title: t('footer.directories'), links: t('footer.directoriesLinks', { returnObjects: true }) },
   ];

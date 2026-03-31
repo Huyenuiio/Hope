@@ -22,7 +22,7 @@
       "userAgreement": "User Agreement",
       "privacyPolicy": "Privacy Policy",
       "cookiePolicy": "Cookie Policy",
-      "newToLinkedIn": "New to Hope?",
+      "newToHope": "New to Hope?",
       "joinNow": "Join now",
       "devLogin": "Quick login (Dev)",
       "and": "and"
@@ -203,7 +203,7 @@
   },
   "footer": {
     "general": "General",
-    "browseLI": "Browse Hope",
+    "browseHope": "Browse Hope",
     "businessSolutions": "Business Solutions",
     "directories": "Directories",
     "generalLinks": [

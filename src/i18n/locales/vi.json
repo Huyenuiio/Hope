@@ -22,7 +22,7 @@
       "userAgreement": "Điều khoản Sử dụng",
       "privacyPolicy": "Chính sách Bảo mật",
       "cookiePolicy": "Chính sách Cookie",
-      "newToLinkedIn": "Chưa có tài khoản?",
+      "newToHope": "Chưa có tài khoản?",
       "joinNow": "Đăng ký ngay",
       "devLogin": "Đăng nhập nhanh để test",
       "and": "và"
@@ -203,7 +203,7 @@
   },
   "footer": {
     "general": "Tổng quát",
-    "browseLI": "Khám phá Hope",
+    "browseHope": "Khám phá Hope",
     "businessSolutions": "Giải pháp doanh nghiệp",
     "directories": "Danh mục",
     "generalLinks": [
