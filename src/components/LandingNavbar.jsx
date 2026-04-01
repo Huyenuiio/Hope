@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useAuth } from '../context/AuthContext';
 
 // Logo component dùng lại được
 export function HopeLogo({ size = 'md' }) {
@@ -16,6 +17,7 @@ export function HopeLogo({ size = 'md' }) {
 
 export default function LandingNavbar() {
   const { t } = useTranslation();
+  const { loginWithGoogle } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -51,16 +53,12 @@ export default function LandingNavbar() {
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher variant="compact" />
-            <Link to="/dashboard">
-              <button className="font-semibold text-gray-600 hover:bg-gray-100 px-4 py-2 rounded-md transition text-sm">
-                {t('nav.joinNow')}
-              </button>
-            </Link>
-            <Link to="/dashboard">
-              <button className="text-primary border border-primary font-semibold rounded-full px-5 py-2 hover:bg-blue-50 transition text-sm">
-                {t('nav.signIn')}
-              </button>
-            </Link>
+            <button onClick={loginWithGoogle} className="font-semibold text-gray-600 hover:bg-gray-100 px-4 py-2 rounded-md transition text-sm">
+              {t('nav.joinNow')}
+            </button>
+            <button onClick={loginWithGoogle} className="text-primary border border-primary font-semibold rounded-full px-5 py-2 hover:bg-blue-50 transition text-sm">
+              {t('nav.signIn')}
+            </button>
           </div>
         </div>
 
@@ -99,16 +97,12 @@ export default function LandingNavbar() {
                 )
               ))}
               <hr className="my-2" />
-              <Link to="/dashboard" className="w-full">
-                <button className="w-full text-center py-3 font-semibold text-gray-700 hover:bg-gray-100 rounded-full border border-gray-300">
-                  {t('nav.joinNow')}
-                </button>
-              </Link>
-              <Link to="/dashboard" className="w-full">
-                <button className="w-full text-center py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-dark">
-                  {t('nav.signIn')}
-                </button>
-              </Link>
+              <button onClick={() => { loginWithGoogle(); setMobileMenuOpen(false); }} className="w-full text-center py-3 font-semibold text-gray-700 hover:bg-gray-100 rounded-full border border-gray-300">
+                {t('nav.joinNow')}
+              </button>
+              <button onClick={() => { loginWithGoogle(); setMobileMenuOpen(false); }} className="w-full text-center py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-dark">
+                {t('nav.signIn')}
+              </button>
             </div>
           </div>
         </div>
