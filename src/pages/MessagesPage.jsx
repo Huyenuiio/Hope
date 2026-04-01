@@ -164,20 +164,37 @@ export default function MessagesPage() {
       const otherUserId = activeConv?.otherUser?._id || activeConv?.otherUser;
       const msgSender = msg.sender?._id || msg.sender;
       const msgReceiver = msg.receiver?._id || msg.receiver;
+      const msgOtherId = msgSender === user?._id ? msgReceiver : msgSender;
+
       if (otherUserId && (msgSender === otherUserId || msgReceiver === otherUserId)) {
         setMessages(prev => [...prev, msg]);
         setTimeout(scrollToBottom, 50);
       }
-      // Update conversation list last message
-      setConversations(prev =>
-        prev.map(c => {
-          const otherId = c.otherUser?._id || c.otherUser;
-          if (otherId === msgSender || otherId === msgReceiver) {
-            return { ...c, lastMessage: msg };
-          }
-          return c;
-        })
-      );
+
+      // Update conversation list
+      setConversations(prev => {
+        const index = prev.findIndex(c => {
+          const cOtherId = c.otherUser?._id || c.otherUser;
+          return cOtherId === msgOtherId;
+        });
+
+        if (index !== -1) {
+          // Update existing conversation with last message and move to top
+          const updated = [...prev];
+          const [conv] = updated.splice(index, 1);
+          updated.unshift({ ...conv, lastMessage: msg });
+          return updated;
+        } else {
+          // New conversation: add to top
+          const newConv = {
+            _id: msg.conversationId || `new_${msgOtherId}`,
+            otherUser: msgSender === user?._id ? msg.receiver : msg.sender,
+            lastMessage: msg,
+            unreadCount: msgSender === user?._id ? 0 : 1
+          };
+          return [newConv, ...prev];
+        }
+      });
     };
 
     // BUG FIX: Server emits 'typing:start', not 'userTyping'

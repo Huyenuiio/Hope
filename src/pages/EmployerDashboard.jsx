@@ -404,6 +404,27 @@ function ApplicationsModal({ job, onClose }) {
   );
 }
 
+function ConfirmationModal({ isOpen, title, message, onConfirm, onCancel, confirmText, cancelText, type = 'danger' }) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-scale-up">
+        <div className="p-6 text-center">
+          <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${type === 'danger' ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'}`}>
+            <span className="material-icons text-3xl">{type === 'danger' ? 'delete_forever' : 'lock_clock'}</span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
+          <p className="text-gray-500 text-sm">{message}</p>
+        </div>
+        <div className="flex border-t border-gray-100">
+          <button onClick={onCancel} className="flex-1 py-4 text-sm font-bold text-gray-500 hover:bg-gray-50 transition-colors">{cancelText || 'Hủy'}</button>
+          <button onClick={onConfirm} className={`flex-1 py-4 text-sm font-bold text-white transition-colors ${type === 'danger' ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-500 hover:bg-amber-600'}`}>{confirmText || 'Xác nhận'}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── MAIN ────────────────────────────────────────────────────────────
 
 export default function EmployerDashboard() {
@@ -420,6 +441,7 @@ export default function EmployerDashboard() {
   const [appModal, setAppModal] = useState(null); // selected job for applications
   const [filterStatus, setFilterStatus] = useState('all');
   const [openMenuId, setOpenMenuId] = useState(null); // tracking which job menu is open
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null, type: 'danger' });
 
   const [searchResults, setSearchResults] = useState({ jobs: [], users: [] });
   const [isSearching, setIsSearching] = useState(false);
@@ -502,26 +524,61 @@ export default function EmployerDashboard() {
     }
   }, [fetchMyJobs, fetchMarketInsights, user]);
 
-  const handleDeleteJob = async (id) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa vĩnh viễn tin tuyển dụng này?')) return;
-    try {
-      await jobsAPI.deleteJob(id);
-      fetchMyJobs();
-      setOpenMenuId(null);
-    } catch (err) {
-      alert(err.response?.data?.message || 'Có lỗi xảy ra khi xóa tin');
-    }
+  const handleDeleteJob = (id) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Xóa vĩnh viễn',
+      message: 'Bạn có chắc chắn muốn xóa vĩnh viễn tin tuyển dụng này? Hành động này không thể hoàn tác.',
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          await jobsAPI.deleteJob(id);
+          fetchMyJobs();
+          setOpenMenuId(null);
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        } catch (err) {
+          alert(err.response?.data?.message || 'Có lỗi xảy ra khi xóa tin');
+        }
+      }
+    });
   };
 
-  const handleCloseJob = async (id) => {
-    if (!window.confirm('Bạn muốn đóng tin tuyển dụng này? Freelancer sẽ không thể ứng tuyển thêm.')) return;
-    try {
-      await jobsAPI.updateJob(id, { status: 'closed' });
-      fetchMyJobs();
-      setOpenMenuId(null);
-    } catch (err) {
-      alert(err.response?.data?.message || 'Có lỗi xảy ra khi đóng tin');
-    }
+  const handleCloseJob = (id) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Đóng tin tuyển dụng',
+      message: 'Bạn muốn đóng tin tuyển dụng này? Freelancer sẽ không thể ứng tuyển thêm.',
+      type: 'warning',
+      onConfirm: async () => {
+        try {
+          await jobsAPI.updateJob(id, { status: 'closed' });
+          fetchMyJobs();
+          setOpenMenuId(null);
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        } catch (err) {
+          alert(err.response?.data?.message || 'Có lỗi xảy ra khi đóng tin');
+        }
+      }
+    });
+  };
+
+  const handleOpenJob = (id) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Mở lại tin tuyển dụng',
+      message: 'Bạn muốn mở lại tin tuyển dụng này? Freelancer có thể tiếp tục ứng tuyển.',
+      type: 'warning',
+      onConfirm: async () => {
+        try {
+          await jobsAPI.updateJob(id, { status: 'open' });
+          fetchMyJobs();
+          setOpenMenuId(null);
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        } catch (err) {
+          alert(err.response?.data?.message || 'Có lỗi xảy ra khi mở lại tin');
+        }
+      }
+    });
   };
 
   // Stats computed from jobs
@@ -681,15 +738,24 @@ export default function EmployerDashboard() {
                                   {job.status === 'open' && (
                                     <button
                                       onClick={() => handleCloseJob(job._id)}
-                                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 relative z-[60]"
                                     >
                                       <span className="material-icons text-sm text-amber-500">lock_clock</span>
                                       Đóng tin
                                     </button>
                                   )}
+                                  {job.status === 'closed' && (
+                                    <button
+                                      onClick={() => handleOpenJob(job._id)}
+                                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 relative z-[60]"
+                                    >
+                                      <span className="material-icons text-sm text-green-500">lock_open</span>
+                                      Mở lại tin
+                                    </button>
+                                  )}
                                   <button
                                     onClick={() => handleDeleteJob(job._id)}
-                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 relative z-[60]"
                                   >
                                     <span className="material-icons text-sm">delete_forever</span>
                                     Xóa vĩnh viễn
@@ -773,6 +839,10 @@ export default function EmployerDashboard() {
       {postModal && <PostJobModal onClose={() => setPostModal(false)} onSuccess={fetchMyJobs} />}
       {editingJob && <PostJobModal job={editingJob} onClose={() => setEditingJob(null)} onSuccess={fetchMyJobs} />}
       {appModal && <ApplicationsModal job={appModal} onClose={() => setAppModal(null)} />}
+      <ConfirmationModal
+        {...confirmModal}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

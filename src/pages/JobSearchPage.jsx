@@ -251,9 +251,6 @@ export default function JobSearchPage() {
         });
 
         toast.success(newIsSaved ? 'Đã lưu công việc!' : 'Đã bỏ lưu công việc');
-
-        // Always sync the list to be sure
-        fetchJobs();
       }
     } catch (err) {
       console.error(err);

@@ -6,10 +6,13 @@ import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 
 function TagButton({ label }) {
+  // Map specific labels to search queries or niches if needed, otherwise use label
+  const searchPath = `/jobs?search=${encodeURIComponent(label)}`;
+
   return (
-    <a href="#" className="px-6 py-3 border border-gray-400 rounded-full font-semibold text-gray-600 hover:bg-gray-200 hover:border-gray-500 transition">
+    <Link to={searchPath} className="px-6 py-3 border border-gray-400 rounded-full font-semibold text-gray-600 hover:bg-gray-200 hover:border-gray-500 transition">
       {label}
-    </a>
+    </Link>
   );
 }
 
@@ -57,9 +60,9 @@ export default function LandingPage() {
           </div>
           <p className="text-xs text-gray-500 max-w-sm">
             {t('landing.hero.agreement')}{' '}
-            <a className="text-primary font-bold hover:underline" href="#">{t('landing.hero.userAgreement')}</a>,{' '}
-            <a className="text-primary font-bold hover:underline" href="#">{t('landing.hero.privacyPolicy')}</a>, {t('landing.hero.and')}{' '}
-            <a className="text-primary font-bold hover:underline" href="#">{t('landing.hero.cookiePolicy')}</a>.
+            <Link className="text-primary font-bold hover:underline" to="/help">{t('landing.hero.userAgreement')}</Link>,{' '}
+            <Link className="text-primary font-bold hover:underline" to="/help">{t('landing.hero.privacyPolicy')}</Link>, {t('landing.hero.and')}{' '}
+            <Link className="text-primary font-bold hover:underline" to="/help">{t('landing.hero.cookiePolicy')}</Link>.
           </p>
           <div className="pt-4 text-lg">
             {t('landing.hero.newToHope')}{' '}
