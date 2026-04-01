@@ -1,9 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import Logo from './Logo';
+import { useAuth } from '../context/AuthContext';
 
 export default function Footer() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+
+  const homePath = user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : (user?.role === 'admin' ? '/admin/dashboard' : '/'));
 
   const sections = [
     { title: t('footer.general'), links: t('footer.generalLinks', { returnObjects: true }) },
@@ -18,7 +22,7 @@ export default function Footer() {
     <footer className="bg-surface-light pt-12 pb-4 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-24">
         <div className="mb-8">
-          <Logo size="lg" />
+          <Logo size="lg" to={homePath} />
         </div>
 
         {/* Links Grid */}

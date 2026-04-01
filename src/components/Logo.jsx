@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
  * @param {boolean} link - Whether to wrap in a Link to home
  * @param {string} className - Additional classes
  */
-export const Logo = ({ size = 'md', link = true, className = '' }) => {
+export const Logo = ({ size = 'md', link = true, to = '/', className = '' }) => {
   const sizeMap = {
     sm: { text: 'text-lg', badge: 'text-base', px: 'px-1', py: 'py-0' },
     md: { text: 'text-xl', badge: 'text-base', px: 'px-1', py: 'py-0.5' },
@@ -24,7 +24,7 @@ export const Logo = ({ size = 'md', link = true, className = '' }) => {
   );
 
   if (link) {
-    return <Link to="/" className="inline-block hover:opacity-90 transition-opacity">{content}</Link>;
+    return <Link to={to} className="inline-block hover:opacity-90 transition-opacity">{content}</Link>;
   }
 
   return content;

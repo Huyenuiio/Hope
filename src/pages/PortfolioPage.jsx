@@ -137,7 +137,9 @@ function AddPortfolioModal({ onClose, onSuccess }) {
 
 export default function PortfolioPage() {
   const { userId: paramId } = useParams();
-  const { user } = useAuth();
+  const { user, setUser, isAuthenticated, loginWithGoogle } = useAuth();
+
+  const homePath = user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : (user?.role === 'admin' ? '/admin/dashboard' : '/'));
   const targetId = paramId || user?._id;
   const isOwner = !paramId || paramId === user?._id;
 
@@ -189,7 +191,7 @@ export default function PortfolioPage() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Logo size="md" />
+          <Logo size="md" to={homePath} />
           <div className="flex items-center gap-2">
             {isOwner && (
               <>

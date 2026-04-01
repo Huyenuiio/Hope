@@ -8,7 +8,9 @@ import Logo from './Logo';
 
 export default function LandingNavbar() {
   const { t } = useTranslation();
-  const { loginWithGoogle } = useAuth();
+  const { loginWithGoogle, user } = useAuth();
+
+  const homePath = user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : (user?.role === 'admin' ? '/admin/dashboard' : '/'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -23,7 +25,7 @@ export default function LandingNavbar() {
     <>
       <nav className="sticky top-0 z-50 bg-surface-light py-3 px-4 md:px-6 lg:px-24 border-b border-gray-200 flex items-center justify-between">
         {/* Logo */}
-        <Logo size="lg" />
+        <Logo size="lg" to={homePath} />
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-6">
@@ -68,7 +70,7 @@ export default function LandingNavbar() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)}></div>
           <div className="absolute top-0 right-0 h-full w-72 bg-white shadow-xl flex flex-col p-6 animate-in slide-in-from-right duration-300">
             <div className="flex items-center justify-between mb-8">
-              <Logo size="md" />
+              <Logo size="md" to={homePath} />
               <button onClick={() => setMobileMenuOpen(false)} className="text-gray-500">
                 <span className="material-icons">close</span>
               </button>

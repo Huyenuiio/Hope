@@ -34,10 +34,13 @@ function timeAgo(dateStr) {
 export default function NotificationsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, unread, job, message, meeting
+
+  const homePath = user?.role === 'client' ? '/employer' : '/dashboard';
 
   const fetchNotifications = useCallback(async () => {
     setLoading(true);
@@ -90,7 +93,7 @@ export default function NotificationsPage() {
             >
               <span className="material-icons">arrow_back</span>
             </Link>
-            <Logo size="md" />
+            <Logo size="md" to={homePath} />
             <h1 className="text-base font-bold text-gray-900">{t('nav.notifications')}</h1>
             {unreadCount > 0 && (
               <span className="bg-primary text-white text-xs font-bold px-2 py-0.5 rounded-full">{unreadCount}</span>

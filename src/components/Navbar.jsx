@@ -99,7 +99,7 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
         <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-2">
           {/* Logo + Search */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Logo size="lg" />
+            <Logo size="lg" to={homePath} />
             {showSearch && (
               <div className="relative w-full max-w-xs hidden md:block" ref={searchRef}>
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
