@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import Logo from './Logo';
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -16,11 +17,8 @@ export default function Footer() {
   return (
     <footer className="bg-surface-light pt-12 pb-4 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-24">
-        {/* Logo */}
         <div className="mb-8">
-          <span className="text-primary font-bold text-2xl flex items-center gap-1">
-            Ho<span className="bg-primary text-white rounded px-1 text-xl">pe</span>
-          </span>
+          <Logo size="lg" />
         </div>
 
         {/* Links Grid */}
@@ -38,9 +36,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 pt-8 border-t border-gray-300 gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-primary">
-              Ho<span className="bg-primary text-white rounded px-0.5 ml-0.5">pe</span>
-            </span>
+            <Logo size="sm" link={false} />
             <span>© 2024</span>
           </div>
           <div className="flex flex-wrap gap-4 justify-center">

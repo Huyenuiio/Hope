@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { portfolioAPI, reviewsAPI } from '../services/api';
+import Logo from '../components/Logo';
 
 function StarRating({ rating, max = 5 }) {
   return (
@@ -188,13 +189,7 @@ export default function PortfolioPage() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link
-            to={user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : '/')}
-            className="flex items-center gap-1"
-          >
-            <span className="text-primary font-bold text-xl">Ho</span>
-            <span className="bg-primary text-white rounded px-1 font-bold text-sm">pe</span>
-          </Link>
+          <Logo size="md" />
           <div className="flex items-center gap-2">
             {isOwner && (
               <>

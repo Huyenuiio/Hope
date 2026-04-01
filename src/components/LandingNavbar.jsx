@@ -3,17 +3,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../context/AuthContext';
+import Logo from './Logo';
 
-// Logo component dùng lại được
-export function HopeLogo({ size = 'md' }) {
-  const textSize = size === 'sm' ? 'text-lg' : size === 'lg' ? 'text-3xl' : 'text-2xl';
-  const badgeSize = size === 'sm' ? 'text-base' : size === 'lg' ? 'text-2xl' : 'text-xl';
-  return (
-    <span className={`text-primary font-bold ${textSize} flex items-center gap-1`}>
-      Ho<span className={`bg-primary text-white rounded px-1 py-0.5 ${badgeSize}`}>pe</span>
-    </span>
-  );
-}
 
 export default function LandingNavbar() {
   const { t } = useTranslation();
@@ -32,7 +23,7 @@ export default function LandingNavbar() {
     <>
       <nav className="sticky top-0 z-50 bg-surface-light py-3 px-4 md:px-6 lg:px-24 border-b border-gray-200 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/"><HopeLogo size="lg" /></Link>
+        <Logo size="lg" />
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-6">
@@ -77,7 +68,7 @@ export default function LandingNavbar() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)}></div>
           <div className="absolute top-0 right-0 h-full w-72 bg-white shadow-xl flex flex-col p-6 animate-in slide-in-from-right duration-300">
             <div className="flex items-center justify-between mb-8">
-              <HopeLogo size="md" />
+              <Logo size="md" />
               <button onClick={() => setMobileMenuOpen(false)} className="text-gray-500">
                 <span className="material-icons">close</span>
               </button>

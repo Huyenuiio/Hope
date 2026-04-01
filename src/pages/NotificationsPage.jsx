@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { messagesAPI } from '../services/api';
+import Logo from '../components/Logo';
 
 const NOTIFICATION_CONFIG = {
   job_application: { icon: 'work', color: 'text-primary bg-primary/10', label: 'Ứng tuyển mới' },
@@ -89,13 +90,7 @@ export default function NotificationsPage() {
             >
               <span className="material-icons">arrow_back</span>
             </Link>
-            <Link
-              to={user?.role === 'client' ? '/employer' : (user?.role === 'freelancer' ? '/dashboard' : '/')}
-              className="flex items-center gap-0.5"
-            >
-              <span className="text-primary font-bold text-xl">Ho</span>
-              <span className="bg-primary text-white rounded px-1 font-bold text-sm">pe</span>
-            </Link>
+            <Logo size="md" />
             <h1 className="text-base font-bold text-gray-900">{t('nav.notifications')}</h1>
             {unreadCount > 0 && (
               <span className="bg-primary text-white text-xs font-bold px-2 py-0.5 rounded-full">{unreadCount}</span>
