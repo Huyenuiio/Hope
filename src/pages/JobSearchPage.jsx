@@ -101,7 +101,7 @@ function JobCard({ job, isSelected, onSelect }) {
 
 export default function JobSearchPage() {
   const { t } = useTranslation();
-  const { isAuthenticated, isFreelancer, user } = useAuth();
+  const { isAuthenticated, isFreelancer, user, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlJobId = searchParams.get('id');
@@ -528,7 +528,7 @@ export default function JobSearchPage() {
                     </button>
                   ) : !isAuthenticated ? (
                     <button
-                      onClick={() => navigate('/')}
+                      onClick={loginWithGoogle}
                       className="flex-1 bg-primary text-white font-semibold py-2.5 rounded-full text-sm hover:bg-primary-dark transition-colors"
                     >
                       Đăng nhập để ứng tuyển

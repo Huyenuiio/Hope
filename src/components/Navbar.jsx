@@ -63,22 +63,26 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
   const isAdmin = user && ['superadmin', 'moderator', 'support'].includes(user.role);
   const isClient = user && user.role === 'client';
 
-  const navItems = isAdmin
-    ? [{ id: 'admin', icon: 'settings_suggest', label: t('admin.sidebar.dashboard'), path: '/admin/dashboard' }]
-    : isClient
-      ? [
-        { id: 'home', icon: 'dashboard', label: 'Dashboard', path: '/employer' },
-        { id: 'jobs', icon: 'work_outline', label: t('nav.jobs'), path: '/jobs' },
-        { id: 'messages', icon: 'chat', label: t('nav.messaging'), path: '/messages' },
-        { id: 'notifications', icon: 'notifications', label: t('nav.notifications'), path: '#' },
-      ]
-      : [
-        { id: 'home', icon: 'home', label: t('nav.home'), path: '/dashboard' },
-        { id: 'network', icon: 'people', label: t('nav.network'), path: '/dashboard' },
-        { id: 'jobs', icon: 'work', label: t('nav.jobs'), path: '/jobs' },
-        { id: 'messages', icon: 'chat', label: t('nav.messaging'), path: '/messages' },
-        { id: 'notifications', icon: 'notifications', label: t('nav.notifications'), path: '#' },
-      ];
+  const navItems = !isAuthenticated
+    ? [
+      { id: 'jobs', icon: 'work', label: t('nav.jobs'), path: '/jobs' },
+    ]
+    : isAdmin
+      ? [{ id: 'admin', icon: 'settings_suggest', label: t('admin.sidebar.dashboard'), path: '/admin/dashboard' }]
+      : isClient
+        ? [
+          { id: 'home', icon: 'dashboard', label: 'Dashboard', path: '/employer' },
+          { id: 'jobs', icon: 'work_outline', label: t('nav.jobs'), path: '/jobs' },
+          { id: 'messages', icon: 'chat', label: t('nav.messaging'), path: '/messages' },
+          { id: 'notifications', icon: 'notifications', label: t('nav.notifications'), path: '#' },
+        ]
+        : [
+          { id: 'home', icon: 'home', label: t('nav.home'), path: '/dashboard' },
+          { id: 'network', icon: 'people', label: t('nav.network'), path: '/dashboard' },
+          { id: 'jobs', icon: 'work', label: t('nav.jobs'), path: '/jobs' },
+          { id: 'messages', icon: 'chat', label: t('nav.messaging'), path: '/messages' },
+          { id: 'notifications', icon: 'notifications', label: t('nav.notifications'), path: '#' },
+        ];
 
   const homePath = isAdmin
     ? '/admin/dashboard'
