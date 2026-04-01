@@ -11,6 +11,7 @@ import ApplyModal from '../components/ApplyModal';
 import ImageLightbox from '../components/ImageLightbox';
 import ShareModal from '../components/ShareModal';
 import SendModal from '../components/SendModal';
+import { toast } from 'react-hot-toast';
 
 const postActionIcons = { Like: 'thumb_up_off_alt', Comment: 'comment', Share: 'share', Send: 'send' };
 const postActions = ['Like', 'Comment', 'Share', 'Send'];
@@ -149,6 +150,7 @@ function JobCard({ job, t, onApply, isHighlighted, onRefresh, setPreviewImage, o
       if (res.data.success) {
         setIsSaved(res.data.isSaved);
         setShowJobOptions(false);
+        toast.success(res.data.message);
       }
     } catch (err) {
       console.error('Toggle save error:', err);

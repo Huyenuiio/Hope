@@ -201,7 +201,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Who Is LinkedIn For */}
+      {/* Who Is Hope For */}
       <section id="people-section" className="bg-surface-light py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-24 flex flex-col md:flex-row gap-12">
           <div className="w-full md:w-1/2 space-y-6">

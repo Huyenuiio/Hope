@@ -203,10 +203,10 @@ export default function JobSearchPage() {
           // If NOT in the current list, fetch it specifically
           try {
             const res = await jobsAPI.getJob(urlJobId);
-            if (res.data) {
-              setSelectedJob(res.data);
+            if (res.data && res.data.job) {
+              setSelectedJob(res.data.job);
               // Add to list so it appears in the sidebar too
-              setJobs(prev => [res.data, ...prev.filter(j => j._id !== urlJobId)]);
+              setJobs(prev => [res.data.job, ...prev.filter(j => j._id !== urlJobId)]);
             }
           } catch (err) {
             console.error('Specific job fetch error:', err);
@@ -245,18 +245,19 @@ export default function JobSearchPage() {
         // Update the list immediately for UI feedback
         setJobs(prev => {
           if (showSavedOnly && !newIsSaved) {
-            return prev.filter(j => j._id !== selectedJob._id);
+            return prev.filter(j => String(j._id) !== String(selectedJob._id));
           }
-          return prev.map(j => j._id === selectedJob._id ? { ...j, isSaved: newIsSaved } : j);
+          return prev.map(j => String(j._id) === String(selectedJob._id) ? { ...j, isSaved: newIsSaved } : j);
         });
 
         toast.success(newIsSaved ? 'Đã lưu công việc!' : 'Đã bỏ lưu công việc');
-        if (showSavedOnly && !newIsSaved) {
-          fetchJobs(); // Final sync
-        }
+
+        // Always sync the list to be sure
+        fetchJobs();
       }
     } catch (err) {
       console.error(err);
+      toast.error(err.response?.data?.message || 'Không thể cập nhật trạng thái lưu');
     }
   };
 

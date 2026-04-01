@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import GlobalCallHandler from './components/GlobalCallHandler';
@@ -100,6 +101,7 @@ function App() {
       </Routes>
       <GlobalCallHandler />
       <MessagingWidget />
+      <Toaster position="top-center" reverseOrder={false} />
     </BrowserRouter>
   );
 }
