@@ -280,14 +280,14 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
                 <>
                   <LanguageSwitcher variant="compact" />
                   <div className="relative group p-1 flex flex-col items-center cursor-pointer">
-                    <Link to="/profile/edit" className="flex flex-col items-center">
+                    <div className="flex flex-col items-center">
                       {user?.avatar ? (
                         <img src={user.avatar} alt="Me" className="w-6 h-6 rounded-full object-cover shadow-sm border border-gray-100" />
                       ) : (
                         <span className="material-icons text-gray-500 text-[24px]">account_circle</span>
                       )}
                       <span className="text-[10px] hidden md:block text-gray-500 mt-0.5 font-semibold">Tôi ▼</span>
-                    </Link>
+                    </div>
 
                     {/* Profile Dropdown */}
                     <div className="absolute top-full right-0 mt-3 w-64 bg-white border border-gray-200 shadow-2xl rounded-2xl py-3 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 z-50 transform origin-top-right group-hover:translate-y-0 translate-y-2">

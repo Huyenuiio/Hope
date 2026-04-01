@@ -19,6 +19,7 @@ import PortfolioPage from './pages/PortfolioPage';
 import NotificationsPage from './pages/NotificationsPage';
 import MeetingsPage from './pages/MeetingsPage';
 import SettingsPage from './pages/SettingsPage';
+import HelpPage from './pages/HelpPage';
 
 // Protected route: requires authentication
 function ProtectedRoute({ children, requiredRole }) {
@@ -92,6 +93,7 @@ function App() {
         <Route path="/notifications" element={<ProtectedRoute requiredRole={['freelancer', 'client']}><NotificationsPage /></ProtectedRoute>} />
         <Route path="/meetings" element={<ProtectedRoute requiredRole={['freelancer', 'client']}><MeetingsPage /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute requiredRole={['freelancer', 'client']}><SettingsPage /></ProtectedRoute>} />
+        <Route path="/help" element={<HelpPage />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
