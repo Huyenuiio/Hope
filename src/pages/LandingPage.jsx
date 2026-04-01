@@ -15,7 +15,7 @@ function TagButton({ label }) {
 
 export default function LandingPage() {
   const { t } = useTranslation();
-  const { isAuthenticated, user, loginWithGoogle, loginWithEmail, loading } = useAuth();
+  const { isAuthenticated, user, loginWithGoogle, loading } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -27,9 +27,6 @@ export default function LandingPage() {
     }
   }, [isAuthenticated, user, loading, navigate]);
 
-  const handleDevLogin = async () => {
-    await loginWithEmail({ email: 'dev1@gmail.com', password: 'password123' });
-  };
 
   const topicTags = t('landing.topics.tags', { returnObjects: true });
   const jobCategoryTags = t('landing.jobCategories.tags', { returnObjects: true });
@@ -56,12 +53,6 @@ export default function LandingPage() {
             >
               <img alt="Google Logo" className="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6k-9BRUtIiPLxpQur8BOYEZ124zmvfQH2FZfgcTLNWDkQ3cQuVRUn7u7o6q9B0XI85k9KBtVQznyGqGmCscwXeVU0BWG0n3-Ipzsv0eRUArVWuDa2575cx8UicPOdNHqtf4q7blpKtGGZPwtGWtYO5GY6YQnl6VGYBMNmWN8o1S6g62C6BBJygVKwfSzipRN-5T_wNLXVfm-wmDWZfTqBg4cIrgLeTIaM3CB9FezP_x2-cWH7bwDjGTuM2vELbrTMHWc-Y1o60mo" />
               <span>{t('landing.hero.continueGoogle')}</span>
-            </button>
-            <button
-              onClick={handleDevLogin}
-              className="w-full border border-gray-400 rounded-full py-3 font-medium hover:bg-gray-50 transition"
-            >
-              <span>{t('landing.hero.devLogin')}</span>
             </button>
           </div>
           <p className="text-xs text-gray-500 max-w-sm">
