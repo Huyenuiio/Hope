@@ -9,7 +9,7 @@ export default function ProfileViewPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isUserOnline } = useSocket();
-  const { user, setUser } = useAuth();
+  const { user, setUser, isAuthenticated, loginWithGoogle } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -168,6 +168,10 @@ export default function ProfileViewPage() {
                 <button disabled className="flex-1 md:flex-none px-4 md:px-6 py-2 bg-gray-200 text-gray-500 font-semibold rounded-full shadow-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed text-sm sm:text-base">
                   <span className="material-icons text-lg">hourglass_empty</span> Gửi yêu cầu
                 </button>
+              ) : !isAuthenticated ? (
+                <button onClick={loginWithGoogle} className="flex-1 md:flex-none px-4 md:px-6 py-2 bg-primary text-white font-semibold rounded-full shadow-md hover:bg-primary-dark transition-all flex items-center justify-center gap-2 text-sm sm:text-base active:scale-95">
+                  <span className="material-icons text-lg">person_add</span> Kết nối
+                </button>
               ) : (
                 <button onClick={async () => {
                   try {
@@ -178,7 +182,10 @@ export default function ProfileViewPage() {
                   <span className="material-icons text-lg">person_add</span> Kết nối
                 </button>
               )}
-              <button onClick={() => navigate(`/messages?with=${profile._id}`)} className="flex-1 md:flex-none px-4 md:px-6 py-2 border-2 border-primary text-primary font-semibold rounded-full hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-sm sm:text-base active:scale-95">
+              <button
+                onClick={!isAuthenticated ? loginWithGoogle : () => navigate(`/messages?with=${profile._id}`)}
+                className="flex-1 md:flex-none px-4 md:px-6 py-2 border-2 border-primary text-primary font-semibold rounded-full hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-sm sm:text-base active:scale-95"
+              >
                 <span className="material-icons text-lg">chat</span> Nhắn tin
               </button>
               {canReview && user?._id !== profile._id && (
