@@ -6,8 +6,8 @@ import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 
 function TagButton({ label }) {
-  // Map specific labels to search queries or niches if needed, otherwise use label
-  const searchPath = `/jobs?search=${encodeURIComponent(label)}`;
+  // If the label is part of our known niche system, filter by niche instead of global search
+  const searchPath = `/jobs?niche=${encodeURIComponent(label)}`;
 
   return (
     <Link to={searchPath} className="px-6 py-3 border border-gray-400 rounded-full font-semibold text-gray-600 hover:bg-gray-200 hover:border-gray-500 transition">

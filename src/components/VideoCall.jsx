@@ -68,6 +68,8 @@ export default function VideoCall({
     const signalingQueueRef = useRef([]);
     const ringtoneIntervalRef = useRef(null);
     const iceRestartTimeoutRef = useRef(null);
+    const localStreamRef = useRef(null);
+    const hasStartedCall = useRef(false);
 
     // Dragging Logic
     const handleDragStart = (e) => {
@@ -215,19 +217,19 @@ export default function VideoCall({
         };
     }, [callStatus]);
 
-    // Cleanup media on unmount
+    // Cleanup media strictly on unmount
     useEffect(() => {
         return () => {
-            if (localStream) {
+            if (localStreamRef.current) {
                 console.log('[WebRTC] Cleaning up local stream tracks on unmount');
-                localStream.getTracks().forEach(t => t.stop());
+                localStreamRef.current.getTracks().forEach(t => t.stop());
             }
             if (peerConnectionRef.current) {
                 console.log('[WebRTC] Closing PeerConnection on unmount');
                 peerConnectionRef.current.close();
             }
         };
-    }, [localStream]);
+    }, []);
 
     // Bind streams to video elements safely after they render
     useEffect(() => {
@@ -247,6 +249,7 @@ export default function VideoCall({
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             setLocalStream(stream);
+            localStreamRef.current = stream;
             return stream;
         } catch (err) {
             console.error('[WebRTC] Camera/mic access error:', err);
@@ -349,7 +352,7 @@ export default function VideoCall({
             callerAvatar: user.avatar,
             signal: offer
         });
-    }, [initLocalStream, setupPeerConnection, otherUser, user, emit]);
+    }, [initLocalStream, setupPeerConnection, otherUser._id, user.name, user.avatar, emit]);
 
     // Handle Inbound Call Acceptance
     const acceptCall = useCallback(async () => {
@@ -479,7 +482,8 @@ export default function VideoCall({
 
     // Initial Action — wait until TURN is ready before initiating
     useEffect(() => {
-        if (isRtcReady && mode === 'outbound') {
+        if (isRtcReady && mode === 'outbound' && !hasStartedCall.current) {
+            hasStartedCall.current = true;
             startCall();
         }
     }, [mode, startCall, isRtcReady]);
