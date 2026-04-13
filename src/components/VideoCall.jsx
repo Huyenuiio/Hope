@@ -135,7 +135,20 @@ export default function VideoCall({
                 const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
 
                 if (!domain || !apiKey) {
-                    console.warn('[WebRTC] Metered credentials missing. Using STUN-only.');
+                    console.warn('[WebRTC] Metered credentials missing. Falling back to public STUN/TURN.');
+                    rtcConfigRef.current = {
+                        iceServers: [
+                            { urls: 'stun:stun.l.google.com:19302' },
+                            {
+                                urls: ['turn:openrelay.metered.live:80', 'turn:openrelay.metered.live:443', 'turn:openrelay.metered.live:443?transport=tcp'],
+                                username: 'openrelayproject',
+                                credential: 'openrelayproject'
+                            }
+                        ],
+                        iceTransportPolicy: 'all',
+                        iceCandidatePoolSize: 10,
+                    };
+                    setTurnEnabled(true);
                     setIsRtcReady(true);
                     return;
                 }
@@ -184,19 +197,22 @@ export default function VideoCall({
                 setTurnEnabled(turnServers.length > 0);
                 setIsRtcReady(true);
             } catch (error) {
-                console.error('[WebRTC] ❌ TURN fetch failed:', error.message, '— using STUN-only fallback.');
-                // Fallback: multiple public STUN servers to maximize connectivity
+                console.error('[WebRTC] ❌ TURN fetch failed:', error.message, '— falling back to public STUN/TURN.');
+                // Fallback: public STUN and OpenRelay TURN to maximize connectivity across networks
                 rtcConfigRef.current = {
                     iceServers: [
                         { urls: 'stun:stun.l.google.com:19302' },
                         { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' },
-                        { urls: 'stun:stun3.l.google.com:19302' },
-                        { urls: 'stun:stun4.l.google.com:19302' },
+                        {
+                            urls: ['turn:openrelay.metered.live:80', 'turn:openrelay.metered.live:443', 'turn:openrelay.metered.live:443?transport=tcp'],
+                            username: 'openrelayproject',
+                            credential: 'openrelayproject'
+                        }
                     ],
                     iceTransportPolicy: 'all',
                     iceCandidatePoolSize: 10,
                 };
+                setTurnEnabled(true); // OpenRelay TURN is included
                 setIsRtcReady(true);
             }
         };
