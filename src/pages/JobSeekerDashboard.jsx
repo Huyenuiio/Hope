@@ -1146,7 +1146,7 @@ export default function JobSeekerDashboard() {
   const [freelancers, setFreelancers] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [profileUpdateOpen, setProfileUpdateOpen] = useState(false);
-  const [sentRequests, setSentRequests] = useState([]);
+  const [sentRequests, setSentRequests] = useState(user?.sentRequests || []);
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [selectedJobForApply, setSelectedJobForApply] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -1156,6 +1156,12 @@ export default function JobSeekerDashboard() {
 
   const [searchResults, setSearchResults] = useState({ jobs: [], users: [] });
   const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    if (user?.sentRequests) {
+      setSentRequests(prev => [...new Set([...prev, ...user.sentRequests])]);
+    }
+  }, [user?.sentRequests]);
 
   // Calculate profile completeness
   const profileScore = user ? Math.min(100, [

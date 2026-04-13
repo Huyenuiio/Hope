@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
@@ -15,15 +16,21 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const notifRef = useRef(null);
+  const desktopNotifRef = useRef(null);
+  const mobileNotifRef = useRef(null);
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (notifRef.current && !notifRef.current.contains(event.target)) {
-        setShowNotifications(false);
+      if (
+        (desktopNotifRef.current && desktopNotifRef.current.contains(event.target)) ||
+        (mobileNotifRef.current && mobileNotifRef.current.contains(event.target))
+      ) {
+        return; // Clicked inside either notif dropdown
       }
+      setShowNotifications(false);
+      
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchResults(false);
       }
@@ -46,18 +53,23 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
   }, [navigate]);
 
   const handleRespondConnection = async (notif, action) => {
+    console.log('Responding to connection request:', notif.sender?._id, action);
     try {
-      await usersAPI.respondConnection(notif.sender._id, action);
+      const res = await usersAPI.respondConnection(notif.sender._id, action);
+      console.log('Response from API:', res.data);
       if (action === 'accept') {
+        toast.success(res.data.message || 'Đã chấp nhận kết nối');
         setNotifications(prev => prev.map(n => n._id === notif._id ? { ...n, type: 'connection_accepted_local' } : n));
         if (notif.sender && setUser) {
           setUser(prev => ({ ...prev, connections: [notif.sender, ...(prev.connections || [])] }));
         }
       } else {
+        toast.success(res.data.message || 'Đã từ chối kết nối');
         setNotifications(prev => prev.map(n => n._id === notif._id ? { ...n, type: 'connection_rejected_local' } : n));
       }
     } catch (err) {
-      console.error(err);
+      console.error('API Error:', err);
+      toast.error(err.response?.data?.message || 'Không thể thực hiện hành động này');
     }
   };
 
@@ -192,7 +204,7 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
                 if (item.id === 'notifications' && !isAuthenticated) return null;
                 const active = item.id === activeNav;
                 return (
-                  <li key={item.id} ref={item.id === 'notifications' ? notifRef : null} className={`flex flex-col items-center justify-center cursor-pointer h-full px-2 transition-colors relative group ${active ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-primary'}`}>
+                  <li key={item.id} ref={item.id === 'notifications' ? desktopNotifRef : null} className={`flex flex-col items-center justify-center cursor-pointer h-full px-2 transition-colors relative group ${active ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-primary'}`}>
                     {item.id === 'notifications' ? (
                       <div className="flex flex-col items-center w-full" onClick={() => { setShowNotifications(!showNotifications); markAllRead(); }}>
                         <span className={`material-icons ${active ? 'text-primary' : 'group-hover:text-primary'}`}>{item.icon}</span>
@@ -339,7 +351,7 @@ export default function Navbar({ activeNav = 'home', search, onSearchChange, sho
           {/* Mobile Right: notification bell + hamburger */}
           <div className="flex items-center gap-2 md:hidden">
             {/* Mobile notification (icon only) */}
-            <div className="relative" ref={notifRef}>
+            <div className="relative" ref={mobileNotifRef}>
               {isAuthenticated && (
                 <button
                   onClick={() => { setShowNotifications(!showNotifications); markAllRead(); }}
