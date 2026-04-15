@@ -519,13 +519,24 @@ export default function ProfileEditPage() {
 
   const handleRoleChange = async (newRole) => {
     if (newRole === internalRole) return;
+    // Nếu role đã được khóa (roleSetAt tồn tại), không cho phép đổi
+    if (user?.roleSetAt) {
+      setError('Vai trò đã được xác nhận và không thể thay đổi. Vui lòng liên hệ hỗ trợ nếu cần điều chỉnh.');
+      return;
+    }
     try {
-      await authAPI.setRole(newRole);
+      const { data } = await authAPI.setRole(newRole);
       setInternalRole(newRole);
-      if (setUser) setUser(prev => ({ ...prev, role: newRole }));
+      // Cập nhật cả role lẫn roleSetAt từ response server vào context
+      if (setUser) setUser(prev => ({
+        ...prev,
+        role: newRole,
+        roleSetAt: data.user?.roleSetAt || new Date().toISOString(),
+      }));
       setActiveTab(1);
     } catch (err) {
-      setError('Lỗi khi chuyển đổi vai trò.');
+      const msg = err.response?.data?.message || 'Lỗi khi chuyển đổi vai trò.';
+      setError(msg);
     }
   };
 
@@ -674,15 +685,33 @@ export default function ProfileEditPage() {
 
         {/* ── FORM CONTENT ── */}
         <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-          {/* Header Role Toggle */}
+          {/* Header Role Toggle / Role Lock Display */}
           <div className="bg-gray-50 border-b border-gray-200 p-4 px-8 flex justify-between items-center">
             <div>
-              <h3 className="font-bold text-gray-800">Chế độ hiển thị Form:</h3>
+              <h3 className="font-bold text-gray-800">Vai trò tài khoản:</h3>
             </div>
-            <div className="flex bg-gray-200 p-1 rounded-xl">
-              <button onClick={() => handleRoleChange('freelancer')} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${isFreelancer ? 'bg-white text-primary shadow-sm ring-1 ring-gray-900/5' : 'text-gray-500 hover:text-gray-700'}`}>Freelancer</button>
-              <button onClick={() => handleRoleChange('client')} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${!isFreelancer ? 'bg-white text-primary shadow-sm ring-1 ring-gray-900/5' : 'text-gray-500 hover:text-gray-700'}`}>Khách hàng (Client)</button>
-            </div>
+            {user?.roleSetAt ? (
+              /* Vai trò đã bị khóa — hiển thị dạng readonly */
+              <div className="flex items-center gap-3">
+                <div className="flex bg-gray-100 p-1 rounded-xl opacity-60 cursor-not-allowed select-none">
+                  <span className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${isFreelancer ? 'bg-white text-primary shadow-sm ring-1 ring-gray-900/5' : 'text-gray-400'}`}>Freelancer</span>
+                  <span className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${!isFreelancer ? 'bg-white text-primary shadow-sm ring-1 ring-gray-900/5' : 'text-gray-400'}`}>Khách hàng (Client)</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                  <span className="material-icons text-sm">lock</span>
+                  Đã khóa
+                </div>
+              </div>
+            ) : (
+              /* Vai trò chưa bị khóa — cho phép chọn lần đầu */
+              <div className="flex items-center gap-3">
+                <div className="flex bg-gray-200 p-1 rounded-xl">
+                  <button onClick={() => handleRoleChange('freelancer')} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${isFreelancer ? 'bg-white text-primary shadow-sm ring-1 ring-gray-900/5' : 'text-gray-500 hover:text-gray-700'}`}>Freelancer</button>
+                  <button onClick={() => handleRoleChange('client')} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${!isFreelancer ? 'bg-white text-primary shadow-sm ring-1 ring-gray-900/5' : 'text-gray-500 hover:text-gray-700'}`}>Khách hàng (Client)</button>
+                </div>
+                <p className="text-xs text-gray-400 italic">Chọn một lần duy nhất</p>
+              </div>
+            )}
           </div>
 
           {error && <div className="m-6 bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-sm font-medium flex items-center gap-2"><span className="material-icons">error</span>{error}</div>}
