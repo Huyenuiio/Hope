@@ -133,10 +133,10 @@ export default function VideoCall({
         };
     }, [isDragging, isResizing, position, size]);
 
-    // ─── Initialize ICE Servers without External API ─────────────────────────
+    // ─── Fetch TURN Server Credentials from Metered ─────────────────────────
     useEffect(() => {
-        rtcConfigRef.current = {
-            iceServers: [
+        const fetchIceServers = async () => {
+            const fallbackServers = [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' },
                 { urls: 'stun:stun2.l.google.com:19302' },
@@ -145,31 +145,60 @@ export default function VideoCall({
                 { urls: 'stun:stun.cloudflare.com:3478' },
                 { urls: 'stun:stun.jitsi.net:443' },
                 { urls: 'stun:stun.twilio.com:3478' },
-                // Split TURN servers into individual objects to avoid array parsing errors in older/mobile browsers
-                { 
-                    urls: 'turn:openrelay.metered.live:80',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                { 
-                    urls: 'turn:openrelay.metered.live:443',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                { 
-                    urls: 'turn:openrelay.metered.live:443?transport=tcp',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
+                { urls: 'turn:openrelay.metered.live:80', username: 'openrelayproject', credential: 'openrelayproject' },
+                { urls: 'turn:openrelay.metered.live:443', username: 'openrelayproject', credential: 'openrelayproject' },
+                { urls: 'turn:openrelay.metered.live:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+            ];
+
+            try {
+                const domain = import.meta.env.VITE_METERED_DOMAIN;
+                const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
+
+                if (!domain || !apiKey) {
+                    throw new Error('Metered credentials missing');
                 }
-            ],
-            iceTransportPolicy: 'all',
-            iceCandidatePoolSize: 10,
-            bundlePolicy: 'max-bundle',
-            rtcpMuxPolicy: 'require',
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                let res;
+                try {
+                    res = await fetch(`https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`, { signal: controller.signal });
+                } finally {
+                    clearTimeout(timeoutId);
+                }
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const iceServers = await res.json();
+
+                if (!Array.isArray(iceServers) || iceServers.length === 0) {
+                    throw new Error('Empty ICE server list returned');
+                }
+
+                rtcConfigRef.current = {
+                    iceServers,
+                    iceTransportPolicy: 'all',
+                    iceCandidatePoolSize: 10,
+                    bundlePolicy: 'max-bundle',
+                    rtcpMuxPolicy: 'require',
+                };
+                
+                setTurnEnabled(true);
+                setIsRtcReady(true);
+            } catch (error) {
+                console.error('[WebRTC] ❌ TURN fetch failed:', error.message, '— falling back to robust STUN/TURN.');
+                rtcConfigRef.current = {
+                    iceServers: fallbackServers,
+                    iceTransportPolicy: 'all',
+                    iceCandidatePoolSize: 10,
+                    bundlePolicy: 'max-bundle',
+                    rtcpMuxPolicy: 'require',
+                };
+                setTurnEnabled(true);
+                setIsRtcReady(true);
+            }
         };
-        
-        setTurnEnabled(true);
-        setIsRtcReady(true);
+        fetchIceServers();
     }, []);
 
 
