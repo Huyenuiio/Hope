@@ -145,16 +145,27 @@ export default function VideoCall({
                 { urls: 'stun:stun.cloudflare.com:3478' },
                 { urls: 'stun:stun.jitsi.net:443' },
                 { urls: 'stun:stun.twilio.com:3478' },
-                {
-                    urls: ['turn:openrelay.metered.live:80', 'turn:openrelay.metered.live:443', 'turn:openrelay.metered.live:443?transport=tcp'],
+                // Split TURN servers into individual objects to avoid array parsing errors in older/mobile browsers
+                { 
+                    urls: 'turn:openrelay.metered.live:80',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                },
+                { 
+                    urls: 'turn:openrelay.metered.live:443',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                },
+                { 
+                    urls: 'turn:openrelay.metered.live:443?transport=tcp',
                     username: 'openrelayproject',
                     credential: 'openrelayproject'
                 }
             ],
             iceTransportPolicy: 'all',
             iceCandidatePoolSize: 10,
-            bundlePolicy: 'max-bundle',
-            rtcpMuxPolicy: 'require',
+            // Removed bundlePolicy: 'max-bundle' and rtcpMuxPolicy: 'require' 
+            // because strict NATs and older 4G network gateways often drop highly multiplexed UDP packets.
         };
         
         setTurnEnabled(true);
@@ -193,12 +204,14 @@ export default function VideoCall({
     useEffect(() => {
         if (localVideoRef.current && localStream) {
             localVideoRef.current.srcObject = localStream;
+            localVideoRef.current.play().catch(e => console.log('[WebRTC] Local play blocked:', e.message));
         }
     }, [localStream]);
 
     useEffect(() => {
         if (remoteVideoRef.current && remoteStream) {
             remoteVideoRef.current.srcObject = remoteStream;
+            remoteVideoRef.current.play().catch(e => console.log('[WebRTC] Remote play blocked:', e.message));
         }
     }, [remoteStream]);
 
