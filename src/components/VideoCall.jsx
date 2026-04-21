@@ -164,8 +164,8 @@ export default function VideoCall({
             ],
             iceTransportPolicy: 'all',
             iceCandidatePoolSize: 10,
-            // Removed bundlePolicy: 'max-bundle' and rtcpMuxPolicy: 'require' 
-            // because strict NATs and older 4G network gateways often drop highly multiplexed UDP packets.
+            bundlePolicy: 'max-bundle',
+            rtcpMuxPolicy: 'require',
         };
         
         setTurnEnabled(true);
