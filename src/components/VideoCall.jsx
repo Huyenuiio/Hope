@@ -145,18 +145,24 @@ export default function VideoCall({
                 { urls: 'stun:stun.cloudflare.com:3478' },
                 { urls: 'stun:stun.jitsi.net:443' },
                 { urls: 'stun:stun.twilio.com:3478' },
+                { urls: 'stun:stun.relay.metered.ca:80' },
                 { 
-                    urls: 'turn:duan-hope-2024.metered.live:80',
+                    urls: 'turn:global.relay.metered.ca:80',
                     username: 'fa1cce8109d012c3eabd1f89',
                     credential: 'cjCUmAZyhuJ63b56'
                 },
                 { 
-                    urls: 'turn:duan-hope-2024.metered.live:443',
+                    urls: 'turn:global.relay.metered.ca:80?transport=tcp',
                     username: 'fa1cce8109d012c3eabd1f89',
                     credential: 'cjCUmAZyhuJ63b56'
                 },
                 { 
-                    urls: 'turn:duan-hope-2024.metered.live:443?transport=tcp',
+                    urls: 'turn:global.relay.metered.ca:443',
+                    username: 'fa1cce8109d012c3eabd1f89',
+                    credential: 'cjCUmAZyhuJ63b56'
+                },
+                { 
+                    urls: 'turns:global.relay.metered.ca:443?transport=tcp',
                     username: 'fa1cce8109d012c3eabd1f89',
                     credential: 'cjCUmAZyhuJ63b56'
                 }
