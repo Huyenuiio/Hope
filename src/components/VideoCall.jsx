@@ -133,10 +133,10 @@ export default function VideoCall({
         };
     }, [isDragging, isResizing, position, size]);
 
-    // ─── Fetch TURN Server Credentials from Metered ─────────────────────────
+    // ─── Initialize ICE Servers Without External API ─────────────────────────
     useEffect(() => {
-        const fetchIceServers = async () => {
-            const fallbackServers = [
+        rtcConfigRef.current = {
+            iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' },
                 { urls: 'stun:stun2.l.google.com:19302' },
@@ -145,60 +145,30 @@ export default function VideoCall({
                 { urls: 'stun:stun.cloudflare.com:3478' },
                 { urls: 'stun:stun.jitsi.net:443' },
                 { urls: 'stun:stun.twilio.com:3478' },
-                { urls: 'turn:openrelay.metered.live:80', username: 'openrelayproject', credential: 'openrelayproject' },
-                { urls: 'turn:openrelay.metered.live:443', username: 'openrelayproject', credential: 'openrelayproject' },
-                { urls: 'turn:openrelay.metered.live:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-            ];
-
-            try {
-                const domain = import.meta.env.VITE_METERED_DOMAIN;
-                const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
-
-                if (!domain || !apiKey) {
-                    throw new Error('Metered credentials missing');
+                { 
+                    urls: 'turn:duan-hope-2024.metered.live:80',
+                    username: 'fa1cce8109d012c3eabd1f89',
+                    credential: 'cjCUmAZyhuJ63b56'
+                },
+                { 
+                    urls: 'turn:duan-hope-2024.metered.live:443',
+                    username: 'fa1cce8109d012c3eabd1f89',
+                    credential: 'cjCUmAZyhuJ63b56'
+                },
+                { 
+                    urls: 'turn:duan-hope-2024.metered.live:443?transport=tcp',
+                    username: 'fa1cce8109d012c3eabd1f89',
+                    credential: 'cjCUmAZyhuJ63b56'
                 }
-
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-                let res;
-                try {
-                    res = await fetch(`https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`, { signal: controller.signal });
-                } finally {
-                    clearTimeout(timeoutId);
-                }
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const iceServers = await res.json();
-
-                if (!Array.isArray(iceServers) || iceServers.length === 0) {
-                    throw new Error('Empty ICE server list returned');
-                }
-
-                rtcConfigRef.current = {
-                    iceServers,
-                    iceTransportPolicy: 'all',
-                    iceCandidatePoolSize: 10,
-                    bundlePolicy: 'max-bundle',
-                    rtcpMuxPolicy: 'require',
-                };
-                
-                setTurnEnabled(true);
-                setIsRtcReady(true);
-            } catch (error) {
-                console.error('[WebRTC] ❌ TURN fetch failed:', error.message, '— falling back to robust STUN/TURN.');
-                rtcConfigRef.current = {
-                    iceServers: fallbackServers,
-                    iceTransportPolicy: 'all',
-                    iceCandidatePoolSize: 10,
-                    bundlePolicy: 'max-bundle',
-                    rtcpMuxPolicy: 'require',
-                };
-                setTurnEnabled(true);
-                setIsRtcReady(true);
-            }
+            ],
+            iceTransportPolicy: 'all',
+            iceCandidatePoolSize: 10,
+            bundlePolicy: 'max-bundle',
+            rtcpMuxPolicy: 'require',
         };
-        fetchIceServers();
+        
+        setTurnEnabled(true);
+        setIsRtcReady(true);
     }, []);
 
 
