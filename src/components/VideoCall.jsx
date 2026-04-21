@@ -2,12 +2,18 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 
-// Default STUN-only config (fallback when Metered fetch fails)
 const DEFAULT_RTC_CONFIG = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
-    ]
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' },
+        { urls: 'stun:stun.cloudflare.com:3478' },
+        { urls: 'stun:stun.jitsi.net:443' },
+        { urls: 'stun:stun.twilio.com:3478' }
+    ],
+    iceTransportPolicy: 'all'
 };
 
 // Simple Ringtone Generator using Web Audio API
@@ -127,96 +133,32 @@ export default function VideoCall({
         };
     }, [isDragging, isResizing, position, size]);
 
-    // ─── Fetch TURN Server Credentials from Metered ─────────────────────────
+    // ─── Initialize ICE Servers without External API ─────────────────────────
     useEffect(() => {
-        const fetchIceServers = async () => {
-            try {
-                const domain = import.meta.env.VITE_METERED_DOMAIN;
-                const apiKey = import.meta.env.VITE_METERED_SECRET_KEY;
-
-                if (!domain || !apiKey) {
-                    console.warn('[WebRTC] Metered credentials missing. Falling back to public STUN/TURN.');
-                    rtcConfigRef.current = {
-                        iceServers: [
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            {
-                                urls: ['turn:openrelay.metered.live:80', 'turn:openrelay.metered.live:443', 'turn:openrelay.metered.live:443?transport=tcp'],
-                                username: 'openrelayproject',
-                                credential: 'openrelayproject'
-                            }
-                        ],
-                        iceTransportPolicy: 'all',
-                        iceCandidatePoolSize: 10,
-                    };
-                    setTurnEnabled(true);
-                    setIsRtcReady(true);
-                    return;
+        rtcConfigRef.current = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' },
+                { urls: 'stun:stun.cloudflare.com:3478' },
+                { urls: 'stun:stun.jitsi.net:443' },
+                { urls: 'stun:stun.twilio.com:3478' },
+                {
+                    urls: ['turn:openrelay.metered.live:80', 'turn:openrelay.metered.live:443', 'turn:openrelay.metered.live:443?transport=tcp'],
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
                 }
-
-                console.log('[WebRTC] Fetching TURN credentials...');
-
-                // Use AbortController instead of AbortSignal.timeout() for Cốc Cốc / older browser compatibility
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-                let res;
-                try {
-                    res = await fetch(
-                        `https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`,
-                        { signal: controller.signal }
-                    );
-                } finally {
-                    clearTimeout(timeoutId);
-                }
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const iceServers = await res.json();
-
-                // Log full response to console for debugging
-                console.log('[WebRTC] Raw TURN response:', JSON.stringify(iceServers));
-
-                if (!Array.isArray(iceServers) || iceServers.length === 0) {
-                    throw new Error('Empty ICE server list returned');
-                }
-
-                const turnServers = iceServers.filter(s =>
-                    (Array.isArray(s.urls) ? s.urls : [s.urls]).some(u => u.startsWith('turn:') || u.startsWith('turns:'))
-                );
-
-                console.log(`[WebRTC] ✅ Loaded ${iceServers.length} servers (${turnServers.length} TURN relay).`);
-                console.log('[WebRTC] Server URLs:', iceServers.map(s => s.urls));
-
-                rtcConfigRef.current = {
-                    iceServers,
-                    iceTransportPolicy: 'all',
-                    iceCandidatePoolSize: 10,
-                    bundlePolicy: 'max-bundle',
-                    rtcpMuxPolicy: 'require',
-                };
-
-                setTurnEnabled(turnServers.length > 0);
-                setIsRtcReady(true);
-            } catch (error) {
-                console.error('[WebRTC] ❌ TURN fetch failed:', error.message, '— falling back to public STUN/TURN.');
-                // Fallback: public STUN and OpenRelay TURN to maximize connectivity across networks
-                rtcConfigRef.current = {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        {
-                            urls: ['turn:openrelay.metered.live:80', 'turn:openrelay.metered.live:443', 'turn:openrelay.metered.live:443?transport=tcp'],
-                            username: 'openrelayproject',
-                            credential: 'openrelayproject'
-                        }
-                    ],
-                    iceTransportPolicy: 'all',
-                    iceCandidatePoolSize: 10,
-                };
-                setTurnEnabled(true); // OpenRelay TURN is included
-                setIsRtcReady(true);
-            }
+            ],
+            iceTransportPolicy: 'all',
+            iceCandidatePoolSize: 10,
+            bundlePolicy: 'max-bundle',
+            rtcpMuxPolicy: 'require',
         };
-        fetchIceServers();
+        
+        setTurnEnabled(true);
+        setIsRtcReady(true);
     }, []);
 
 
